@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Create New Goal | AtomQuest Goals</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error-container": "#ffdad6",
+                        "primary-fixed-dim": "#b8c4ff",
+                        "inverse-on-surface": "#f0f1f3",
+                        "background": "#f8f9fb",
+                        "surface-container-high": "#e7e8ea",
+                        "secondary": "#555f70",
+                        "on-error-container": "#93000a",
+                        "inverse-primary": "#b8c4ff",
+                        "error": "#ba1a1a",
+                        "secondary-fixed": "#d9e3f7",
+                        "outline-variant": "#c4c5d5",
+                        "on-surface-variant": "#444653",
+                        "surface-variant": "#e1e2e4",
+                        "on-primary": "#ffffff",
+                        "on-background": "#191c1e",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "on-tertiary-container": "#3fd298",
+                        "on-secondary-fixed": "#121c2a",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#1e40af",
+                        "on-secondary-fixed-variant": "#3d4757",
+                        "surface-bright": "#f8f9fb",
+                        "outline": "#757684",
+                        "on-tertiary": "#ffffff",
+                        "primary": "#00288e",
+                        "on-surface": "#191c1e",
+                        "on-primary-fixed": "#001453",
+                        "tertiary": "#003d27",
+                        "tertiary-fixed": "#6ffbbe",
+                        "surface-tint": "#3755c3",
+                        "surface": "#f8f9fb",
+                        "primary-fixed": "#dde1ff",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#2e3132",
+                        "on-primary-container": "#a8b8ff",
+                        "surface-container-highest": "#e1e2e4",
+                        "on-tertiary-fixed": "#002113",
+                        "on-secondary-container": "#596374",
+                        "secondary-fixed-dim": "#bdc7db",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#edeef0",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "secondary-container": "#d6e0f4",
+                        "tertiary-container": "#00563a",
+                        "surface-container-low": "#f3f4f6",
+                        "on-primary-fixed-variant": "#173bab",
+                        "surface-dim": "#d9dadc"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "xl": "80px",
+                        "margin-mobile": "16px",
+                        "sm": "12px",
+                        "base": "8px",
+                        "lg": "48px",
+                        "md": "24px",
+                        "gutter": "24px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "label-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-sm": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "headline-md": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; transition: background-color 0.3s, color 0.3s; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        
+        /* Dark Mode Overrides */
+        html.dark body { background-color: #121212 !important; color: #e0e0e0 !important; }
+        html.dark aside, html.dark header, html.dark .bg-surface-container-lowest, html.dark .bg-surface-container-low, html.dark .bg-surface-container, html.dark .bg-surface { background-color: #1e1e1e !important; color: #e0e0e0 !important; border-color: #333 !important; }
+        html.dark .bg-primary { background-color: #00288e !important; color: #ffffff !important; }
+        html.dark .bg-primary-container { background-color: #1e40af !important; color: #ffffff !important; }
+        html.dark .text-primary { color: #a8b8ff !important; }
+        html.dark .text-primary-container { color: #a8b8ff !important; }
+        html.dark .text-secondary { color: #bdc7db !important; }
+        html.dark .text-on-surface, html.dark .text-on-surface-variant { color: #e0e0e0 !important; }
+        html.dark .border-outline-variant, html.dark .border-outline { border-color: #333 !important; }
+        html.dark .bg-secondary-container { background-color: #3d4757 !important; color: #d6e0f4 !important; }
+        html.dark .bg-tertiary-container { background-color: #00563a !important; color: #6ffbbe !important; }
+        html.dark input, html.dark select, html.dark textarea { background-color: #2a2a2a !important; color: #e0e0e0 !important; border-color: #444 !important; }
+    </style>
+</head>
+<body class="text-on-surface bg-surface-container-low min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="bg-surface-container-lowest dark:bg-inverse-surface border-b border-outline-variant dark:border-outline shadow-sm docked full-width top-0 z-50">
+<div class="flex justify-between items-center w-full px-gutter max-w-container-max mx-auto h-16">
+<div class="flex items-center gap-md">
+<span class="font-title-lg text-title-lg font-bold text-primary dark:text-primary-fixed">AtomQuest Goals</span>
+<div class="hidden md:flex items-center bg-surface-container-low px-sm py-xs rounded-lg border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface-variant mr-xs">search</span>
+<input class="bg-transparent border-none focus:ring-0 font-body-md text-body-md text-on-surface w-64" placeholder="Search goals..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-sm">
+                    <div class="flex items-center gap-sm">
+                        <div class="flex gap-xs">
+                            <button id="btn-toggle-theme" class="p-xs rounded-full hover:bg-surface-container-low dark:hover:bg-secondary-fixed-variant transition-colors cursor-pointer active:opacity-80">
+                                <span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim">dark_mode</span>
+                            </button>
+                            <button id="btn-notifications" class="p-xs rounded-full hover:bg-surface-container-low dark:hover:bg-secondary-fixed-variant transition-colors cursor-pointer active:opacity-80">
+                                <span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim">notifications</span>
+                            </button>
+                            <button id="btn-help" class="p-xs rounded-full hover:bg-surface-container-low dark:hover:bg-secondary-fixed-variant transition-colors cursor-pointer active:opacity-80">
+                                <span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim">help</span>
+                            </button>
+                            <button id="btn-settings" class="p-xs rounded-full hover:bg-surface-container-low dark:hover:bg-secondary-fixed-variant transition-colors cursor-pointer active:opacity-80">
+                                <span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim">settings</span>
+                            </button>
+                        </div>
+                        <div class="h-8 w-8 rounded-full overflow-hidden border border-outline-variant">
+                            <img alt="Employee Profile Avatar" class="w-full h-full object-cover" data-alt="A professional headshot of a corporate employee in business attire, clean lighting, minimalist background, high-resolution portrait for a corporate profile." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcut6Kr_x6pPoV0Guyw9SpMCsnrgc5_w_zLNTVcejt8QJfBgO-jcePQkRH_Q1d09p-16tbTLkXSQT3DrtN6rQ7buaxiEyTdAo7dZw5Fkf4TT1JObaUcy8aMfIWwefNf0piE8EbDU0HKGlv717jD6UTBbnyIgghYFnlY-NO5u6zTV9fCaJUlozDkaUzEnCQ1uV0t_DjuLugHra43sUMoOCBCYbB7u1mDSV_Q37I4U4vyo6JkUVS8wxKl4tj14hII-L95N5dyYXVag_D"/>
+                        </div>
+                    </div>
+</div>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col h-full w-64 bg-surface-container-low dark:bg-inverse-surface border-r border-outline-variant dark:border-outline p-md gap-sm overflow-y-auto">
+<div class="mb-lg">
+<h2 class="font-headline-sm text-headline-sm font-bold text-primary-container dark:text-primary-fixed">Goal Management</h2>
+<p class="font-label-md text-label-md text-on-surface-variant">Employee Portal</p>
+</div>
+<nav class="flex flex-col gap-xs flex-1">
+<a class="flex items-center gap-sm p-sm bg-primary-container text-on-primary-container dark:bg-primary-fixed-dim dark:text-on-primary-fixed-variant rounded-lg font-bold scale-95 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">target</span>
+<span class="font-label-md text-label-md">My Goals</span>
+</a>
+<a class="flex items-center gap-sm p-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high rounded-lg scale-95 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">event_repeat</span>
+<span class="font-label-md text-label-md">Check-ins</span>
+</a>
+<a class="flex items-center gap-sm p-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high rounded-lg scale-95 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">trending_up</span>
+<span class="font-label-md text-label-md">Progress</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-outline-variant pt-md flex flex-col gap-xs">
+<a class="flex items-center gap-sm p-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+<a class="flex items-center gap-sm p-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high rounded-lg" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-md text-label-md">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 overflow-y-auto p-md lg:p-lg">
+<div class="max-w-[800px] mx-auto">
+<!-- Page Header -->
+<div class="mb-lg flex justify-between items-end">
+<div>
+<h1 class="font-headline-md text-headline-md text-on-surface mb-xs">Create New Goal</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Define your objectives and key results for the current performance cycle.</p>
+</div>
+</div>
+<!-- Weightage Progress Section -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md mb-md shadow-sm">
+<div class="flex justify-between items-center mb-sm">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Current Total Weightage</span>
+<span class="font-label-md text-label-md text-primary font-bold">85%</span>
+</div>
+<div class="w-full h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary-container" style="width: 85%"></div>
+</div>
+<p class="mt-sm font-label-sm text-label-sm text-on-surface-variant">
+                        You have <span class="text-primary font-bold">15%</span> remaining weightage to allocate.
+                    </p>
+</div>
+<!-- Form Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md lg:p-lg shadow-sm">
+<form class="space-y-md">
+<!-- Goal Title -->
+<div class="space-y-xs">
+<label class="font-label-md text-label-md text-on-surface">Goal Title</label>
+<input id="goal_title" class="w-full px-sm py-base rounded-lg border border-outline focus:border-primary focus:ring-1 focus:ring-primary bg-surface-container-lowest text-body-md font-body-md transition-all" placeholder="e.g., Increase Quarterly Revenue Growth" type="text"/>
+</div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+                            <!-- Thrust Area -->
+                            <div class="space-y-xs">
+                                <label class="font-label-md text-label-md text-on-surface">Thrust Area</label>
+                                <div class="flex gap-xs">
+                                    <select id="thrust_area" class="flex-1 px-sm py-base rounded-lg border border-outline focus:border-primary focus:ring-1 focus:ring-primary bg-surface-container-lowest text-body-md font-body-md">
+                                        <option disabled="" selected="" value="">Select an area</option>
+                                        <option value="Strategic Growth">Strategic Growth</option>
+                                        <option value="Operational Excellence">Operational Excellence</option>
+                                        <option value="Customer Success">Customer Success</option>
+                                        <option value="Innovation & Tech">Innovation & Tech</option>
+                                    </select>
+                                    <button id="btn-ai-suggest" type="button" class="px-md py-base bg-secondary text-white rounded-lg hover:opacity-90 transition-opacity flex items-center gap-xs shadow-sm">
+                                        <span class="material-symbols-outlined text-[18px]">bolt</span>
+                                        AI Suggest
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- Context for AI -->
+                            <div class="md:col-span-2 space-y-xs">
+                                <label class="font-label-md text-label-md text-on-surface">Additional Context (Optional)</label>
+                                <textarea id="ai_context" class="w-full px-sm py-base rounded-lg border border-outline focus:border-primary focus:ring-1 focus:ring-primary bg-surface-container-lowest text-body-md font-body-md" placeholder="e.g., Focus on reducing manual reporting time by 20%" rows="2"></textarea>
+                            </div>
+                            
+                            <!-- AI Suggestions Container -->
+                            <div id="ai-suggestions" class="hidden md:col-span-2 space-y-sm bg-secondary-container/30 p-md rounded-xl border border-secondary/20">
+                                <h4 class="font-label-md text-label-md font-bold text-secondary flex items-center gap-xs">
+                                    <span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+                                    AI Architect Suggestions
+                                </h4>
+                                <div id="suggestions-list" class="grid grid-cols-1 md:grid-cols-3 gap-sm">
+                                    <!-- Suggestions will be injected here -->
+                                </div>
+                            </div>
+
+                            <!-- Unit of Measurement -->
+                            <div class="space-y-xs">
+                                <label class="font-label-md text-label-md text-on-surface">Unit of Measurement</label>
+                                <select id="uom_type" class="w-full px-sm py-base rounded-lg border border-outline focus:border-primary focus:ring-1 focus:ring-primary bg-surface-container-lowest text-body-md font-body-md">
+                                    <option value="Numeric">Numeric</option>
+                                    <option value="Percentage">Percentage</option>
+                                    <option value="Timeline">Timeline</option>
+                                    <option value="Zero-based">Zero-based</option>
+                                </select>
+                            </div>
+                            <!-- Direction -->
+                            <div class="space-y-xs">
+                                <label class="font-label-md text-label-md text-on-surface">Direction</label>
+                                <select id="uom_direction" class="w-full px-sm py-base rounded-lg border border-outline focus:border-primary focus:ring-1 focus:ring-primary bg-surface-container-lowest text-body-md font-body-md">
+                                    <option value="max">Maximize (Higher is better)</option>
+                                    <option value="min">Minimize (Lower is better)</option>
+                                </select>
+                            </div>
+                            <!-- Target Value -->
+                            <div class="space-y-xs">
+                                <label class="font-label-md text-label-md text-on-surface">Target Value</label>
+                                <input id="target" class="w-full px-sm py-base rounded-lg border border-outline focus:border-primary focus:ring-1 focus:ring-primary bg-surface-container-lowest text-body-md font-body-md" placeholder="0" type="number" step="any"/>
+                            </div>
+                            <!-- Weightage % -->
+                            <div class="space-y-xs">
+                                <label class="font-label-md text-label-md text-on-surface">Weightage %</label>
+                                <div class="relative">
+                                    <input id="weightage" class="w-full px-sm py-base rounded-lg border border-outline focus:border-primary focus:ring-1 focus:ring-primary bg-surface-container-lowest text-body-md font-body-md pr-xl" placeholder="15" type="number"/>
+                                    <span class="absolute right-sm top-1/2 -translate-y-1/2 text-on-surface-variant font-label-md">%</span>
+                                </div>
+                            </div>
+                        </div>
+<!-- Warning Banner -->
+<div class="flex items-center gap-sm p-sm bg-error-container text-on-error-container rounded-lg border border-error/20 mt-lg">
+<span class="material-symbols-outlined text-error">warning</span>
+<span class="font-label-md text-label-md font-medium">Total weightage must equal 100%</span>
+</div>
+<!-- Form Actions -->
+<div class="flex justify-end items-center gap-md pt-lg border-t border-outline-variant">
+<button class="px-md py-base border border-outline text-on-surface-variant font-label-md text-label-md rounded-lg hover:bg-surface-container-high transition-colors cursor-pointer active:opacity-80" type="button">
+                                Cancel
+                            </button>
+<button class="px-md py-base bg-primary-container text-on-primary text-white font-label-md text-label-md rounded-lg hover:opacity-90 transition-opacity cursor-pointer shadow-md" type="submit">
+                                Save Goal
+                            </button>
+</div>
+</form>
+</div>
+<!-- Guidance Information (Optional Bento Pattern Detail) -->
+<div class="mt-lg grid grid-cols-1 md:grid-cols-3 gap-md">
+<div class="p-md bg-surface-container rounded-xl border border-outline-variant">
+<span class="material-symbols-outlined text-primary mb-xs">info</span>
+<h4 class="font-label-md text-label-md font-bold mb-xs">Smart Goals</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Ensure your goals are Specific, Measurable, Achievable, Relevant, and Time-bound.</p>
+</div>
+<div class="p-md bg-surface-container rounded-xl border border-outline-variant">
+<span class="material-symbols-outlined text-primary mb-xs">balance</span>
+<h4 class="font-label-md text-label-md font-bold mb-xs">Fair Allocation</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Distribute weightage based on the impact and complexity of the objective.</p>
+</div>
+<div class="p-md bg-surface-container rounded-xl border border-outline-variant">
+<span class="material-symbols-outlined text-primary mb-xs">group</span>
+<h4 class="font-label-md text-label-md font-bold mb-xs">Team Alignment</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Align individual goals with organizational "Thrust Areas" for maximum synergy.</p>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Footer -->
+<footer class="bg-surface-container dark:bg-on-secondary-fixed border-t border-outline-variant dark:border-outline shadow-sm docked full-width bottom-0 z-40">
+<div class="w-full py-md px-gutter flex flex-col md:flex-row justify-between items-center max-w-container-max mx-auto">
+<span class="font-label-sm text-label-sm text-secondary dark:text-secondary-fixed mb-sm md:mb-0">
+                © 2024 Goal Management Portal. Professional Growth &amp; Systematic Success.
+            </span>
+<div class="flex gap-md">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">Support Center</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">Feedback</a>
+</div>
+</div>
+</footer>
+    <script>
+        let currentTotalWeightage = 0;
+
+        async function initForm() {
+            try {
+                const userRes = await fetch('/api/auth/me');
+                if (!userRes.ok) return window.location.href = '/login.html';
+                const userData = await userRes.json();
+
+                const res = await fetch('/api/goals/mine');
+                const data = await res.json();
+                
+                currentTotalWeightage = 0;
+                if (data.goals) {
+                    data.goals.forEach(g => currentTotalWeightage += g.weightage);
+                }
+
+                updateWeightageDisplay();
+
+                const banner = document.querySelector('.bg-error-container');
+                if (currentTotalWeightage === 100) {
+                    banner.className = 'flex items-center gap-sm p-sm bg-tertiary-fixed text-on-tertiary-fixed rounded-lg border border-tertiary/20 mt-lg';
+                    banner.innerHTML = '<span class="material-symbols-outlined">check_circle</span><span class="font-label-md text-label-md font-medium">Goal sheet is already at 100%. Review existing goals.</span>';
+                }
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function updateWeightageDisplay(addedWeight = 0) {
+            const projected = Math.min(100, currentTotalWeightage + addedWeight);
+            document.querySelectorAll('.font-label-md.text-label-md.text-primary.font-bold').forEach(el => el.innerText = `${projected}%`);
+            document.querySelector('.h-full.bg-primary-container').style.width = `${projected}%`;
+            const remainingSpan = document.querySelector('.text-primary.font-bold');
+            if (remainingSpan) remainingSpan.innerText = `${100 - projected}%`;
+            
+            const banner = document.querySelector('.bg-error-container') || document.querySelector('.bg-tertiary-fixed');
+            if (banner) {
+                if (projected > 100) {
+                    banner.className = 'flex items-center gap-sm p-sm bg-error-container text-on-error-container rounded-lg border border-error/20 mt-lg';
+                    banner.innerHTML = '<span class="material-symbols-outlined text-error">warning</span><span class="font-label-md text-label-md font-medium">Warning: Total weightage exceeds 100%. Cannot save.</span>';
+                } else if (projected === 100) {
+                    banner.className = 'flex items-center gap-sm p-sm bg-tertiary-fixed text-on-tertiary-fixed rounded-lg border border-tertiary/20 mt-lg';
+                    banner.innerHTML = '<span class="material-symbols-outlined">check_circle</span><span class="font-label-md text-label-md font-medium">Perfect! Goal sheet will be at exactly 100%.</span>';
+                } else {
+                    banner.className = 'flex items-center gap-sm p-sm bg-surface-container-high text-on-surface-variant rounded-lg border border-outline/20 mt-lg';
+                    banner.innerHTML = '<span class="material-symbols-outlined text-outline">info</span><span class="font-label-md text-label-md font-medium">Keep adding goals until you reach 100%.</span>';
+                }
+            }
+        }
+
+        document.getElementById('weightage').addEventListener('input', (e) => {
+            const val = parseInt(e.target.value);
+            updateWeightageDisplay(isNaN(val) ? 0 : val);
+        });
+
+        document.querySelector('form').onsubmit = async (e) => {
+            e.preventDefault();
+            
+            const title = document.getElementById('goal_title').value;
+            const thrust_area = document.getElementById('thrust_area').value;
+            const uom_type = document.getElementById('uom_type').value;
+            const uom_direction = document.getElementById('uom_direction').value;
+            const target = parseFloat(document.getElementById('target').value);
+            const weightage = parseInt(document.getElementById('weightage').value);
+
+            const missing = [];
+            if (!title) missing.push('Goal Title');
+            if (!thrust_area) missing.push('Thrust Area');
+            if (isNaN(target)) missing.push('Target Value');
+            if (isNaN(weightage)) missing.push('Weightage %');
+
+            if (missing.length > 0) {
+                return alert('Please fill the following required fields: ' + missing.join(', '));
+            }
+
+            if (currentTotalWeightage + weightage > 100) {
+                return alert(`Adding this goal would exceed 100% total weightage. You only have ${100 - currentTotalWeightage}% remaining.`);
+            }
+
+            try {
+                const response = await fetch('/api/goals', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, thrust_area, uom_type, uom_direction, target, weightage })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    window.location.href = '/employee.html';
+                } else {
+                    alert(data.error || 'Failed to save goal');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
+        // Cancel button
+        document.querySelector('button[type="button"]').onclick = () => window.location.href = '/employee.html';
+
+        // Utility Icons
+        document.getElementById('btn-notifications').onclick = () => alert('No new notifications.');
+        document.getElementById('btn-help').onclick = () => alert('Goals should be ambitious yet achievable. Need help drafting? AI Assistant coming soon!');
+        document.getElementById('btn-settings').onclick = () => alert('Settings are managed at the account level.');
+
+        // AI Suggestion Logic
+        document.getElementById('btn-ai-suggest').onclick = async () => {
+            const thrust_area = document.getElementById('thrust_area').value;
+            const context = document.getElementById('ai_context').value;
+
+            if (!thrust_area) return alert('Please select a Thrust Area first.');
+
+            const btn = document.getElementById('btn-ai-suggest');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin">refresh</span> Thinking...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/ai/suggest', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ thrust_area, context })
+                });
+                const data = await res.json();
+                
+                if (data.suggestions) {
+                    renderSuggestions(data.suggestions);
+                } else {
+                    alert(data.error || 'AI is taking a break. Try again later.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Connection error. Check if your API key is set in .env');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        };
+
+        function renderSuggestions(suggestions) {
+            const container = document.getElementById('ai-suggestions');
+            const list = document.getElementById('suggestions-list');
+            container.classList.remove('hidden');
+            list.innerHTML = '';
+
+            suggestions.forEach(s => {
+                const div = document.createElement('div');
+                div.className = 'bg-surface p-sm rounded-lg border border-outline-variant hover:border-secondary transition-all cursor-pointer flex flex-col gap-xs group';
+                div.innerHTML = `
+                    <p class="font-label-md text-label-md font-bold text-on-surface group-hover:text-secondary">${s.title}</p>
+                    <p class="font-label-sm text-label-sm text-on-surface-variant italic leading-tight">${s.rationale}</p>
+                    <div class="mt-auto pt-xs flex justify-between items-center border-t border-outline-variant">
+                        <span class="font-label-sm text-label-sm font-bold text-secondary">${s.target} ${s.uom}</span>
+                        <span class="material-symbols-outlined text-[16px] text-secondary">add_circle</span>
+                    </div>
+                `;
+                div.onclick = () => applySuggestion(s);
+                list.appendChild(div);
+            });
+        }
+
+        function applySuggestion(s) {
+            document.getElementById('goal_title').value = s.title;
+            document.getElementById('uom_type').value = s.uom;
+            document.getElementById('uom_direction').value = s.direction || 'max';
+            document.getElementById('target').value = s.target;
+            document.getElementById('ai-suggestions').classList.add('hidden');
+        }
+
+        // ── Theme Toggle ──────────────────────────────────────────────────────
+        const btnToggleTheme = document.getElementById('btn-toggle-theme');
+        if (btnToggleTheme) {
+            btnToggleTheme.addEventListener('click', (e) => {
+                e.preventDefault();
+                const html = document.documentElement;
+                if (html.classList.contains('dark')) {
+                    html.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    html.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
+        }
+
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+
+        initForm();
+    </script>
+</body></html>

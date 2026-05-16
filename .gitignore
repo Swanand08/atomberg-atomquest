@@ -1,0 +1,4 @@
+node_modules/
+.env
+atomquest.db
+.DS_Store

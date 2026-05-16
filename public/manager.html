@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface": "#191c1e",
+                    "on-secondary": "#ffffff",
+                    "on-secondary-fixed": "#121c2a",
+                    "primary-container": "#1e40af",
+                    "on-primary-container": "#a8b8ff",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-high": "#e7e8ea",
+                    "error-container": "#ffdad6",
+                    "tertiary": "#003d27",
+                    "surface-container-low": "#f3f4f6",
+                    "on-secondary-container": "#596374",
+                    "inverse-on-surface": "#f0f1f3",
+                    "surface-container": "#edeef0",
+                    "primary-fixed-dim": "#b8c4ff",
+                    "tertiary-fixed-dim": "#4edea3",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed-dim": "#bdc7db",
+                    "surface-dim": "#d9dadc",
+                    "surface-variant": "#e1e2e4",
+                    "background": "#f8f9fb",
+                    "tertiary-fixed": "#6ffbbe",
+                    "on-primary-fixed": "#001453",
+                    "secondary-container": "#d6e0f4",
+                    "outline": "#757684",
+                    "on-error-container": "#93000a",
+                    "on-error": "#ffffff",
+                    "inverse-surface": "#2e3132",
+                    "on-primary-fixed-variant": "#173bab",
+                    "surface-bright": "#f8f9fb",
+                    "secondary": "#555f70",
+                    "tertiary-container": "#00563a",
+                    "surface-container-highest": "#e1e2e4",
+                    "on-primary": "#ffffff",
+                    "inverse-primary": "#b8c4ff",
+                    "surface-tint": "#3755c3",
+                    "secondary-fixed": "#d9e3f7",
+                    "on-surface-variant": "#444653",
+                    "on-tertiary-fixed": "#002113",
+                    "surface": "#f8f9fb",
+                    "primary": "#00288e",
+                    "outline-variant": "#c4c5d5",
+                    "on-tertiary-container": "#3fd298",
+                    "on-secondary-fixed-variant": "#3d4757",
+                    "on-background": "#191c1e",
+                    "primary-fixed": "#dde1ff",
+                    "on-tertiary-fixed-variant": "#005236",
+                    "error": "#ba1a1a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-mobile": "16px",
+                    "xs": "4px",
+                    "gutter": "24px",
+                    "md": "24px",
+                    "container-max": "1280px",
+                    "xl": "80px",
+                    "lg": "48px",
+                    "base": "8px",
+                    "sm": "12px"
+            },
+            "fontFamily": {
+                    "headline-sm": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "title-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-sm": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-md": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                    "headline-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; transition: background-color 0.3s, color 0.3s; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        /* Dark Mode Overrides */
+        html.dark body { background-color: #121212 !important; color: #e0e0e0 !important; }
+        html.dark aside, html.dark .bg-surface, html.dark .bg-surface-container-lowest, html.dark .bg-surface-container-low, html.dark .bg-surface-container, html.dark .bg-white { background-color: #1e1e1e !important; color: #e0e0e0 !important; border-color: #333 !important; }
+        html.dark .bg-primary { background-color: #00288e !important; color: #ffffff !important; }
+        html.dark .bg-primary-container { background-color: #1e40af !important; color: #ffffff !important; }
+        html.dark .text-primary { color: #a8b8ff !important; }
+        html.dark .text-secondary { color: #bdc7db !important; }
+        html.dark .text-on-surface, html.dark .text-on-surface-variant { color: #e0e0e0 !important; }
+        html.dark .border-outline-variant, html.dark .border-outline { border-color: #333 !important; }
+        html.dark .zebra-stripe:nth-child(even) { background-color: #2a2a2a !important; }
+        html.dark .bg-secondary-container { background-color: #3d4757 !important; color: #d6e0f4 !important; }
+        html.dark .text-on-secondary-container { color: #d6e0f4 !important; }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full flex flex-col p-sm w-64 bg-surface-container-low border-r border-outline-variant z-50 overflow-y-auto">
+<div class="mb-lg px-md pt-md">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white" data-icon="rocket_launch">rocket_launch</span>
+</div>
+<div>
+<h1 class="font-headline-sm text-headline-sm font-black text-primary">AtomQuest</h1>
+<p class="font-label-md text-label-md text-secondary">Manager Portal</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 px-xs space-y-xs">
+                <a id="tab-overview" class="flex items-center gap-md px-md py-sm bg-secondary-container text-on-secondary-container font-bold rounded-lg transition-all duration-200" href="#">
+                    <span class="material-symbols-outlined" data-icon="group">group</span>
+                    <span class="font-label-md text-label-md">Team Overview</span>
+                </a>
+                <a id="tab-approvals" class="flex items-center gap-md px-md py-sm text-secondary hover:bg-surface-container rounded-lg transition-all duration-200" href="#">
+                    <span class="material-symbols-outlined" data-icon="verified">verified</span>
+                    <span class="font-label-md text-label-md">Pending Approvals</span>
+                </a>
+                <a id="tab-reports" class="flex items-center gap-md px-md py-sm text-secondary hover:bg-surface-container rounded-lg transition-all duration-200" href="#">
+                    <span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+                    <span class="font-label-md text-label-md">Performance Reports</span>
+                </a>
+            </nav>
+<div class="mt-auto px-md py-lg border-t border-outline-variant/30">
+<button id="btn-assign-goal" class="w-full flex items-center justify-center gap-sm bg-primary-container text-white py-sm rounded-lg font-label-md text-label-md hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+                Assign New Goal
+            </button>
+</div>
+<div class="px-xs space-y-xs pb-md">
+<a id="btn-toggle-theme" class="flex items-center gap-md px-md py-sm text-secondary hover:bg-surface-container rounded-lg transition-all duration-200 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="dark_mode">dark_mode</span>
+<span class="font-label-md text-label-md">Toggle Theme</span>
+</a>
+<a id="tab-settings" class="flex items-center gap-md px-md py-sm text-secondary hover:bg-surface-container rounded-lg transition-all duration-200 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+<a id="tab-help" class="flex items-center gap-md px-md py-sm text-secondary hover:bg-surface-container rounded-lg transition-all duration-200 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-label-md text-label-md">Help</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 flex flex-col min-h-screen">
+<!-- TopNavBar -->
+<header class="sticky top-0 z-40 flex justify-between items-center w-full px-md h-16 bg-surface-container-lowest shadow-sm border-b border-outline-variant">
+<div class="flex items-center gap-lg">
+<h2 class="font-headline-sm text-headline-sm font-bold text-primary">AtomQuest Goals</h2>
+                        <div class="relative hidden md:block">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-sm text-outline">
+                                <span class="material-symbols-outlined" data-icon="search">search</span>
+                            </span>
+                            <input id="search-input" class="pl-10 pr-md py-xs bg-surface-container-low border-none rounded-full text-body-md font-body-md w-64 focus:ring-2 focus:ring-primary/20" placeholder="Search team members..." type="text"/>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-md">
+                        <button id="btn-notifications" class="p-xs text-secondary hover:bg-surface-container-low rounded-full transition-colors cursor-pointer">
+                            <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+                        </button>
+<div class="h-8 w-[1px] bg-outline-variant"></div>
+<div id="manager-profile-btn" class="flex items-center gap-sm cursor-pointer hover:bg-surface-container-low p-xs rounded transition-colors active:opacity-80">
+<img alt="Manager Profile Avatar" class="w-8 h-8 rounded-full border border-outline-variant" data-alt="A professional headshot of a corporate manager." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEQ8cqh3kSZX9HBUyA72nSZAhMSel3u1aRUYaYbHtUJSq25KjkKNUKFU8u9a9IcOMBVkHnkcNeMW6XMTjosGonEF4d1Bc__qH2PhGQi4M6QBdsFCCTAHgee0dW-z5k1vd7WflMdEcEi-UUoykCcuZ_5NQXbAEVfq-d1MxRvtIGlXYfmL6zFVK9ANtQcwfXpZ03KaMal1Dd6i1hkaebJ-HPdsDiPJX5DUDUbifGEvOkPHLzdQLMatv9mCrOqHFqWkTYEHIMCKINN4vo"/>
+<span class="font-body-md text-body-md text-on-surface font-bold" id="manager-profile-name">Alex Rivera</span>
+</div>
+</div>
+</header>
+<!-- Canvas -->
+<div class="p-lg space-y-lg max-w-[1280px] mx-auto w-full">
+<!-- Summary Cards Section -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-md">
+<!-- Total Team Members -->
+<div class="bg-surface-container-lowest p-md rounded-xl border border-outline-variant shadow-sm flex items-start justify-between">
+<div>
+<p class="font-label-md text-label-md text-secondary">Total Team Members</p>
+<h3 class="font-headline-md text-headline-md text-on-surface mt-xs">12</h3>
+</div>
+<div class="bg-surface-container-low p-sm rounded-lg">
+<span class="material-symbols-outlined text-primary" data-icon="groups">groups</span>
+</div>
+</div>
+<!-- Pending Approvals (Highlighted) -->
+<div class="bg-surface-container-lowest p-md rounded-xl border-2 border-primary-container shadow-sm flex items-start justify-between">
+<div>
+<p class="font-label-md text-label-md text-secondary">Pending Approvals</p>
+<h3 class="font-headline-md text-headline-md text-primary mt-xs">05</h3>
+</div>
+<div class="bg-primary-container p-sm rounded-lg">
+<span class="material-symbols-outlined text-white" data-icon="pending_actions">pending_actions</span>
+</div>
+</div>
+<!-- Approved This Cycle -->
+<div class="bg-surface-container-lowest p-md rounded-xl border border-outline-variant shadow-sm flex items-start justify-between">
+<div>
+<p class="font-label-md text-label-md text-secondary">Approved This Cycle</p>
+<h3 class="font-headline-md text-headline-md text-on-surface mt-xs">18</h3>
+</div>
+<div class="bg-tertiary-fixed p-sm rounded-lg">
+<span class="material-symbols-outlined text-on-tertiary-fixed" data-icon="task_alt">task_alt</span>
+</div>
+</div>
+</section>
+<!-- Goal Approval Table -->
+<section class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+<div class="px-md py-sm border-b border-outline-variant bg-surface-container-low flex justify-between items-center">
+<h4 class="font-title-lg text-title-lg text-on-surface">Goal Approvals</h4>
+<button class="text-primary font-label-md text-label-md flex items-center gap-xs">
+                        View All <span class="material-symbols-outlined text-[18px]" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low/50">
+<th class="px-md py-sm font-label-md text-label-md text-secondary uppercase tracking-wider">Employee Name</th>
+<th class="px-md py-sm font-label-md text-label-md text-secondary uppercase tracking-wider">Goals Submitted</th>
+<th class="px-md py-sm font-label-md text-label-md text-secondary uppercase tracking-wider">Status</th>
+<th class="px-md py-sm font-label-md text-label-md text-secondary uppercase tracking-wider">Date Submitted</th>
+<th class="px-md py-sm font-label-md text-label-md text-secondary uppercase tracking-wider text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-md py-md">
+<div class="flex items-center gap-sm">
+<img alt="Sarah Jenkins" class="w-8 h-8 rounded-full" data-alt="A portrait of a professional woman with blonde hair, wearing a navy blue blazer, set against a blurred modern office background with soft corporate lighting. The style is crisp and professional, adhering to a high-end SaaS platform aesthetic with clean lines and a premium feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbQTKCKBEdiGKz0hcQVqffQknJR-A7x-qZCHW0TJDJ4RDSNch0bJcdArqsitBn1gdF9dEQQcPVwh7QfkxcAh9kIMIcgx7D-arPN_0x1C5zO6Q8ReV0xQGTj4QyS_4l4ZogkiNuX0pumZmblluUU4dlR0HDd-4KeYf7YTmjwaTllmFv4isUUVBur318F0HpHwvrv-lqVbmV1ubDMVHkJXrclA2NI55XMxa6UYBawBlQq7OenoNIS7fETIOL1X9LK_Oct01wdEf-j-6b"/>
+<span class="font-body-md text-body-md text-on-surface font-semibold">Sarah Jenkins</span>
+</div>
+</td>
+<td class="px-md py-md font-body-md text-body-md text-on-surface-variant">Q4 Technical Growth Plan</td>
+<td class="px-md py-md">
+<span class="inline-flex items-center px-sm py-xs rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm">
+                                        Pending
+                                    </span>
+</td>
+<td class="px-md py-md font-body-md text-body-md text-secondary">Oct 24, 2024</td>
+<td class="px-md py-md text-right space-x-sm">
+<button class="px-sm py-1.5 bg-primary-container text-white rounded font-label-md text-label-md hover:opacity-90 transition-opacity">Approve</button>
+<button class="px-sm py-1.5 border border-outline text-on-surface rounded font-label-md text-label-md hover:bg-surface-container transition-colors">Reject</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-md py-md">
+<div class="flex items-center gap-sm">
+<img alt="Marcus Chen" class="w-8 h-8 rounded-full" data-alt="A portrait of a professional man with black hair, wearing a white button-down shirt, looking friendly and capable. The background is a minimalist corporate workspace with subtle blue and grey color accents. The image has a clean, airy, and professional light-mode aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2XZt3seN0MaQgKtT5NKiFR595bmscJdHav0otAyoa_cVMM7f18XeC3IG-G0d0DaVzQbpNnnjDTRixAqslSgUfdDLU4BUY-FlA9jbAvFpJuy00xMqPF-LsfvGx9jGkycapDRmywqPzugP64GQUd0QcilUJbIJX8kyTrO_FelVH4XUstSpceEs5UfZcoiYDHVlwzoUy1j2iT0-tcCDgaWvblOmYxWUeFSUUQqWnbAeyBAVf9AeODbOwYtBLHcTUQAqdIr4M9Uiv7yxr"/>
+<span class="font-body-md text-body-md text-on-surface font-semibold">Marcus Chen</span>
+</div>
+</td>
+<td class="px-md py-md font-body-md text-body-md text-on-surface-variant">Customer Success Optimization</td>
+<td class="px-md py-md">
+<span class="inline-flex items-center px-sm py-xs rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm">
+                                        Approved
+                                    </span>
+</td>
+<td class="px-md py-md font-body-md text-body-md text-secondary">Oct 22, 2024</td>
+<td class="px-md py-md text-right">
+<span class="text-secondary font-label-md text-label-md italic pr-md">No action required</span>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-md py-md">
+<div class="flex items-center gap-sm">
+<img alt="Elena Rodriguez" class="w-8 h-8 rounded-full" data-alt="A portrait of a professional woman with dark curly hair, wearing a grey professional dress, appearing focused and intelligent. The setting is a bright, modern office with soft daylight. The overall tone is corporate, reliable, and clean, fitting a modern SaaS dashboard environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFSkjeldolpSlphsRXgVvlKGp93x28Mr-acvgg_B6f2Rz7aku1WvLkr-XXUSnoIipJ_PmmL3BnRjRijCOh6IyBykBZKBQn0mzjLDNXPH0h0hrkgOAliYjaWmp_1e4nNREP27PVchIrvOsTo3BW6oz2fbCtoexpcEqVL4hNvsD_Pu1PNOpvx_pl-Pgl0R2B7K7z8aLqWx1FsnQKfDbEl31PncJZZE5t9w6RJoAvb3p8D2ucn9IpC5jx4N6uxP6PWNZcom9o3RqP9baM"/>
+<span class="font-body-md text-body-md text-on-surface font-semibold">Elena Rodriguez</span>
+</div>
+</td>
+<td class="px-md py-md font-body-md text-body-md text-on-surface-variant">Security Compliance Audit</td>
+<td class="px-md py-md">
+<span class="inline-flex items-center px-sm py-xs rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm">
+                                        Rejected
+                                    </span>
+</td>
+<td class="px-md py-md font-body-md text-body-md text-secondary">Oct 20, 2024</td>
+<td class="px-md py-md text-right">
+<button class="text-primary font-label-md text-label-md hover:underline pr-md">View Feedback</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Asymmetric Bento Grid Section for additional insights -->
+<section class="grid grid-cols-1 md:grid-cols-4 gap-md pb-xl">
+<div class="md:col-span-2 bg-surface-container-lowest p-md rounded-xl border border-outline-variant shadow-sm h-64 flex flex-col">
+<div class="flex justify-between items-start mb-md">
+<h4 class="font-title-lg text-title-lg text-on-surface">Goal Completion Trends</h4>
+<span class="material-symbols-outlined text-secondary" data-icon="more_vert">more_vert</span>
+</div>
+<div class="flex-1 bg-surface-container-low rounded-lg flex items-center justify-center border border-dashed border-outline-variant">
+<div class="text-center">
+<span class="material-symbols-outlined text-outline text-4xl mb-xs" data-icon="show_chart">show_chart</span>
+<p class="font-body-md text-body-md text-secondary">Visualization of team velocity</p>
+</div>
+</div>
+</div>
+<div class="bg-primary-container p-md rounded-xl shadow-md h-64 text-white flex flex-col justify-between">
+    <div>
+        <h4 class="font-title-lg text-title-lg mb-xs">Goal Cycle Deadline</h4>
+        <p id="deadline-label" class="font-body-md text-body-md opacity-80">Dec 31, 2025 — End of Cycle</p>
+    </div>
+    <div>
+        <div id="deadline-days" class="text-[32px] font-bold mb-xs">—</div>
+        <div class="w-full bg-white/20 h-2 rounded-full overflow-hidden">
+            <div id="deadline-bar" class="bg-white h-full" style="width:0%"></div>
+        </div>
+        <p id="deadline-sub" class="text-sm opacity-70 mt-xs">Days remaining in 2025</p>
+    </div>
+</div>
+<div class="bg-surface-container-lowest p-md rounded-xl border border-outline-variant shadow-sm h-64 flex flex-col">
+    <h4 class="font-title-lg text-title-lg text-on-surface mb-md">Recent Activity</h4>
+    <ul id="recent-activity-list" class="space-y-sm overflow-y-auto flex-1">
+        <li class="text-on-surface-variant font-label-md italic">Loading activity...</li>
+    </ul>
+</div>
+</section>
+</div>
+</main>
+    <!-- Goals Details Modal -->
+    <div id="goals-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-md">
+        <div class="bg-surface-container-lowest rounded-xl w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col shadow-2xl">
+            <div class="p-md border-b border-outline-variant flex justify-between items-center bg-primary-container text-white">
+                <h3 id="modal-title" class="font-headline-sm text-headline-sm">Employee Goals</h3>
+                <button onclick="closeModal()" class="material-symbols-outlined hover:bg-white/20 rounded-full p-xs transition-colors">close</button>
+            </div>
+            <div id="modal-content" class="p-md overflow-y-auto space-y-md">
+                <!-- Goals will be injected here -->
+            </div>
+            <div class="p-md border-t border-outline-variant text-right">
+                <button onclick="closeModal()" class="px-md py-base bg-secondary text-white rounded-lg hover:opacity-90">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Assign Goal Modal -->
+    <div id="assign-goal-modal" class="fixed inset-0 bg-on-surface/50 hidden items-center justify-center z-50 p-md backdrop-blur-sm">
+        <div class="bg-surface-container-lowest rounded-xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="p-md border-b border-outline-variant flex justify-between items-center bg-primary text-on-primary">
+                <h3 class="font-title-lg text-title-lg">Assign Goal to Team Member</h3>
+                <button onclick="closeAssignGoalModal()" class="text-on-primary hover:bg-white/20 p-xs rounded-full transition-colors">
+                    <span class="material-symbols-outlined" data-icon="close">close</span>
+                </button>
+            </div>
+            <form id="assign-goal-form" class="p-md space-y-md overflow-y-auto">
+                <div>
+                    <label class="block font-label-md text-label-md mb-xs text-on-surface">Employee</label>
+                    <select id="assign-employee-id" required class="w-full bg-surface-container-low border border-outline rounded-lg px-md py-sm focus:ring-2 focus:ring-primary outline-none"></select>
+                </div>
+                <div>
+                    <label class="block font-label-md text-label-md mb-xs text-on-surface">Goal Title</label>
+                    <input id="assign-title" type="text" required class="w-full bg-surface-container-low border border-outline rounded-lg px-md py-sm focus:ring-2 focus:ring-primary outline-none" />
+                </div>
+                <div>
+                    <label class="block font-label-md text-label-md mb-xs text-on-surface">Thrust Area</label>
+                    <input id="assign-thrust" type="text" required class="w-full bg-surface-container-low border border-outline rounded-lg px-md py-sm focus:ring-2 focus:ring-primary outline-none" />
+                </div>
+                <div class="grid grid-cols-2 gap-md">
+                    <div>
+                        <label class="block font-label-md text-label-md mb-xs text-on-surface">Target Value</label>
+                        <input id="assign-target" type="number" required class="w-full bg-surface-container-low border border-outline rounded-lg px-md py-sm focus:ring-2 focus:ring-primary outline-none" />
+                    </div>
+                    <div>
+                        <label class="block font-label-md text-label-md mb-xs text-on-surface">Weightage %</label>
+                        <input id="assign-weightage" type="number" min="10" max="100" required class="w-full bg-surface-container-low border border-outline rounded-lg px-md py-sm focus:ring-2 focus:ring-primary outline-none" />
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-md">
+                    <div>
+                        <label class="block font-label-md text-label-md mb-xs text-on-surface">UoM Type</label>
+                        <select id="assign-uom" class="w-full bg-surface-container-low border border-outline rounded-lg px-md py-sm focus:ring-2 focus:ring-primary outline-none">
+                            <option value="numeric">Numeric</option>
+                            <option value="percent">Percent</option>
+                            <option value="timeline">Timeline</option>
+                            <option value="zero">Zero-based</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-label-md text-label-md mb-xs text-on-surface">Direction</label>
+                        <select id="assign-direction" class="w-full bg-surface-container-low border border-outline rounded-lg px-md py-sm focus:ring-2 focus:ring-primary outline-none">
+                            <option value="max">Maximize (More is better)</option>
+                            <option value="min">Minimize (Less is better)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-sm pt-sm border-t border-outline-variant">
+                    <button type="button" onclick="closeAssignGoalModal()" class="px-md py-sm font-label-md text-label-md text-secondary hover:bg-surface-container rounded-lg">Cancel</button>
+                    <button type="submit" class="px-md py-sm bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:opacity-90 shadow-sm">Assign Goal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        let allTeamData = { team: [] };
+        let logoutAdded = false;
+
+        async function fetchTeam() {
+            try {
+                const userRes = await fetch('/api/auth/me');
+                if (!userRes.ok) return window.location.href = '/login.html';
+                const userData = await userRes.json();
+
+                // Set Manager Name safely
+                const nameEl = document.querySelector('.font-body-md.text-body-md.text-on-surface.font-bold');
+                if (nameEl) nameEl.innerText = userData.user.name;
+
+                const res = await fetch('/api/manager/checkins');
+                if (!res.ok) throw new Error('Failed to fetch team data');
+                allTeamData = await res.json();
+
+                renderTeamTable(allTeamData.team);
+
+                // Add Logout button only once
+                if (!logoutAdded) {
+                    logoutAdded = true;
+                    const nav = document.querySelector('nav');
+                    const logoutBtn = document.createElement('a');
+                    logoutBtn.className = 'flex items-center gap-md px-md py-sm text-secondary hover:bg-surface-container rounded-lg transition-all duration-200 cursor-pointer';
+                    logoutBtn.innerHTML = `<span class="material-symbols-outlined">logout</span><span class="font-label-md text-label-md">Logout</span>`;
+                    logoutBtn.onclick = async () => {
+                        await fetch('/api/auth/logout', { method: 'POST' });
+                        window.location.href = '/login.html';
+                    };
+                    nav.appendChild(logoutBtn);
+                }
+
+            } catch (err) {
+                console.error('Dashboard error:', err);
+                document.querySelector('tbody').innerHTML = `<tr><td colspan="5" class="text-center py-lg text-error font-label-md">Error loading team. Please refresh.</td></tr>`;
+            }
+        }
+
+        function renderTeamTable(team) {
+            const tbody = document.querySelector('tbody');
+            tbody.innerHTML = '';
+
+            // Guard: handle null, undefined, or non-array
+            if (!team || !Array.isArray(team)) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-lg text-on-surface-variant italic font-label-md">No team data found.</td></tr>`;
+                updateSummaryCards(0, 0, 0);
+                return;
+            }
+
+            if (team.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-lg text-on-surface-variant italic font-label-md">No team members assigned to you yet.</td></tr>`;
+                updateSummaryCards(0, 0, 0);
+                return;
+            }
+
+            let pendingCount = 0;
+            let approvedCount = 0;
+
+            team.forEach(emp => {
+                const sheet = emp.sheet || {};
+                const status = sheet.status || 'draft';
+                const goalCount = emp.goals ? emp.goals.length : 0;
+
+                if (status === 'pending') pendingCount++;
+                if (status === 'approved') approvedCount++;
+
+                // Safely encode goals for onclick
+                const goalsData = encodeURIComponent(JSON.stringify(emp.goals || []));
+                const safeName = emp.name.replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+
+                const statusStyle = {
+                    approved: 'background:#dcfce7;color:#166534',
+                    pending:  'background:#dbeafe;color:#1e40af',
+                    rejected: 'background:#fee2e2;color:#991b1b',
+                    draft:    'background:#f3f4f6;color:#6b7280'
+                }[status] || 'background:#f3f4f6;color:#6b7280';
+
+                const statusLabel = {
+                    approved: '✓ Approved',
+                    pending:  '⏳ Pending Review',
+                    rejected: '✗ Rejected',
+                    draft:    'In Draft'
+                }[status] || status;
+
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-surface-container-low transition-colors border-b border-outline-variant';
+                tr.innerHTML = `
+                    <td class="px-md py-md">
+                        <div class="flex items-center gap-sm">
+                            <div style="width:36px;height:36px;border-radius:50%;background:#1e40af;color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0">${emp.name.charAt(0).toUpperCase()}</div>
+                            <div>
+                                <p class="font-body-md text-body-md text-on-surface font-semibold">${emp.name}</p>
+                                <p class="font-label-sm text-label-sm text-on-surface-variant">${emp.department || ''}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-md py-md font-body-md text-body-md text-on-surface-variant">${goalCount} goal${goalCount !== 1 ? 's' : ''}</td>
+                    <td class="px-md py-md">
+                        <span style="${statusStyle};padding:4px 12px;border-radius:9999px;font-size:12px;font-weight:600;display:inline-block">${statusLabel}</span>
+                    </td>
+                    <td class="px-md py-md font-body-md text-body-md text-secondary">${sheet.id ? 'Cycle 2025' : '—'}</td>
+                    <td class="px-md py-md text-right">
+                        <button onclick="showGoals(decodeURIComponent('${goalsData}'), '${safeName}')" class="px-sm py-xs text-primary border border-primary rounded-lg hover:bg-surface-container font-label-md text-label-md transition-colors mr-xs">View Goals</button>
+                        ${status === 'pending' ? `
+                            <button onclick="approveSheet(${sheet.id})" class="px-sm py-xs bg-primary-container text-white rounded-lg font-label-md text-label-md hover:opacity-90 transition-opacity mr-xs">✓ Approve</button>
+                            <button onclick="rejectSheet(${sheet.id})" style="border:1px solid #dc2626;color:#dc2626" class="px-sm py-xs rounded-lg font-label-md text-label-md hover:bg-red-50 transition-colors">✗ Reject</button>
+                        ` : ''}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            updateSummaryCards(team.length, pendingCount, approvedCount);
+        }
+
+        function updateSummaryCards(total, pending, approved) {
+            const summaries = document.querySelectorAll('.font-headline-md');
+            if (summaries[0]) summaries[0].innerText = total;
+            if (summaries[1]) summaries[1].innerText = pending.toString().padStart(2, '0');
+            if (summaries[2]) summaries[2].innerText = approved;
+        }
+
+        async function approveSheet(id) {
+            if (confirm('Approve this goal sheet?')) {
+                await fetch(`/api/manager/approve/${id}`, { method: 'POST' });
+                fetchTeam();
+            }
+        }
+
+        async function rejectSheet(id) {
+            const reason = prompt('Reason for rejection:');
+            if (reason) {
+                await fetch(`/api/manager/reject/${id}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ reason })
+                });
+                fetchTeam();
+            }
+        }
+
+        // Modal Functions
+        function showGoals(goalsJson, name) {
+            let goals;
+            try {
+                goals = typeof goalsJson === 'string' ? JSON.parse(goalsJson) : goalsJson;
+            } catch(e) {
+                goals = [];
+            }
+
+            document.getElementById('modal-title').innerText = `${name}'s Goals`;
+            const content = document.getElementById('modal-content');
+            content.innerHTML = '';
+
+            if (!goals || goals.length === 0) {
+                content.innerHTML = '<p class="text-on-surface-variant italic py-md text-center">No goals added yet. Employee needs to create goals and submit for approval.</p>';
+            } else {
+                goals.forEach(g => {
+                    const checkinsList = g.checkins && g.checkins.length > 0 
+                        ? g.checkins.map(c => `<span class="bg-surface-variant text-on-surface-variant px-xs py-xs rounded text-xs">${c.quarter}: ${c.achievement}</span>`).join(' ')
+                        : '<span class="text-xs text-on-surface-variant italic">No check-ins yet</span>';
+
+                    const div = document.createElement('div');
+                    div.className = 'p-md bg-surface-container-low rounded-xl border border-outline-variant';
+                    div.innerHTML = `
+                        <div class="flex justify-between items-start mb-xs">
+                            <h4 class="font-title-lg text-title-lg text-primary">${g.title}</h4>
+                            <span class="px-sm py-xs bg-secondary-container text-on-secondary-container rounded-full font-label-sm text-label-sm font-bold">${g.weightage}%</span>
+                        </div>
+                        <p class="font-label-sm text-label-sm text-secondary font-semibold mb-xs">${g.thrust_area}</p>
+                        <div class="grid grid-cols-3 gap-sm pt-sm border-t border-outline-variant mb-xs">
+                            <div>
+                                <p class="text-label-sm text-on-surface-variant uppercase tracking-wider">Target</p>
+                                <p class="font-body-md font-bold">${g.target} ${g.uom_type}</p>
+                            </div>
+                            <div>
+                                <p class="text-label-sm text-on-surface-variant uppercase tracking-wider">Direction</p>
+                                <p class="font-body-md font-bold">${g.uom_direction === 'max' ? '↑ Maximize' : '↓ Minimize'}</p>
+                            </div>
+                            <div>
+                                <p class="text-label-sm text-on-surface-variant uppercase tracking-wider">Status</p>
+                                <p class="font-body-md font-bold">${(g.goal_status || 'not started').replace('_', ' ')}</p>
+                            </div>
+                        </div>
+                        <div class="pt-sm border-t border-outline-variant/50">
+                            <p class="text-label-sm text-on-surface-variant mb-xs">Quarterly Check-ins:</p>
+                            <div class="flex gap-sm flex-wrap">${checkinsList}</div>
+                        </div>
+                    `;
+                    content.appendChild(div);
+                });
+            }
+
+            document.getElementById('goals-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('goals-modal').classList.add('hidden');
+        }
+
+        // ── Search Filtering ──────────────────────────────────────────────────
+        const searchInput = document.getElementById('search-input');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                const filtered = allTeamData.team.filter(emp => emp.name.toLowerCase().includes(term));
+                renderTeamTable(filtered);
+            });
+        }
+
+        // ── Overview Tab ──────────────────────────────────────────────────────
+        document.getElementById('tab-overview').onclick = () => {
+            renderTeamTable(allTeamData.team);
+            document.querySelectorAll('nav a').forEach(a => {
+                a.classList.remove('bg-secondary-container', 'text-on-secondary-container');
+                a.classList.add('text-on-surface-variant');
+            });
+            document.getElementById('tab-overview').classList.add('bg-secondary-container', 'text-on-secondary-container');
+            document.getElementById('tab-overview').classList.remove('text-on-surface-variant');
+        };
+
+        // ── Pending Approvals Tab ─────────────────────────────────────────────
+        document.getElementById('tab-approvals').onclick = () => {
+            const pending = allTeamData.team.filter(emp => emp.sheet && emp.sheet.status === 'pending');
+            renderTeamTable(pending);
+            // Highlight the tab
+            document.querySelectorAll('nav a').forEach(a => {
+                a.classList.remove('bg-secondary-container', 'text-on-secondary-container');
+                a.classList.add('text-on-surface-variant');
+            });
+            document.getElementById('tab-approvals').classList.add('bg-secondary-container', 'text-on-secondary-container');
+            document.getElementById('tab-approvals').classList.remove('text-on-surface-variant');
+        };
+
+        // ── Performance Reports Tab ───────────────────────────────────────────
+        document.getElementById('tab-reports').onclick = () => {
+            document.querySelectorAll('nav a').forEach(a => {
+                a.classList.remove('bg-secondary-container', 'text-on-secondary-container');
+                a.classList.add('text-on-surface-variant');
+            });
+            document.getElementById('tab-reports').classList.add('bg-secondary-container', 'text-on-secondary-container');
+            document.getElementById('tab-reports').classList.remove('text-on-surface-variant');
+
+            const team = allTeamData.team || [];
+            const total = team.length;
+            const submitted = team.filter(e => e.sheet && e.sheet.status !== 'draft').length;
+            const approved = team.filter(e => e.sheet && e.sheet.status === 'approved').length;
+            const pending  = team.filter(e => e.sheet && e.sheet.status === 'pending').length;
+            const noSheet  = team.filter(e => !e.sheet).length;
+            
+            document.querySelector('tbody').innerHTML = `
+                <tr><td colspan="5" class="p-lg">
+                    <div class="bg-surface-container-low p-lg rounded-xl border border-outline-variant text-center">
+                        <h2 class="font-headline-md text-on-surface mb-md">Team Performance Report</h2>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-md mt-md">
+                            <div class="p-md bg-surface-container-lowest rounded-lg border border-outline-variant">
+                                <span class="font-label-sm text-on-surface-variant uppercase">Team Size</span>
+                                <p class="font-title-lg font-bold text-on-surface mt-xs">${total}</p>
+                            </div>
+                            <div class="p-md bg-surface-container-lowest rounded-lg border border-outline-variant">
+                                <span class="font-label-sm text-on-surface-variant uppercase">Approved</span>
+                                <p class="font-title-lg font-bold text-tertiary mt-xs">${approved}</p>
+                            </div>
+                            <div class="p-md bg-surface-container-lowest rounded-lg border border-outline-variant">
+                                <span class="font-label-sm text-on-surface-variant uppercase">Pending Review</span>
+                                <p class="font-title-lg font-bold text-primary mt-xs">${pending}</p>
+                            </div>
+                            <div class="p-md bg-surface-container-lowest rounded-lg border border-outline-variant">
+                                <span class="font-label-sm text-on-surface-variant uppercase">No Sheet Yet</span>
+                                <p class="font-title-lg font-bold text-error mt-xs">${noSheet}</p>
+                            </div>
+                        </div>
+                    </div>
+                </td></tr>
+            `;
+        };
+
+        // ── Help Tab ─────────────────────────────────────────────────────────
+        document.getElementById('tab-help') && (document.getElementById('tab-help').onclick = () => {
+            document.querySelector('tbody').innerHTML = `
+                <tr><td colspan="5" class="p-lg">
+                    <div class="bg-surface-container-low p-lg rounded-xl border border-outline-variant">
+                        <h2 class="font-headline-md text-on-surface mb-md">Manager Help Guide</h2>
+                        <ol class="list-decimal pl-lg space-y-sm text-on-surface font-body-md">
+                            <li><strong>Team Overview:</strong> View individual goals and check-ins.</li>
+                            <li><strong>Pending Approvals:</strong> Approve or reject draft goals.</li>
+                            <li><strong>Assign Goal:</strong> Create specific goals for direct reports.</li>
+                        </ol>
+                    </div>
+                </td></tr>
+            `;
+        });
+
+        // ── Settings Tab ──────────────────────────────────────────────────────
+        document.getElementById('tab-settings') && (document.getElementById('tab-settings').onclick = async () => {
+            try {
+                const me = (await (await fetch('/api/auth/me')).json()).user;
+                document.querySelector('tbody').innerHTML = `
+                    <tr><td colspan="5" class="p-lg">
+                        <div class="bg-surface-container-low p-lg rounded-xl border border-outline-variant">
+                            <h2 class="font-headline-md text-on-surface mb-md">Settings</h2>
+                            <div class="space-y-sm text-on-surface font-body-md">
+                                <p><strong>Name:</strong> ${me.name}</p>
+                                <p><strong>Email:</strong> ${me.email}</p>
+                                <p><strong>Role:</strong> ${me.role}</p>
+                                <p><strong>Department:</strong> ${me.department || 'N/A'}</p>
+                                <p class="mt-lg text-on-surface-variant text-sm italic">Account settings are managed by the HR Admin.</p>
+                            </div>
+                        </div>
+                    </td></tr>
+                `;
+            } catch(e) {
+                console.error(e);
+            }
+        });
+
+        // ── Notifications ─────────────────────────────────────────────────────
+        document.getElementById('btn-notifications').onclick = () => {
+            const pending = (allTeamData.team || []).filter(e => e.sheet && e.sheet.status === 'pending').length;
+            if (pending > 0) alert(`🔔 You have ${pending} pending approval(s) from your team.`);
+            else alert('🔔 No new notifications. All goal sheets are reviewed.');
+        };
+
+        // ── Next Deadline — live countdown to Dec 31 ──────────────────────────
+        (function updateDeadline() {
+            const now = new Date();
+            const yearEnd = new Date(now.getFullYear(), 11, 31); // Dec 31
+            const yearStart = new Date(now.getFullYear(), 0, 1);
+            const totalDays = Math.round((yearEnd - yearStart) / 86400000);
+            const daysLeft = Math.max(0, Math.round((yearEnd - now) / 86400000));
+            const progress = Math.round(((totalDays - daysLeft) / totalDays) * 100);
+            const el = id => document.getElementById(id);
+            if (el('deadline-days')) el('deadline-days').textContent = daysLeft + ' Days';
+            if (el('deadline-label')) el('deadline-label').textContent = `Dec 31, ${now.getFullYear()} — End of Cycle`;
+            if (el('deadline-bar')) el('deadline-bar').style.width = progress + '%';
+            if (el('deadline-sub')) el('deadline-sub').textContent = `${daysLeft} days remaining in ${now.getFullYear()}`;
+        })();
+
+        // ── Recent Activity — from audit logs ─────────────────────────────────
+        (async function loadActivity() {
+            const list = document.getElementById('recent-activity-list');
+            if (!list) return;
+            try {
+                const res = await fetch('/api/admin/audit-logs');
+                const logs = await res.json();
+                if (!Array.isArray(logs) || logs.length === 0) {
+                    list.innerHTML = '<li class="text-on-surface-variant font-label-md italic">No recent activity yet.</li>';
+                    return;
+                }
+                const colors = ['bg-tertiary', 'bg-primary', 'bg-secondary', 'bg-outline'];
+                list.innerHTML = logs.slice(0, 5).map((log, i) => `
+                    <li class="flex gap-sm items-start">
+                        <div class="w-2 h-2 rounded-full ${colors[i % colors.length]} mt-2 flex-shrink-0"></div>
+                        <p class="font-label-md text-label-md text-on-surface-variant">
+                            <strong>${log.user_name}</strong> ${log.field_changed} ${log.new_value ? '→ ' + log.new_value : ''}
+                            <span class="text-outline text-xs ml-xs">${new Date(log.changed_at).toLocaleDateString()}</span>
+                        </p>
+                    </li>
+                `).join('');
+            } catch(e) {
+                list.innerHTML = '<li class="text-on-surface-variant font-label-md italic">Unable to load activity.</li>';
+            }
+        })();
+
+        // Profile Click
+        document.getElementById('manager-profile-btn').onclick = () => {
+            const name = document.getElementById('manager-profile-name').innerText;
+            alert(`Manager Profile:\nName: ${name}\nRole: Manager\n\nSettings can be managed in the Settings tab.`);
+        };
+
+        // ── Theme Toggle ──────────────────────────────────────────────────────
+        const btnToggleTheme = document.getElementById('btn-toggle-theme');
+        if (btnToggleTheme) {
+            btnToggleTheme.onclick = () => {
+                const html = document.documentElement;
+                if (html.classList.contains('dark')) {
+                    html.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    html.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+            };
+        }
+
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+
+        fetchTeam();
+    </script>
+</body></html>

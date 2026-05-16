@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AtomQuest Goals - Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                "on-secondary-fixed": "#121c2a",
+                "surface-container": "#edeef0",
+                "tertiary-container": "#00563a",
+                "tertiary": "#003d27",
+                "secondary-fixed-dim": "#bdc7db",
+                "on-tertiary-container": "#3fd298",
+                "on-tertiary-fixed": "#002113",
+                "on-error-container": "#93000a",
+                "background": "#f8f9fb",
+                "inverse-primary": "#b8c4ff",
+                "surface-container-high": "#e7e8ea",
+                "error-container": "#ffdad6",
+                "surface-container-lowest": "#ffffff",
+                "primary-container": "#1e40af",
+                "tertiary-fixed": "#6ffbbe",
+                "secondary-container": "#d6e0f4",
+                "on-primary-container": "#a8b8ff",
+                "tertiary-fixed-dim": "#4edea3",
+                "outline": "#757684",
+                "surface-variant": "#e1e2e4",
+                "on-primary": "#ffffff",
+                "on-surface": "#191c1e",
+                "surface-container-highest": "#e1e2e4",
+                "primary-fixed-dim": "#b8c4ff",
+                "on-secondary-container": "#596374",
+                "on-tertiary": "#ffffff",
+                "error": "#ba1a1a",
+                "surface-dim": "#d9dadc",
+                "primary-fixed": "#dde1ff",
+                "surface-tint": "#3755c3",
+                "on-tertiary-fixed-variant": "#005236",
+                "on-error": "#ffffff",
+                "surface-bright": "#f8f9fb",
+                "secondary-fixed": "#d9e3f7",
+                "on-surface-variant": "#444653",
+                "on-secondary-fixed-variant": "#3d4757",
+                "on-primary-fixed-variant": "#173bab",
+                "surface": "#f8f9fb",
+                "secondary": "#555f70",
+                "inverse-on-surface": "#f0f1f3",
+                "outline-variant": "#c4c5d5",
+                "primary": "#00288e",
+                "on-secondary": "#ffffff",
+                "on-primary-fixed": "#001453",
+                "on-background": "#191c1e",
+                "surface-container-low": "#f3f4f6",
+                "inverse-surface": "#2e3132"
+              },
+              "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+              },
+              "spacing": {
+                "xl": "80px",
+                "xs": "4px",
+                "container-max": "1280px",
+                "sm": "12px",
+                "gutter": "24px",
+                "md": "24px",
+                "lg": "48px",
+                "margin-mobile": "16px",
+                "base": "8px"
+              },
+              "fontFamily": {
+                "headline-sm": ["Inter"],
+                "label-md": ["Inter"],
+                "headline-lg": ["Inter"],
+                "title-lg": ["Inter"],
+                "headline-md": ["Inter"],
+                "label-sm": ["Inter"],
+                "body-lg": ["Inter"],
+                "body-md": ["Inter"]
+              },
+              "fontSize": {
+                "headline-sm": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500" }],
+                "headline-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                "title-lg": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                "headline-md": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9fb; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .circular-progress {
+            background: radial-gradient(closest-side, white 79%, transparent 80% 100%),
+                        conic-gradient(#00288e 85%, #e1e2e4 0);
+        }
+        .level-1-card {
+            background-color: #FFFFFF;
+            border: 1px solid #E5E7EB;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Dark Mode Overrides */
+        html.dark body { background-color: #121212 !important; color: #e0e0e0 !important; }
+        html.dark aside, html.dark header, html.dark .bg-surface-container-lowest, html.dark .bg-surface-container-low, html.dark .bg-surface-container, html.dark .level-1-card { background-color: #1e1e1e !important; color: #e0e0e0 !important; border-color: #333 !important; }
+        html.dark .bg-primary { background-color: #00288e !important; color: #ffffff !important; }
+        html.dark .bg-primary-container { background-color: #1e40af !important; color: #ffffff !important; }
+        html.dark .text-primary { color: #a8b8ff !important; }
+        html.dark .text-primary-container { color: #a8b8ff !important; }
+        html.dark .text-secondary { color: #bdc7db !important; }
+        html.dark .text-on-surface, html.dark .text-on-surface-variant { color: #e0e0e0 !important; }
+        html.dark .border-outline-variant, html.dark .border-outline { border-color: #333 !important; }
+        html.dark .bg-secondary-container { background-color: #3d4757 !important; color: #d6e0f4 !important; }
+        html.dark .text-on-secondary-container { color: #d6e0f4 !important; }
+        html.dark .bg-tertiary-container { background-color: #00563a !important; color: #6ffbbe !important; }
+        html.dark input, html.dark select, html.dark textarea { background-color: #2a2a2a !important; color: #e0e0e0 !important; border-color: #444 !important; }
+    </style>
+</head>
+<body class="flex min-h-screen">
+<!-- SideNavBar (Authority: JSON) -->
+<aside class="hidden md:flex flex-col h-screen p-md gap-sm bg-surface-container-low border-r border-outline-variant w-64 fixed left-0 top-0 z-20 overflow-y-auto">
+<div class="mb-lg px-xs">
+    <a href="/login.html" class="block">
+        <h2 class="font-headline-sm text-headline-sm font-bold text-primary-container">AtomQuest Goals</h2>
+        <p class="font-label-md text-label-md text-on-surface-variant">Employee Portal</p>
+    </a>
+</div>
+<nav class="flex-1 space-y-base">
+                <a id="tab-my-goals" class="flex items-center gap-sm px-md py-sm bg-primary-container text-on-primary-container rounded-lg font-bold scale-95 active:scale-90 transition-all" href="#">
+                    <span class="material-symbols-outlined">target</span>
+                    <span class="font-label-md text-label-md">My Goals</span>
+                </a>
+                <a id="tab-checkins" class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg scale-95 active:scale-90 transition-all" href="#">
+                    <span class="material-symbols-outlined">event_repeat</span>
+                    <span class="font-label-md text-label-md">Check-ins</span>
+                </a>
+                <a id="tab-progress" class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg scale-95 active:scale-90 transition-all" href="#">
+                    <span class="material-symbols-outlined">trending_up</span>
+                    <span class="font-label-md text-label-md">Progress</span>
+                </a>
+            </nav>
+<button class="mt-md w-full bg-primary-container text-on-primary text-label-md font-bold py-sm rounded-lg hover:opacity-90 transition-opacity">
+            New Goal
+        </button>
+<div class="mt-auto pt-md border-t border-outline-variant flex flex-col gap-base">
+    <a id="btn-toggle-theme" class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all cursor-pointer" href="#">
+        <span class="material-symbols-outlined" data-icon="dark_mode">dark_mode</span>
+        <span class="font-label-md text-label-md">Toggle Theme</span>
+    </a>
+    <a id="tab-settings-link" class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all cursor-pointer" href="#">
+        <span class="material-symbols-outlined">settings</span>
+        <span class="font-label-md text-label-md">Settings</span>
+    </a>
+    <a id="tab-docs-link" class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all cursor-pointer" href="#">
+        <span class="material-symbols-outlined">help</span>
+        <span class="font-label-md text-label-md">Documentation</span>
+    </a>
+    <a id="btn-logout" class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all cursor-pointer" href="#">
+        <span class="material-symbols-outlined">logout</span>
+        <span class="font-label-md text-label-md">Logout</span>
+    </a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<div class="flex-1 md:ml-64 flex flex-col">
+<!-- TopNavBar (Authority: JSON) -->
+<header class="sticky top-0 z-10 bg-surface-container-lowest shadow-sm border-b border-outline-variant h-16 w-full">
+<div class="flex justify-between items-center w-full px-gutter max-w-container-max mx-auto h-full">
+<div class="flex items-center gap-md">
+<img alt="AtomQuest Logo" class="h-8 w-auto" src="https://lh3.googleusercontent.com/aida/ADBb0ui_T_K7yyiSP2bWTdm4S3mwjpB1adEzSpxWigd_pOHxsbxdVdhsmYybV8eTCaV0gCvsr4JOqu7MaoNuQdDkhG1XXhhdNAQVa8zg0IfbxHmEkbNWXghiVm3_aBGgRK2ViHmaM2gWw5kBQmlOTWVzHrxO8mN9c6xBzyIML1uMFVa7g8Xx-f7tG67zYHGXiSD4ITZAuxRGkgYthUIvDLjMQ4WCm-daFwaevUobHxJcD7xjFlMCUmleOvEOK72B"/>
+<span id="btn-logo" class="font-title-lg text-title-lg font-bold text-primary cursor-pointer hover:underline" onclick="window.location.href='/login.html'">AtomQuest Goals</span>
+</div>
+<div class="flex items-center gap-md">
+                        <div class="hidden sm:flex bg-surface-container-low rounded-full px-md py-xs items-center gap-xs">
+                            <span class="material-symbols-outlined text-outline">search</span>
+                            <input id="search-input" class="bg-transparent border-none focus:ring-0 text-label-md" placeholder="Search goals..." type="text"/>
+                        </div>
+                        <div class="flex items-center gap-sm">
+                            <span id="btn-notifications" class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:bg-surface-container-low p-xs rounded-full">notifications</span>
+                            <span id="btn-help" class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:bg-surface-container-low p-xs rounded-full">help</span>
+                            <span id="btn-settings" class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:bg-surface-container-low p-xs rounded-full">settings</span>
+<div class="h-8 w-8 rounded-full bg-primary-fixed-dim border border-outline-variant overflow-hidden">
+<img alt="Employee Profile Avatar" class="h-full w-full object-cover" data-alt="A professional corporate portrait of a mid-career male executive with a warm smile. He is wearing a crisp charcoal suit in a high-end, softly lit modern office environment. The image uses a clean, bright, light-mode aesthetic with a focus on professional reliability and systematic success. The background shows blurred architectural details of a contemporary workspace." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCphgU6tTo-PqFJGTeuwppX8YYA6hA16JSNb3ao1h7FyehP_vDv4Mwfz4WxZjeDgal_mhMM9js_7HPcNh-XnnBQ32yjx8im_U6jUr306ngrtE3q_rEYcgQsHNhH-et5elvFMYsxGystw48LQ6tAtrwkiQ8UbUWKeHJjoOp8wpiPtPJWI1CY9RGs2TFpperflRhYXHaDLec3ltdrPbmVNn1uIc7dJmVEZg-avg9kzpbrVIhldeWOYSQbacRLSoXu0UF8mBLDL3fJ1cSu"/>
+</div>
+</div>
+</div>
+</div>
+</header>
+<main class="p-gutter max-w-container-max mx-auto w-full">
+            <section class="flex flex-col md:flex-row justify-between items-start md:items-center gap-md mb-lg">
+                <div>
+                    <h1 class="font-headline-md text-headline-md text-on-surface">My Performance Goals</h1>
+                    <p class="font-body-md text-body-md text-on-surface-variant">Q4 2024 Performance Period</p>
+                </div>
+                <div class="flex items-center gap-lg bg-surface-container-lowest p-md rounded-xl level-1-card">
+                    <div class="flex flex-col items-end">
+                            <p class="font-body-md text-body-md text-on-surface-variant mb-base">Your goal sheet is currently a <b>Draft</b>. Reach 100% total weightage to submit for manager approval.</p>
+                            <div class="flex items-center gap-sm">
+                                <span class="font-title-lg text-title-lg text-primary font-bold">0% / 100%</span>
+                                <span class="material-symbols-outlined text-primary" title="Managers can only see and approve sheets that are submitted at exactly 100% weightage.">info</span>
+                            </div>
+                    </div>
+                    <div class="relative h-16 w-16 circular-progress rounded-full flex items-center justify-center">
+                        <span class="font-label-md text-label-md font-bold text-primary">85%</span>
+                    </div>
+                    <div class="flex flex-col gap-xs">
+                        <button id="btn-submit-sheet" class="hidden bg-tertiary text-on-tertiary font-bold px-md py-sm rounded-lg flex items-center gap-xs hover:opacity-90 transition-opacity">
+                            <span class="material-symbols-outlined">send</span>
+                            Submit for Approval
+                        </button>
+                        <button id="btn-add-goal" class="bg-primary-container text-on-primary font-bold px-md py-sm rounded-lg flex items-center gap-xs hover:opacity-90 transition-opacity">
+                            <span class="material-symbols-outlined">add</span>
+                            Add New Goal
+                        </button>
+                    </div>
+                </div>
+            </section>
+<!-- Goals Grid -->
+<section class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-md">
+<!-- Goal Card 1 -->
+<div class="level-1-card p-md rounded-xl flex flex-col h-full hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-sm">
+<span class="px-sm py-xs bg-secondary-container text-on-secondary-container font-label-sm text-label-sm rounded-full">Technical Excellence</span>
+<span class="px-sm py-xs bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm rounded-full font-bold">On Track</span>
+</div>
+<h3 class="font-title-lg text-title-lg text-on-surface mb-xs">Implement New CI/CD Pipeline</h3>
+<p class="font-body-md text-body-md text-on-surface-variant flex-1 mb-md">Migrate 80% of legacy projects to the new automated deployment workflow by end of Q4.</p>
+<div class="space-y-sm">
+<div class="flex justify-between items-center">
+<span class="font-label-md text-label-md text-on-surface-variant">Progress</span>
+<span class="font-label-md text-label-md font-bold text-on-surface">65% / 100%</span>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full" style="width: 65%"></div>
+</div>
+<div class="flex justify-between pt-sm border-t border-outline-variant">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Weightage</p>
+<p class="font-label-md text-label-md font-bold text-primary">25%</p>
+</div>
+<div class="text-right">
+<p class="font-label-sm text-label-sm text-on-surface-variant">Due Date</p>
+<p class="font-label-md text-label-md text-on-surface">Dec 15, 2024</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Goal Card 2 -->
+<div class="level-1-card p-md rounded-xl flex flex-col h-full hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-sm">
+<span class="px-sm py-xs bg-secondary-container text-on-secondary-container font-label-sm text-label-sm rounded-full">Customer Success</span>
+<span class="px-sm py-xs bg-surface-container-highest text-on-surface-variant font-label-sm text-label-sm rounded-full font-bold">Not Started</span>
+</div>
+<h3 class="font-title-lg text-title-lg text-on-surface mb-xs">Customer Satisfaction Score &gt; 90%</h3>
+<p class="font-body-md text-body-md text-on-surface-variant flex-1 mb-md">Maintain high service levels across all premium accounts through proactive quarterly reviews.</p>
+<div class="space-y-sm">
+<div class="flex justify-between items-center">
+<span class="font-label-md text-label-md text-on-surface-variant">Target</span>
+<span class="font-label-md text-label-md font-bold text-on-surface">9.5/10</span>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-outline h-full" style="width: 0%"></div>
+</div>
+<div class="flex justify-between pt-sm border-t border-outline-variant">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Weightage</p>
+<p class="font-label-md text-label-md font-bold text-primary">15%</p>
+</div>
+<div class="text-right">
+<p class="font-label-sm text-label-sm text-on-surface-variant">Due Date</p>
+<p class="font-label-md text-label-md text-on-surface">Dec 31, 2024</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Goal Card 3 -->
+<div class="level-1-card p-md rounded-xl flex flex-col h-full hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-sm">
+<span class="px-sm py-xs bg-secondary-container text-on-secondary-container font-label-sm text-label-sm rounded-full">Operational Growth</span>
+<span class="px-sm py-xs bg-tertiary text-on-tertiary font-label-sm text-label-sm rounded-full font-bold">Completed</span>
+</div>
+<h3 class="font-title-lg text-title-lg text-on-surface mb-xs">Internal Security Audit</h3>
+<p class="font-body-md text-body-md text-on-surface-variant flex-1 mb-md">Successfully pass the annual ISO security audit with zero critical non-compliance findings.</p>
+<div class="space-y-sm">
+<div class="flex justify-between items-center">
+<span class="font-label-md text-label-md text-on-surface-variant">Final Result</span>
+<span class="font-label-md text-label-md font-bold text-on-surface">100% Pass</span>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-tertiary-fixed-dim h-full" style="width: 100%"></div>
+</div>
+<div class="flex justify-between pt-sm border-t border-outline-variant">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Weightage</p>
+<p class="font-label-md text-label-md font-bold text-primary">20%</p>
+</div>
+<div class="text-right">
+<p class="font-label-sm text-label-sm text-on-surface-variant">Completed On</p>
+<p class="font-label-md text-label-md text-on-surface">Oct 20, 2024</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Goal Card 4 -->
+<div class="level-1-card p-md rounded-xl flex flex-col h-full hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-sm">
+<span class="px-sm py-xs bg-secondary-container text-on-secondary-container font-label-sm text-label-sm rounded-full">Professional Development</span>
+<span class="px-sm py-xs bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm rounded-full font-bold">On Track</span>
+</div>
+<h3 class="font-title-lg text-title-lg text-on-surface mb-xs">Cloud Architect Certification</h3>
+<p class="font-body-md text-body-md text-on-surface-variant flex-1 mb-md">Complete the advanced cloud architecture training and pass the certification exam.</p>
+<div class="space-y-sm">
+<div class="flex justify-between items-center">
+<span class="font-label-md text-label-md text-on-surface-variant">Status</span>
+<span class="font-label-md text-label-md font-bold text-on-surface">80% Courseware</span>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full" style="width: 80%"></div>
+</div>
+<div class="flex justify-between pt-sm border-t border-outline-variant">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Weightage</p>
+<p class="font-label-md text-label-md font-bold text-primary">10%</p>
+</div>
+<div class="text-right">
+<p class="font-label-sm text-label-sm text-on-surface-variant">Due Date</p>
+<p class="font-label-md text-label-md text-on-surface">Nov 30, 2024</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Goal Card 5 -->
+<div class="level-1-card p-md rounded-xl flex flex-col h-full hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-sm">
+<span class="px-sm py-xs bg-secondary-container text-on-secondary-container font-label-sm text-label-sm rounded-full">Core Values</span>
+<span class="px-sm py-xs bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm rounded-full font-bold">On Track</span>
+</div>
+<h3 class="font-title-lg text-title-lg text-on-surface mb-xs">Mentorship Program Lead</h3>
+<p class="font-body-md text-body-md text-on-surface-variant flex-1 mb-md">Lead the internal mentorship cohort for junior engineers, conducting bi-weekly sessions.</p>
+<div class="space-y-sm">
+<div class="flex justify-between items-center">
+<span class="font-label-md text-label-md text-on-surface-variant">Engagement</span>
+<span class="font-label-md text-label-md font-bold text-on-surface">12/16 Sessions</span>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full" style="width: 75%"></div>
+</div>
+<div class="flex justify-between pt-sm border-t border-outline-variant">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Weightage</p>
+<p class="font-label-md text-label-md font-bold text-primary">15%</p>
+</div>
+<div class="text-right">
+<p class="font-label-sm text-label-sm text-on-surface-variant">Due Date</p>
+<p class="font-label-md text-label-md text-on-surface">Dec 15, 2024</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Empty/CTA State Card -->
+<div class="border-2 border-dashed border-outline-variant p-md rounded-xl flex flex-col items-center justify-center h-full min-h-[280px] bg-surface-container-low hover:bg-surface-container-high transition-colors cursor-pointer group">
+<div class="h-16 w-16 rounded-full bg-white flex items-center justify-center mb-md group-hover:scale-110 transition-transform shadow-sm">
+<span class="material-symbols-outlined text-primary text-[32px]">add_circle</span>
+</div>
+<p class="font-title-lg text-title-lg text-on-surface-variant">Assign Remaining 15%</p>
+<p class="font-label-md text-label-md text-outline">Click to add a new performance goal</p>
+</div>
+</section>
+</main>
+<!-- Footer (Authority: JSON) -->
+<footer class="mt-auto w-full py-md px-gutter bg-surface-container border-t border-outline-variant">
+<div class="max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-md">
+<div class="flex flex-col items-center md:items-start">
+<p class="font-label-md text-label-md font-bold text-on-surface">AtomQuest Goals</p>
+<p class="font-label-sm text-label-sm text-secondary-fixed-dim">© 2024 Goal Management Portal. Professional Growth &amp; Systematic Success.</p>
+</div>
+<div class="flex gap-md">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Support Center</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Feedback</a>
+</div>
+</div>
+</footer>
+</div>
+<!-- Check-In Modal -->
+<div id="checkin-modal" class="fixed inset-0 bg-on-surface/50 hidden items-center justify-center z-50 p-md backdrop-blur-sm">
+    <div class="bg-surface-container-lowest rounded-xl shadow-xl w-full max-w-md overflow-hidden">
+        <div class="p-md border-b border-outline-variant flex justify-between items-center bg-primary-container text-on-primary-container">
+            <h3 class="font-title-lg text-title-lg">Log Check-In</h3>
+            <button onclick="closeCheckInModal()" class="text-on-primary-container hover:bg-white/20 p-xs rounded-full transition-colors">
+                <span class="material-symbols-outlined" data-icon="close">close</span>
+            </button>
+        </div>
+        <form id="checkin-form" class="p-md space-y-md">
+            <input type="hidden" id="checkin-goal-id" />
+            <div>
+                <p id="checkin-goal-title" class="font-label-md text-label-md font-bold text-primary mb-xs"></p>
+                <p id="checkin-goal-target" class="font-label-sm text-label-sm text-secondary"></p>
+            </div>
+            
+            <div>
+                <label class="block font-label-md text-label-md mb-xs text-on-surface">Achievement Value</label>
+                <input id="checkin-value" type="number" step="any" required class="w-full bg-surface-container-low border border-outline rounded-lg px-md py-sm focus:ring-2 focus:ring-primary outline-none" />
+            </div>
+            
+            <div class="grid grid-cols-2 gap-md">
+                <div>
+                    <label class="block font-label-md text-label-md mb-xs text-on-surface">Quarter</label>
+                    <select id="checkin-quarter" class="w-full bg-surface-container-low border border-outline rounded-lg px-md py-sm focus:ring-2 focus:ring-primary outline-none">
+                        <option value="Q1">Q1</option>
+                        <option value="Q2">Q2</option>
+                        <option value="Q3">Q3</option>
+                        <option value="Q4" selected>Q4</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-label-md text-label-md mb-xs text-on-surface">Status</label>
+                    <select id="checkin-status" class="w-full bg-surface-container-low border border-outline rounded-lg px-md py-sm focus:ring-2 focus:ring-primary outline-none">
+                        <option value="on_track">On Track</option>
+                        <option value="behind">At Risk / Behind</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="flex justify-end gap-sm pt-sm border-t border-outline-variant">
+                <button type="button" onclick="closeCheckInModal()" class="px-md py-sm font-label-md text-label-md text-secondary hover:bg-surface-container rounded-lg">Cancel</button>
+                <button type="submit" class="px-md py-sm bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:opacity-90 shadow-sm flex items-center gap-xs">
+                    <span class="material-symbols-outlined text-[18px]">save</span> Save Check-In
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+    <script>
+        let allGoals = [];
+        let currentSheet = null;
+
+        async function fetchDashboard() {
+            try {
+                const [userRes, goalsRes] = await Promise.all([
+                    fetch('/api/auth/me'),
+                    fetch('/api/goals/mine')
+                ]);
+
+                if (!userRes.ok) return window.location.href = '/login.html';
+                
+                const userData = await userRes.json();
+                const goalsData = await goalsRes.json();
+                allGoals = goalsData.goals;
+                currentSheet = goalsData.sheet;
+
+                // Set User Name
+                document.querySelector('.font-title-lg.text-title-lg.font-bold.text-primary').innerText = `GoalPortal - ${userData.user.name}`;
+
+                renderGoals(allGoals);
+
+                // Handle Logout
+                const logoutLink = Array.from(document.querySelectorAll('a')).find(a => a.innerText.includes('Logout'));
+                if (logoutLink) {
+                    logoutLink.onclick = async (e) => {
+                        e.preventDefault();
+                        await fetch('/api/auth/logout', { method: 'POST' });
+                        window.location.href = '/login.html';
+                    };
+                }
+
+                // Handle Add New Goal buttons
+                const addNewGoalBtns = document.querySelectorAll('button');
+                addNewGoalBtns.forEach(btn => {
+                    if (btn.innerText.includes('New Goal') || btn.innerText.includes('Add New Goal')) {
+                        btn.onclick = () => window.location.href = '/goal-form.html';
+                    }
+                });
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function renderGoals(goals) {
+            const container = document.querySelector('section.grid');
+            const ctaCard = container.querySelector('.border-2.border-dashed');
+            container.innerHTML = '';
+
+            let totalWeightage = 0;
+
+            goals.forEach(goal => {
+                totalWeightage += goal.weightage;
+                const card = document.createElement('div');
+                card.className = 'level-1-card p-md rounded-xl flex flex-col h-full hover:shadow-md transition-shadow relative group';
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-sm">
+                        <span class="px-sm py-xs bg-secondary-container text-on-secondary-container font-label-sm text-label-sm rounded-full">${goal.thrust_area}</span>
+                        <div class="flex gap-xs">
+                             <span class="px-sm py-xs bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm rounded-full font-bold">${goal.goal_status.replace('_', ' ')}</span>
+                             ${(!currentSheet || currentSheet.status === 'draft' || currentSheet.status === 'rejected') ? `
+                             <button onclick="deleteGoal(${goal.id})" class="opacity-0 group-hover:opacity-100 p-xs text-error hover:bg-error-container rounded-full transition-all" title="Delete Goal">
+                                <span class="material-symbols-outlined text-[18px]">delete</span>
+                             </button>
+                             ` : ''}
+                        </div>
+                    </div>
+                    <h3 class="font-title-lg text-title-lg text-on-surface mb-xs">${goal.title}</h3>
+                    <p class="font-body-md text-body-md text-on-surface-variant flex-1 mb-md">Target: ${goal.target} (${goal.uom_type})</p>
+                    <div class="space-y-sm">
+                        <div class="flex justify-between items-center">
+                            <span class="font-label-md text-label-md text-on-surface-variant">Progress</span>
+                            <span class="font-label-md text-label-md font-bold text-on-surface">${goal.achievement} / ${goal.target}</span>
+                        </div>
+                        <div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+                            <div class="bg-primary h-full" style="width: ${(goal.achievement / goal.target) * 100}%"></div>
+                        </div>
+                        <div class="flex justify-between items-center pt-sm border-t border-outline-variant mt-sm">
+                            <div>
+                                <p class="font-label-sm text-label-sm text-on-surface-variant">Weightage</p>
+                                <p class="font-label-md text-label-md font-bold text-primary">${goal.weightage}%</p>
+                            </div>
+                            ${(currentSheet && currentSheet.status === 'approved') ? `
+                            <button onclick="promptCheckIn(${goal.id}, '${goal.title}', ${goal.target}, '${goal.uom_type}')" class="px-sm py-xs bg-primary-container text-on-primary font-label-sm rounded transition-colors shadow-sm">
+                                Check In
+                            </button>
+                            ` : (!currentSheet || currentSheet.status === 'draft' || currentSheet.status === 'rejected') ? `
+                            <button onclick="editGoal(${goal.id})" class="px-sm py-xs text-primary font-label-sm hover:bg-primary-container/10 rounded transition-colors">
+                                Edit
+                            </button>
+                            ` : `
+                            <span class="font-label-sm text-on-surface-variant italic">Locked</span>
+                            `}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            if (ctaCard) {
+                container.appendChild(ctaCard);
+                ctaCard.onclick = () => window.location.href = '/goal-form.html';
+                const ctaTitle = ctaCard.querySelector('.font-title-lg');
+                if (ctaTitle) ctaTitle.innerText = `Assign Remaining ${100 - totalWeightage}%`;
+            }
+            
+            // Update weightage in all places
+            const weightText = `${totalWeightage}% / 100%`;
+            document.querySelectorAll('.font-title-lg.text-title-lg.text-primary.font-bold').forEach(el => el.innerText = weightText);
+            document.querySelectorAll('.circular-progress span').forEach(el => el.innerText = `${totalWeightage}%`);
+            // Update the circular progress visually
+            document.querySelectorAll('.circular-progress').forEach(el => {
+                el.style.background = `conic-gradient(var(--color-primary, #0060A8) ${totalWeightage}%, var(--color-surface-container, #F3F4F9) ${totalWeightage}%)`;
+            });
+
+            // Show/Hide Submit Button based on weightage and status
+            const submitBtn = document.getElementById('btn-submit-sheet');
+            const sheetStatus = currentSheet ? currentSheet.status : 'draft';
+            
+            // Update the status text in the header
+            const statusMsg = document.querySelector('.flex.flex-col.items-end .text-on-surface-variant');
+            if (statusMsg) {
+                if (sheetStatus === 'pending') {
+                    statusMsg.innerHTML = `Your goal sheet is <b>Pending Approval</b> by your manager.`;
+                } else if (sheetStatus === 'approved') {
+                    statusMsg.innerHTML = `Your goal sheet is <b>Approved</b>. You can now start check-ins!`;
+                } else if (sheetStatus === 'rejected') {
+                    statusMsg.innerHTML = `Your goal sheet was <b>Rejected</b>. Reason: ${currentSheet.reject_reason || ''}`;
+                } else {
+                    statusMsg.innerHTML = `Your goal sheet is currently a <b>Draft</b>. Reach 100% total weightage to submit.`;
+                }
+            }
+
+            if (totalWeightage === 100) {
+                submitBtn.classList.remove('hidden');
+                if (sheetStatus === 'pending' || sheetStatus === 'approved') {
+                    submitBtn.disabled = true;
+                    submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    submitBtn.innerHTML = `<span class="material-symbols-outlined">check_circle</span> ${sheetStatus === 'approved' ? 'Approved' : 'Submitted'}`;
+                } else {
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    submitBtn.innerHTML = `<span class="material-symbols-outlined">send</span> Submit for Approval`;
+                }
+            } else {
+                submitBtn.classList.add('hidden');
+            }
+        }
+
+        async function deleteGoal(id) {
+            if (confirm('Are you sure you want to delete this goal?')) {
+                const res = await fetch(`/api/goals/${id}`, { method: 'DELETE' });
+                if (res.ok) fetchDashboard();
+                else alert('Failed to delete goal');
+            }
+        }
+
+        function editGoal(id) {
+            // In a full app, this would open a modal or pre-fill the form
+            alert('Edit functionality is coming soon. For now, please delete and re-add.');
+        }
+
+        function promptCheckIn(id, title, target, uom) {
+            document.getElementById('checkin-goal-id').value = id;
+            document.getElementById('checkin-goal-title').innerText = title;
+            document.getElementById('checkin-goal-target').innerText = `Current Target: ${target} ${uom}`;
+            document.getElementById('checkin-value').value = '';
+            document.getElementById('checkin-modal').classList.remove('hidden');
+            document.getElementById('checkin-modal').classList.add('flex');
+        }
+
+        function closeCheckInModal() {
+            document.getElementById('checkin-modal').classList.add('hidden');
+            document.getElementById('checkin-modal').classList.remove('flex');
+        }
+
+        document.getElementById('checkin-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('checkin-goal-id').value;
+            const num = parseFloat(document.getElementById('checkin-value').value);
+            const quarter = document.getElementById('checkin-quarter').value;
+            const status = document.getElementById('checkin-status').value;
+            
+            if (isNaN(num)) return alert('Please enter a valid number.');
+            
+            try {
+                const res = await fetch('/api/goals/checkin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ goal_id: id, achievement: num, quarter: quarter, status: status })
+                });
+                if (res.ok) {
+                    alert('Check-in saved successfully!');
+                    closeCheckInModal();
+                    fetchDashboard();
+                } else {
+                    const data = await res.json();
+                    alert(data.error || 'Failed to check in');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Error submitting check-in.');
+            }
+        };
+
+        document.getElementById('btn-submit-sheet').onclick = async () => {
+            if (confirm('Submit your goal sheet for manager approval? Once submitted, you cannot edit goals.')) {
+                const res = await fetch('/api/goals/submit', { method: 'POST' });
+                if (res.ok) {
+                    alert('Submitted successfully!');
+                    fetchDashboard();
+                } else {
+                    const data = await res.json();
+                    alert(data.error || 'Submission failed');
+                }
+            }
+        };
+
+        // Search Filtering
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = allGoals.filter(g => 
+                g.title.toLowerCase().includes(term) || 
+                g.thrust_area.toLowerCase().includes(term)
+            );
+            renderGoals(filtered);
+        });
+
+        // ── Tab Navigation ────────────────────────────────────────────────────
+        function setActiveTab(tabId) {
+            ['tab-my-goals','tab-checkins','tab-progress', 'tab-settings-link', 'tab-docs-link'].forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.classList.remove('bg-primary-container', 'text-on-primary-container', 'font-bold', 'scale-95');
+                el.classList.add('text-on-surface-variant', 'hover:bg-surface-container-high');
+            });
+            const active = document.getElementById(tabId);
+            if (active) {
+                active.classList.add('bg-primary-container', 'text-on-primary-container', 'font-bold', 'scale-95');
+                active.classList.remove('text-on-surface-variant', 'hover:bg-surface-container-high');
+            }
+        }
+
+        document.getElementById('tab-my-goals').addEventListener('click', (e) => {
+            e.preventDefault();
+            setActiveTab('tab-my-goals');
+            renderGoals(allGoals);
+        });
+
+        document.getElementById('tab-checkins').addEventListener('click', (e) => {
+            e.preventDefault();
+            setActiveTab('tab-checkins');
+            const container = document.querySelector('section.grid');
+            if (allGoals.length === 0) {
+                container.innerHTML = `<div class="col-span-1 lg:col-span-3 p-lg text-center text-on-surface-variant font-label-md">No goals available to check-in.</div>`;
+                return;
+            }
+            
+            let checkinsHtml = allGoals.map(g => `
+                <div class="bg-surface-container-lowest p-md rounded-xl border border-outline-variant mb-md">
+                    <h3 class="font-title-lg text-on-surface mb-sm">${g.title}</h3>
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-sm">
+                        <span class="text-on-surface-variant font-label-md">Progress: ${g.achievement} / ${g.target} ${g.uom_type}</span>
+                        ${(currentSheet && currentSheet.status === 'approved') ? `
+                            <button onclick="promptCheckIn(${g.id}, '${g.title.replace(/'/g, "\\'")}', ${g.target}, '${g.uom_type}')" class="px-md py-sm bg-primary-container text-on-primary rounded-lg font-label-md hover:opacity-90">Check In</button>
+                        ` : '<span class="text-on-surface-variant text-sm italic">Not approved for check-ins</span>'}
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = `
+                <div class="col-span-1 lg:col-span-3">
+                    <h2 class="font-headline-md text-on-surface mb-md">Goal Check-ins</h2>
+                    ${checkinsHtml}
+                </div>
+            `;
+        });
+
+        document.getElementById('tab-progress').addEventListener('click', (e) => {
+            e.preventDefault();
+            setActiveTab('tab-progress');
+            let totalAchieved = 0;
+            let totalWeight = 0;
+            allGoals.forEach(g => {
+                if(g.target > 0) {
+                    const pct = Math.min(100, (g.achievement / g.target) * 100);
+                    totalAchieved += (pct * g.weightage) / 100;
+                }
+                totalWeight += g.weightage;
+            });
+            const overall = totalWeight > 0 ? Math.round((totalAchieved / totalWeight) * 100) : 0;
+            
+            const container = document.querySelector('section.grid');
+            container.innerHTML = `
+                <div class="col-span-1 lg:col-span-3 bg-surface-container-low p-lg rounded-xl border border-outline-variant text-center">
+                    <h2 class="font-headline-md text-headline-md text-on-surface mb-md">Performance Progress Overview</h2>
+                    <div class="flex justify-center mb-lg">
+                        <div class="relative h-40 w-40 rounded-full flex items-center justify-center shadow-inner" style="background: conic-gradient(var(--color-primary, #0060A8) ${overall}%, var(--color-surface-container, #F3F4F9) ${overall}%)">
+                            <div class="h-32 w-32 bg-surface-container-low rounded-full flex flex-col items-center justify-center">
+                                <span class="font-headline-lg text-headline-lg font-bold text-primary">${overall}%</span>
+                                <span class="font-label-sm text-label-sm text-on-surface-variant">Overall Achieved</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-md max-w-3xl mx-auto">
+                        <div class="p-md bg-surface-container-lowest rounded-lg border border-outline-variant shadow-sm">
+                            <span class="font-label-sm text-on-surface-variant uppercase tracking-wide">Total Goals</span>
+                            <p class="font-title-lg font-bold text-on-surface mt-xs">${allGoals.length}</p>
+                        </div>
+                        <div class="p-md bg-surface-container-lowest rounded-lg border border-outline-variant shadow-sm">
+                            <span class="font-label-sm text-on-surface-variant uppercase tracking-wide">Weightage Assigned</span>
+                            <p class="font-title-lg font-bold text-on-surface mt-xs">${totalWeight}%</p>
+                        </div>
+                        <div class="p-md bg-surface-container-lowest rounded-lg border border-outline-variant shadow-sm">
+                            <span class="font-label-sm text-on-surface-variant uppercase tracking-wide">Goal Status</span>
+                            <p class="font-title-lg font-bold ${currentSheet && currentSheet.status === 'approved' ? 'text-primary' : 'text-on-surface-variant'} mt-xs">
+                                ${currentSheet ? currentSheet.status.charAt(0).toUpperCase() + currentSheet.status.slice(1) : 'Draft'}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        // ── Sidebar Nav Actions ────────────────────────────────────────────────
+        document.getElementById('tab-settings-link') && document.getElementById('tab-settings-link').addEventListener('click', async (e) => {
+            e.preventDefault();
+            setActiveTab('tab-settings-link');
+            const me = (await (await fetch('/api/auth/me')).json()).user;
+            const container = document.querySelector('section.grid');
+            container.innerHTML = `
+                <div class="col-span-1 lg:col-span-3 bg-surface-container-low p-lg rounded-xl border border-outline-variant">
+                    <h2 class="font-headline-md text-on-surface mb-md">Settings</h2>
+                    <div class="space-y-sm text-on-surface font-body-md">
+                        <p><strong>Name:</strong> ${me.name}</p>
+                        <p><strong>Email:</strong> ${me.email}</p>
+                        <p><strong>Role:</strong> ${me.role}</p>
+                        <p><strong>Department:</strong> ${me.department || 'N/A'}</p>
+                        <p class="mt-lg text-on-surface-variant text-sm italic">Account settings are managed by Admin.</p>
+                    </div>
+                </div>
+            `;
+        });
+
+        document.getElementById('tab-docs-link') && document.getElementById('tab-docs-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            setActiveTab('tab-docs-link');
+            const container = document.querySelector('section.grid');
+            container.innerHTML = `
+                <div class="col-span-1 lg:col-span-3 bg-surface-container-low p-lg rounded-xl border border-outline-variant">
+                    <h2 class="font-headline-md text-on-surface mb-md">Documentation</h2>
+                    <h3 class="font-title-lg text-primary mb-sm">AtomQuest Goal Management System Guide</h3>
+                    <ol class="list-decimal pl-lg space-y-sm text-on-surface font-body-md">
+                        <li><strong>Drafting:</strong> Add Goals up to exactly 100% total weightage.</li>
+                        <li><strong>Approval:</strong> Submit your completed sheet for manager approval. You cannot edit goals once submitted.</li>
+                        <li><strong>Tracking:</strong> Log quarterly progress via the Check-ins tab once your sheet is approved.</li>
+                    </ol>
+                </div>
+            `;
+        });
+
+        document.getElementById('btn-logout') && document.getElementById('btn-logout').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await fetch('/api/auth/logout', { method: 'POST' });
+            window.location.href = '/login.html';
+        });
+
+        // ── Utility Buttons (Top Bar) ─────────────────────────────────────────
+        document.getElementById('btn-notifications') && document.getElementById('btn-notifications').addEventListener('click', () => alert('No new notifications.'));
+        document.getElementById('btn-help') && document.getElementById('btn-help').addEventListener('click', () => alert('Support documentation is being prepared.'));
+        document.getElementById('btn-settings') && document.getElementById('btn-settings').addEventListener('click', async () => {
+             const me = (await (await fetch('/api/auth/me')).json()).user;
+             alert(`⚙️ Settings\n\nName: ${me.name}\nEmail: ${me.email}\nRole: ${me.role}\nDept: ${me.department || 'N/A'}\n\nAccount settings are managed by Admin.`);
+        });
+
+        // ── Theme Toggle ──────────────────────────────────────────────────────
+        const btnToggleTheme = document.getElementById('btn-toggle-theme');
+        if (btnToggleTheme) {
+            btnToggleTheme.addEventListener('click', (e) => {
+                e.preventDefault();
+                const html = document.documentElement;
+                if (html.classList.contains('dark')) {
+                    html.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    html.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
+        }
+
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+
+        fetchDashboard();
+    </script>
+</body></html>

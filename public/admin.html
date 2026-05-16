@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HR Admin Dashboard - AtomQuest Goals</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary": "#555f70",
+                        "surface-dim": "#d9dadc",
+                        "on-secondary-fixed": "#121c2a",
+                        "surface-container-high": "#e7e8ea",
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#f3f4f6",
+                        "secondary-fixed-dim": "#bdc7db",
+                        "surface": "#f8f9fb",
+                        "secondary-container": "#d6e0f4",
+                        "secondary-fixed": "#d9e3f7",
+                        "outline-variant": "#c4c5d5",
+                        "on-primary-fixed": "#001453",
+                        "primary-fixed-dim": "#b8c4ff",
+                        "tertiary-container": "#00563a",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "surface-container-highest": "#e1e2e4",
+                        "inverse-primary": "#b8c4ff",
+                        "on-secondary-container": "#596374",
+                        "inverse-surface": "#2e3132",
+                        "tertiary": "#003d27",
+                        "inverse-on-surface": "#f0f1f3",
+                        "on-background": "#191c1e",
+                        "error-container": "#ffdad6",
+                        "primary-container": "#1e40af",
+                        "on-tertiary-container": "#3fd298",
+                        "surface-variant": "#e1e2e4",
+                        "on-tertiary": "#ffffff",
+                        "primary": "#00288e",
+                        "background": "#f8f9fb",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "surface-bright": "#f8f9fb",
+                        "on-error-container": "#93000a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed-variant": "#3d4757",
+                        "on-primary-container": "#a8b8ff",
+                        "surface-tint": "#3755c3",
+                        "on-tertiary-fixed": "#002113",
+                        "surface-container": "#edeef0",
+                        "tertiary-fixed": "#6ffbbe",
+                        "error": "#ba1a1a",
+                        "on-surface-variant": "#444653",
+                        "primary-fixed": "#dde1ff",
+                        "on-primary-fixed-variant": "#173bab",
+                        "on-error": "#ffffff",
+                        "on-surface": "#191c1e",
+                        "outline": "#757684",
+                        "on-secondary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xl": "80px",
+                        "sm": "12px",
+                        "margin-mobile": "16px",
+                        "xs": "4px",
+                        "gutter": "24px",
+                        "container-max": "1280px",
+                        "md": "24px",
+                        "base": "8px",
+                        "lg": "48px"
+                    },
+                    "fontFamily": {
+                        "headline-sm": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-sm": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "headline-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                        "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                        "headline-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-md": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9fb; transition: background-color 0.3s, color 0.3s; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .sidebar-active { background-color: #d6e0f4; color: #00288e; }
+        .zebra-stripe:nth-child(even) { background-color: #f3f4f6; }
+
+        /* Dark Mode Overrides */
+        html.dark body { background-color: #121212 !important; color: #e0e0e0 !important; }
+        html.dark aside, html.dark .bg-surface, html.dark .bg-surface-container-lowest, html.dark .bg-surface-container-low, html.dark .bg-surface-container, html.dark .bg-white { background-color: #1e1e1e !important; color: #e0e0e0 !important; border-color: #333 !important; }
+        html.dark .bg-primary { background-color: #00288e !important; color: #ffffff !important; }
+        html.dark .bg-primary-container { background-color: #1e40af !important; color: #ffffff !important; }
+        html.dark .text-primary { color: #a8b8ff !important; }
+        html.dark .text-secondary { color: #bdc7db !important; }
+        html.dark .text-on-surface, html.dark .text-on-surface-variant { color: #e0e0e0 !important; }
+        html.dark .border-outline-variant, html.dark .border-outline { border-color: #333 !important; }
+        html.dark .zebra-stripe:nth-child(even) { background-color: #2a2a2a !important; }
+        html.dark .sidebar-active { background-color: #2e3b5e !important; color: #a8b8ff !important; }
+        html.dark .bg-tertiary-fixed { background-color: #00563a !important; color: #6ffbbe !important; }
+        html.dark .bg-secondary-container { background-color: #3d4757 !important; color: #d6e0f4 !important; }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full flex flex-col p-sm border-r border-outline-variant bg-surface w-64 z-50 overflow-y-auto">
+<div class="mb-lg px-sm pt-md">
+<h1 class="font-title-lg text-title-lg font-bold text-primary">Admin Portal</h1>
+<p class="font-label-md text-label-md text-on-surface-variant">Management Console</p>
+</div>
+<nav class="flex-1 space-y-xs">
+                <a id="tab-dashboard" class="flex items-center gap-sm bg-secondary-container text-on-secondary-container rounded-lg px-sm py-base scale-95 active:scale-90 transition-transform" href="#">
+                    <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                    <span class="font-label-md text-label-md">Dashboard</span>
+                </a>
+                <a id="tab-employees" class="flex items-center gap-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg px-sm py-base transition-all" href="#">
+                    <span class="material-symbols-outlined" data-icon="groups">groups</span>
+                    <span class="font-label-md text-label-md">Employee Status</span>
+                </a>
+                <a id="tab-audit" class="flex items-center gap-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg px-sm py-base transition-all" href="#">
+                    <span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+                    <span class="font-label-md text-label-md">Audit Logs</span>
+                </a>
+                <a id="tab-reports" class="flex items-center gap-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg px-sm py-base transition-all" href="#">
+                    <span class="material-symbols-outlined" data-icon="assessment">assessment</span>
+                    <span class="font-label-md text-label-md">Reports</span>
+                </a>
+                <a id="btn-toggle-theme" class="flex items-center gap-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg px-sm py-base transition-all cursor-pointer">
+                    <span class="material-symbols-outlined" data-icon="dark_mode">dark_mode</span>
+                    <span class="font-label-md text-label-md">Toggle Theme</span>
+                </a>
+                <a id="tab-settings" class="flex items-center gap-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg px-sm py-base transition-all cursor-pointer">
+                    <span class="material-symbols-outlined" data-icon="manage_accounts">manage_accounts</span>
+                    <span class="font-label-md text-label-md">Settings</span>
+                </a>
+            </nav>
+<div class="mt-auto p-sm">
+<button class="w-full flex items-center justify-center gap-sm bg-primary text-on-primary py-sm rounded-lg font-label-md text-label-md hover:bg-primary-container transition-colors shadow-sm">
+<span class="material-symbols-outlined" data-icon="download">download</span>
+                Generate Report
+            </button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 min-h-screen p-md">
+<!-- Top Header -->
+<header class="flex justify-between items-center mb-lg">
+<div>
+<h2 class="font-headline-md text-headline-md text-primary">AtomQuest HR Dashboard</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Global Goal Monitoring &amp; Compliance</p>
+</div>
+<div class="flex items-center gap-md">
+                        <button id="btn-notifications" class="flex items-center gap-xs text-on-surface-variant hover:bg-surface-container-low p-base rounded-full transition-colors">
+                            <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+                        </button>
+<div id="admin-profile-btn" class="flex items-center gap-sm border-l border-outline-variant pl-md cursor-pointer hover:bg-surface-container-low transition-colors p-sm rounded-lg">
+<img alt="Admin Profile" class="w-10 h-10 rounded-full object-cover border border-outline-variant" data-alt="A professional headshot of a corporate human resources administrator." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBtJJIi73bPvgTMKHqtAtebpgIUbmfoYez6fI_oPLoNasTX8SGUunderkWBrbmO6s9XSf8mYxhH9cgEV6MzjTfXji2xtWJ1DBrf6BepZyDZtBTIXQuoM-FNpdsrMNdX-ebhisjVAfAkJTLoODNMQwZ7IOoZudbXk61LYI7JEd3kh7jcOfFDcnrJYWaJOtX0VlxFRBMgKPH2NtBhjrAjpLu9zPvvIsNbFhc0rNHjRgWftCa4FnYUYMS5mgVRt5Huhjgk-0PS6MoNBBS"/>
+<div class="hidden lg:block">
+<p class="font-label-md text-label-md font-bold" id="admin-profile-name">Alex Sterling</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Lead HR Administrator</p>
+</div>
+</div>
+</div>
+</header>
+<!-- Administrative Actions Bar -->
+<div class="flex flex-wrap items-center justify-between gap-md mb-md bg-surface-container-lowest p-md rounded-xl border border-outline-variant shadow-sm">
+<div class="flex gap-sm">
+                        <div class="relative">
+                            <span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
+                            <input id="search-input" class="pl-10 pr-md py-base bg-surface border border-outline rounded-lg font-body-md text-body-md w-64 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="Search employees or departments..." type="text"/>
+                        </div>
+<button id="btn-adv-filters" class="flex items-center gap-xs px-md py-base bg-surface border border-outline rounded-lg font-label-md text-label-md text-on-surface hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined" data-icon="filter_list">filter_list</span>
+                    Advanced Filters
+                </button>
+</div>
+<button id="btn-export-csv" class="flex items-center gap-sm px-md py-base bg-primary-container text-white rounded-lg font-label-md text-label-md hover:opacity-90 active:scale-95 transition-all shadow-md">
+<span class="material-symbols-outlined" data-icon="csv">csv</span>
+                Export to CSV
+            </button>
+</div>
+<!-- Completion Status Section -->
+<section id="section-employees" class="mb-lg tab-content block">
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+<div class="p-md border-b border-outline-variant flex justify-between items-center bg-white">
+<h3 class="font-title-lg text-title-lg text-primary">Goal Completion Status</h3>
+<span class="px-sm py-xs bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-full font-label-sm text-label-sm">84% Overall Compliance</span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-primary text-on-primary">
+<th class="px-md py-sm font-label-md text-label-md">Employee Name</th>
+<th class="px-md py-sm font-label-md text-label-md text-center">Department</th>
+<th class="px-md py-sm font-label-md text-label-md text-center">Goals Submitted</th>
+<th class="px-md py-sm font-label-md text-label-md text-center">Q1 Check-in</th>
+<th class="px-md py-sm font-label-md text-label-md text-center">Q2 Check-in</th>
+<th class="px-md py-sm font-label-md text-label-md text-center">Status</th>
+<th class="px-md py-sm font-label-md text-label-md text-center">Actions</th>
+</tr>
+</thead>
+<tbody id="emp-tbody" class="text-on-surface">
+<tr><td colspan="7" class="px-md py-md text-center text-on-surface-variant italic">Loading employees...</td></tr>
+</tbody>
+</table>
+</div>
+<div class="p-sm bg-surface-container-low text-center">
+<span id="emp-count" class="font-label-md text-label-md text-on-surface-variant">Loading...</span>
+</div>
+</div>
+</section>
+<!-- Audit Log Section -->
+<section id="section-audit" class="tab-content block">
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+<div class="p-md border-b border-outline-variant flex justify-between items-center bg-white">
+<h3 class="font-title-lg text-title-lg text-primary">System Audit Log</h3>
+<div class="flex gap-sm">
+<button class="p-xs hover:bg-surface-container-low rounded"><span class="material-symbols-outlined text-on-surface-variant" data-icon="refresh">refresh</span></button>
+<button class="p-xs hover:bg-surface-container-low rounded"><span class="material-symbols-outlined text-on-surface-variant" data-icon="more_vert">more_vert</span></button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-high">
+<tr>
+<th class="px-md py-sm font-label-md text-label-md text-on-surface">User</th>
+<th class="px-md py-sm font-label-md text-label-md text-on-surface">Action</th>
+<th class="px-md py-sm font-label-md text-label-md text-on-surface">Goal Name</th>
+<th class="px-md py-sm font-label-md text-label-md text-on-surface">Old Value</th>
+<th class="px-md py-sm font-label-md text-label-md text-on-surface">New Value</th>
+<th class="px-md py-sm font-label-md text-label-md text-on-surface">Timestamp</th>
+</tr>
+</thead>
+<tbody id="log-tbody">
+<tr><td colspan="6" class="px-md py-md text-center text-on-surface-variant italic">Loading audit logs...</td></tr>
+</tbody>
+</table>
+</div>
+<div class="p-md flex items-center justify-between bg-white">
+<p id="log-count" class="font-label-sm text-label-sm text-on-surface-variant">Loading...</p>
+<div class="flex gap-xs">
+<button class="px-sm py-xs border border-outline rounded hover:bg-surface-container-low transition-colors"><span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span></button>
+<button class="px-sm py-xs border border-outline bg-primary text-on-primary rounded">1</button>
+<button class="px-sm py-xs border border-outline rounded hover:bg-surface-container-low transition-colors">2</button>
+<button class="px-sm py-xs border border-outline rounded hover:bg-surface-container-low transition-colors">3</button>
+<button class="px-sm py-xs border border-outline rounded hover:bg-surface-container-low transition-colors"><span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span></button>
+</div>
+</div>
+</div>
+</section>
+<!-- Dynamic Sections -->
+<section id="section-reports" class="tab-content hidden"></section>
+<section id="section-settings" class="tab-content hidden"></section>
+</main>
+<!-- Contextual FAB for high-level screens -->
+<button id="btn-fab-add" class="fixed bottom-md right-md bg-primary text-on-primary w-14 h-14 rounded-full shadow-lg flex items-center justify-center hover:bg-primary-container transition-all active:scale-90 z-40">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+
+<!-- Employee Details Modal -->
+<div id="emp-details-modal" class="fixed inset-0 bg-on-surface/50 hidden items-center justify-center z-50 p-md backdrop-blur-sm">
+    <div class="bg-surface-container-lowest rounded-xl shadow-xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh]">
+        <div class="p-md border-b border-outline-variant flex justify-between items-center bg-primary text-on-primary">
+            <h3 class="font-title-lg text-title-lg">Employee Goal Details</h3>
+            <button onclick="closeEmpDetailsModal()" class="text-on-primary hover:bg-white/20 p-xs rounded-full transition-colors">
+                <span class="material-symbols-outlined" data-icon="close">close</span>
+            </button>
+        </div>
+        <div class="p-md overflow-y-auto flex-1">
+            <div id="emp-details-header" class="mb-lg p-md bg-surface-container-low rounded-xl border border-outline-variant">
+                <!-- Header content populated by JS -->
+            </div>
+            <div id="emp-details-goals" class="space-y-md">
+                <!-- Goals content populated by JS -->
+            </div>
+        </div>
+    </div>
+</div>
+    <script>
+        let allEmployees = [];
+        let allLogs = [];
+
+        async function fetchAdminData() {
+            try {
+                const userRes = await fetch('/api/auth/me');
+                if (!userRes.ok) return window.location.href = '/login.html';
+                const userData = await userRes.json();
+                
+                // Set Admin Name
+                const nameEl = document.querySelector('.font-label-md.text-label-md.font-bold');
+                if (nameEl) nameEl.innerText = userData.user.name;
+                const roleEl = document.querySelector('.font-label-sm.text-label-sm.text-on-surface-variant');
+                if (roleEl) roleEl.innerText = userData.user.role === 'admin' ? 'HR Administrator' : userData.user.role;
+
+                const [empRes, logRes] = await Promise.all([
+                    fetch('/api/admin/employees'),
+                    fetch('/api/admin/audit-logs')
+                ]);
+
+                const empData = await empRes.json();
+                const logData = await logRes.json();
+                
+                allEmployees = empData.employees || [];
+                allLogs = logData.logs || [];
+
+                renderEmployees(allEmployees);
+                renderLogs(allLogs);
+
+                // Handle Logout
+                const nav = document.querySelector('nav');
+                const logoutBtn = document.createElement('a');
+                logoutBtn.className = 'flex items-center gap-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg px-sm py-base transition-all cursor-pointer';
+                logoutBtn.innerHTML = `<span class="material-symbols-outlined">logout</span><span class="font-label-md text-label-md">Logout</span>`;
+                logoutBtn.onclick = async () => {
+                    await fetch('/api/auth/logout', { method: 'POST' });
+                    window.location.href = '/login.html';
+                };
+                nav.appendChild(logoutBtn);
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function renderEmployees(employees) {
+            const empTbody = document.getElementById('emp-tbody');
+            if (!empTbody) return;
+            if (!employees || employees.length === 0) {
+                empTbody.innerHTML = '<tr><td colspan="6" class="px-md py-md text-center text-on-surface-variant italic">No employees found.</td></tr>';
+                const cnt = document.getElementById('emp-count');
+                if (cnt) cnt.textContent = 'No employees';
+                return;
+            }
+            empTbody.innerHTML = '';
+            employees.forEach(emp => {
+                const statusColor = emp.sheet_status === 'approved' ? 'bg-tertiary-fixed text-on-tertiary-fixed-variant'
+                    : emp.sheet_status === 'pending' ? 'bg-secondary-container text-on-secondary-container'
+                    : emp.sheet_status === 'rejected' ? 'bg-error-container text-on-error-container'
+                    : 'bg-surface-container text-on-surface-variant';
+                const tr = document.createElement('tr');
+                tr.className = 'zebra-stripe border-b border-outline-variant';
+                tr.innerHTML = `
+                    <td class="px-md py-md font-body-md text-body-md font-medium">${emp.name}</td>
+                    <td class="px-md py-md font-body-md text-body-md text-center">${emp.department || '—'}</td>
+                    <td class="px-md py-md text-center">${emp.sheet_status ? '<span class="material-symbols-outlined text-tertiary-container">check_circle</span>' : '<span class="material-symbols-outlined text-error">cancel</span>'}</td>
+                    <td class="px-md py-md text-center">${emp.checkins && emp.checkins.Q1 ? '<span class="material-symbols-outlined text-tertiary-container">check_circle</span>' : '—'}</td>
+                    <td class="px-md py-md text-center">${emp.checkins && emp.checkins.Q2 ? '<span class="material-symbols-outlined text-tertiary-container">check_circle</span>' : '—'}</td>
+                    <td class="px-md py-md text-center"><span class="px-base py-xs ${statusColor} rounded font-label-sm text-label-sm">${emp.sheet_status || 'Not Started'}</span></td>
+                    <td class="px-md py-md text-center"><button onclick="viewEmployeeDetails(${emp.id})" class="px-sm py-xs text-primary border border-primary rounded-lg hover:bg-surface-container font-label-md text-label-md transition-colors">View</button></td>
+                `;
+                empTbody.appendChild(tr);
+            });
+            const cnt = document.getElementById('emp-count');
+            if (cnt) cnt.textContent = `Showing ${employees.length} employee(s)`;
+        }
+
+        function renderLogs(logs) {
+            const logTbody = document.getElementById('log-tbody');
+            if (!logTbody) return;
+            if (!logs || logs.length === 0) {
+                logTbody.innerHTML = '<tr><td colspan="6" class="px-md py-md text-center text-on-surface-variant italic">No audit log entries yet.</td></tr>';
+                const cnt = document.getElementById('log-count');
+                if (cnt) cnt.textContent = 'No log entries';
+                return;
+            }
+            logTbody.innerHTML = '';
+            logs.forEach(log => {
+                const tr = document.createElement('tr');
+                tr.className = 'zebra-stripe border-b border-outline-variant';
+                tr.innerHTML = `
+                    <td class="px-md py-md font-body-md text-body-md">${log.user_name}</td>
+                    <td class="px-md py-md"><span class="px-base py-xs bg-blue-100 text-blue-800 rounded-full font-label-sm text-label-sm">${log.field_changed}</span></td>
+                    <td class="px-md py-md font-body-md text-body-md italic">${log.goal_title || 'N/A'}</td>
+                    <td class="px-md py-md font-body-md text-body-md text-on-surface-variant">${log.old_value || '—'}</td>
+                    <td class="px-md py-md font-body-md text-body-md font-bold text-primary">${log.new_value}</td>
+                    <td class="px-md py-md font-label-sm text-label-sm text-on-surface-variant">${new Date(log.changed_at).toLocaleString()}</td>
+                `;
+                logTbody.appendChild(tr);
+            });
+            const cnt = document.getElementById('log-count');
+            if (cnt) cnt.textContent = `Showing ${logs.length} log entries`;
+        }
+
+        // Search Filtering
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const filteredEmp = allEmployees.filter(emp => 
+                emp.name.toLowerCase().includes(term) || 
+                emp.department.toLowerCase().includes(term)
+            );
+            renderEmployees(filteredEmp);
+            
+            const filteredLogs = allLogs.filter(log => 
+                log.user_name.toLowerCase().includes(term) || 
+                (log.goal_title && log.goal_title.toLowerCase().includes(term))
+            );
+            renderLogs(filteredLogs);
+        });
+
+        // ── Tab Navigation ────────────────────────────────────────────────────
+        function hideAllSections() {
+            document.querySelectorAll('.tab-content').forEach(s => {
+                s.classList.remove('block');
+                s.classList.add('hidden');
+            });
+        }
+
+        function setActiveTab(tabId) {
+            ['tab-dashboard','tab-employees','tab-audit','tab-reports','tab-settings'].forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.classList.remove('sidebar-active');
+                el.classList.add('text-on-surface-variant');
+            });
+            const active = document.getElementById(tabId);
+            if (active) { active.classList.add('sidebar-active'); active.classList.remove('text-on-surface-variant'); }
+        }
+
+        document.getElementById('tab-dashboard').onclick = () => {
+            setActiveTab('tab-dashboard');
+            hideAllSections();
+            document.getElementById('section-employees').classList.remove('hidden');
+            document.getElementById('section-employees').classList.add('block');
+            document.getElementById('section-audit').classList.remove('hidden');
+            document.getElementById('section-audit').classList.add('block');
+        };
+        document.getElementById('tab-employees').onclick = () => {
+            setActiveTab('tab-employees');
+            hideAllSections();
+            document.getElementById('section-employees').classList.remove('hidden');
+            document.getElementById('section-employees').classList.add('block');
+        };
+        document.getElementById('tab-audit').onclick = () => {
+            setActiveTab('tab-audit');
+            hideAllSections();
+            document.getElementById('section-audit').classList.remove('hidden');
+            document.getElementById('section-audit').classList.add('block');
+        };
+        document.getElementById('tab-reports').onclick = async () => {
+            setActiveTab('tab-reports');
+            hideAllSections();
+            const reportsSec = document.getElementById('section-reports');
+            reportsSec.classList.remove('hidden');
+            reportsSec.classList.add('block');
+
+            const emps = allEmployees;
+            const total = emps.length;
+            const approved = emps.filter(e => e.sheet_status === 'approved').length;
+            const pending  = emps.filter(e => e.sheet_status === 'pending').length;
+            const draft    = emps.filter(e => e.sheet_status === 'draft').length;
+            const none     = emps.filter(e => !e.sheet_status).length;
+            
+            reportsSec.innerHTML = `
+                <div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm">
+                    <h2 class="font-headline-md text-on-surface mb-md">Compliance Report</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-md mt-md mb-lg">
+                        <div class="p-md bg-surface-container-low rounded-lg border border-outline-variant">
+                            <span class="font-label-sm text-on-surface-variant uppercase">Total Employees</span>
+                            <p class="font-title-lg font-bold text-on-surface mt-xs">${total}</p>
+                        </div>
+                        <div class="p-md bg-surface-container-low rounded-lg border border-outline-variant">
+                            <span class="font-label-sm text-on-surface-variant uppercase">Approved</span>
+                            <p class="font-title-lg font-bold text-tertiary mt-xs">${approved}</p>
+                        </div>
+                        <div class="p-md bg-surface-container-low rounded-lg border border-outline-variant">
+                            <span class="font-label-sm text-on-surface-variant uppercase">Pending</span>
+                            <p class="font-title-lg font-bold text-primary mt-xs">${pending}</p>
+                        </div>
+                        <div class="p-md bg-surface-container-low rounded-lg border border-outline-variant">
+                            <span class="font-label-sm text-on-surface-variant uppercase">Not Started</span>
+                            <p class="font-title-lg font-bold text-error mt-xs">${none}</p>
+                        </div>
+                    </div>
+                    <div class="bg-surface-container p-md rounded-lg text-center">
+                        <h3 class="font-title-lg text-on-surface mb-xs">Overall Compliance Rate</h3>
+                        <p class="font-headline-lg font-black text-primary">${total ? Math.round(approved/total*100) : 0}%</p>
+                        <p class="text-on-surface-variant text-sm mt-xs">Use Export CSV to download full data.</p>
+                    </div>
+                </div>
+            `;
+        };
+        document.getElementById('tab-settings').onclick = async () => {
+            setActiveTab('tab-settings');
+            hideAllSections();
+            const settingsSec = document.getElementById('section-settings');
+            settingsSec.classList.remove('hidden');
+            settingsSec.classList.add('block');
+
+            const me = (await (await fetch('/api/auth/me')).json()).user;
+            settingsSec.innerHTML = `
+                <div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm">
+                    <h2 class="font-headline-md text-on-surface mb-md">System Settings</h2>
+                    <div class="space-y-sm text-on-surface font-body-md">
+                        <p><strong>Logged in as:</strong> ${me.name}</p>
+                        <p><strong>Email:</strong> ${me.email}</p>
+                        <p><strong>Role:</strong> ${me.role}</p>
+                        <div class="my-md border-t border-outline-variant"></div>
+                        <p><strong>System:</strong> AtomQuest Goals Portal</p>
+                        <p><strong>Database:</strong> SQLite (local)</p>
+                        <p><strong>Session:</strong> Active</p>
+                        <p class="mt-lg text-on-surface-variant text-sm italic">For server configuration, contact your IT administrator.</p>
+                    </div>
+                </div>
+            `;
+        };
+
+        // ── Utility Buttons ───────────────────────────────────────────────────
+        document.getElementById('btn-notifications').onclick = () => {
+            const pending = allEmployees.filter(e => e.sheet_status === 'pending').length;
+            if (pending > 0) alert(`🔔 ${pending} employee goal sheet(s) are awaiting manager approval.`);
+            else alert('🔔 No pending approvals. System is up to date.');
+        };
+
+        // Export CSV buttons
+        const exportBtn = document.getElementById('btn-export-csv');
+        if (exportBtn) exportBtn.onclick = () => window.location.href = '/api/admin/export';
+
+        async function viewEmployeeDetails(id) {
+            try {
+                const res = await fetch(`/api/admin/employee/${id}/details`);
+                if (!res.ok) throw new Error('Failed to fetch details');
+                const data = await res.json();
+                
+                const header = document.getElementById('emp-details-header');
+                header.innerHTML = `
+                    <div class="flex justify-between items-center mb-sm">
+                        <h4 class="font-title-lg text-title-lg text-primary">${data.employee.name}</h4>
+                        <span class="px-sm py-xs bg-surface-container text-on-surface-variant rounded-full font-label-sm text-label-sm">${data.employee.department || 'No Dept'}</span>
+                    </div>
+                    <p class="font-label-md text-label-md text-secondary">Manager: ${data.employee.manager_name || 'Unassigned'}</p>
+                    <p class="font-label-md text-label-md text-secondary">Email: ${data.employee.email}</p>
+                    <div class="mt-sm pt-sm border-t border-outline-variant">
+                        <p class="font-label-md text-label-md text-on-surface">Sheet Status: <span class="font-bold">${data.sheet ? data.sheet.status : 'Not Started'}</span></p>
+                    </div>
+                `;
+
+                const goalsContainer = document.getElementById('emp-details-goals');
+                if (!data.goals || data.goals.length === 0) {
+                    goalsContainer.innerHTML = '<p class="text-center text-on-surface-variant italic py-lg">No goals found for this employee.</p>';
+                } else {
+                    goalsContainer.innerHTML = data.goals.map(g => {
+                        const checkinsList = g.checkins && g.checkins.length > 0 
+                            ? g.checkins.map(c => `<span class="bg-surface-variant text-on-surface-variant px-xs py-xs rounded text-xs">${c.quarter}: ${c.achievement} (${c.status.replace('_', ' ')})</span>`).join(' ')
+                            : '<span class="text-xs text-on-surface-variant italic">No check-ins yet</span>';
+                        return `
+                            <div class="p-md bg-surface-container-low rounded-xl border border-outline-variant">
+                                <div class="flex justify-between items-start mb-xs">
+                                    <h5 class="font-title-md text-title-md text-on-surface">${g.title}</h5>
+                                    <span class="px-sm py-xs bg-secondary-container text-on-secondary-container rounded-full font-label-sm text-label-sm">${g.weightage}%</span>
+                                </div>
+                                <p class="font-label-sm text-label-sm text-secondary mb-xs">Thrust Area: ${g.thrust_area}</p>
+                                <div class="grid grid-cols-2 gap-sm mb-sm text-sm">
+                                    <p>Target: <strong>${g.target} ${g.uom_type}</strong></p>
+                                    <p>Overall Achievement: <strong>${g.achievement}</strong></p>
+                                </div>
+                                <div class="pt-sm border-t border-outline-variant/50">
+                                    <p class="font-label-sm text-label-sm text-on-surface-variant mb-xs">Check-ins:</p>
+                                    <div class="flex gap-sm flex-wrap">${checkinsList}</div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+
+                document.getElementById('emp-details-modal').classList.remove('hidden');
+                document.getElementById('emp-details-modal').classList.add('flex');
+            } catch (err) {
+                alert('Error loading employee details');
+                console.error(err);
+            }
+        }
+
+        function closeEmpDetailsModal() {
+            document.getElementById('emp-details-modal').classList.add('hidden');
+            document.getElementById('emp-details-modal').classList.remove('flex');
+        }
+        
+        const generateReportBtn = document.querySelector('aside button');
+        if (generateReportBtn) generateReportBtn.onclick = () => window.location.href = '/api/admin/export';
+        
+        // Advanced filters
+        const advFiltersBtn = document.getElementById('btn-adv-filters');
+        if (advFiltersBtn) advFiltersBtn.onclick = () => alert('Advanced Filters feature is coming in the next release.');
+        
+        // Admin Profile click
+        const adminProfileBtn = document.getElementById('admin-profile-btn');
+        if (adminProfileBtn) adminProfileBtn.onclick = () => alert('Admin Profile: Active\nContact IT to change password or manage access roles.');
+        
+        // FAB Add
+        const fabAdd = document.getElementById('btn-fab-add');
+        if (fabAdd) fabAdd.onclick = () => alert('Global Action: Cannot add individual goals as an Admin. Log in as an Employee to create goals.');
+
+        // ── Theme Toggle ──────────────────────────────────────────────────────
+        const btnToggleTheme = document.getElementById('btn-toggle-theme');
+        if (btnToggleTheme) {
+            btnToggleTheme.onclick = () => {
+                const html = document.documentElement;
+                if (html.classList.contains('dark')) {
+                    html.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    html.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+            };
+        }
+
+        // Initialize Theme
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+
+        fetchAdminData();
+    </script>
+</body></html>
