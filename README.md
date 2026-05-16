@@ -7,8 +7,8 @@
 ---
 
 ## 🌐 Live Demo
-The application is currently hosted and available for review at:
-**[https://your-app-name.onrender.com](https://your-app-name.onrender.com)**
+The application is live and available for review at:
+**[https://atomquest-portal-6bkr.onrender.com](https://atomquest-portal-6bkr.onrender.com)**
 
 ---
 
