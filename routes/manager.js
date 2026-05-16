@@ -113,7 +113,7 @@ router.get('/checkins', async (req, res) => {
                 const checkins = await all('SELECT * FROM checkins WHERE goal_id=? ORDER BY quarter', [g.id]);
                 return { ...g, checkins };
             }));
-            return { ...emp, goals: goalsWithCheckins };
+            return { ...emp, sheet: sheet || null, goals: goalsWithCheckins };
         }));
         res.json({ team: result });
     } catch (err) { res.status(500).json({ error: err.message }); }
