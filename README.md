@@ -86,10 +86,10 @@ To test the different portals, you can log in using the pre-seeded credentials:
 
 | Role | Email | Password | Notes |
 | :--- | :--- | :--- | :--- |
-| **HR Admin** | `admin1@company.com` | `admin123` | Full system access |
+| **HR Admin** | `admin@company.com` | `admin123` | Full system access |
 | **Manager** | `manager1@company.com` | `mgr123` | Team oversight & approvals |
-| **Employee** | `emp1@company.com` | `emp123` | Pre-loaded with demo goals |
-| **Employee (Clean Slate)** | `emp2@company.com` | `emp123` | No goals — add your own! |
+| **Employee** | `emp1@company.com` | `emp123` | Pre-loaded with demo goals & check-ins |
+| **Employee (Clean Slate)** | `emp2@company.com` | `emp123` | No goals — perfect for live demo! |
 
 ---
 
