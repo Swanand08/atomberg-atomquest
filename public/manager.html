@@ -660,7 +660,7 @@
         };
 
         // ── Performance Reports Tab ───────────────────────────────────────────
-        document.getElementById('tab-reports').onclick = () => {
+        document.getElementById('tab-reports').onclick = async () => {
             document.querySelectorAll('nav a').forEach(a => {
                 a.classList.remove('bg-secondary-container', 'text-on-secondary-container');
                 a.classList.add('text-on-surface-variant');
@@ -668,39 +668,51 @@
             document.getElementById('tab-reports').classList.add('bg-secondary-container', 'text-on-secondary-container');
             document.getElementById('tab-reports').classList.remove('text-on-surface-variant');
 
-            const team = allTeamData.team || [];
-            const total = team.length;
-            const submitted = team.filter(e => e.sheet && e.sheet.status !== 'draft').length;
-            const approved = team.filter(e => e.sheet && e.sheet.status === 'approved').length;
-            const pending  = team.filter(e => e.sheet && e.sheet.status === 'pending').length;
-            const noSheet  = team.filter(e => !e.sheet).length;
-            
-            document.querySelector('tbody').innerHTML = `
-                <tr><td colspan="5" class="p-lg">
-                    <div class="bg-surface-container-low p-lg rounded-xl border border-outline-variant text-center">
-                        <h2 class="font-headline-md text-on-surface mb-md">Team Performance Report</h2>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-md mt-md">
-                            <div class="p-md bg-surface-container-lowest rounded-lg border border-outline-variant">
-                                <span class="font-label-sm text-on-surface-variant uppercase">Team Size</span>
-                                <p class="font-title-lg font-bold text-on-surface mt-xs">${total}</p>
-                            </div>
-                            <div class="p-md bg-surface-container-lowest rounded-lg border border-outline-variant">
-                                <span class="font-label-sm text-on-surface-variant uppercase">Approved</span>
-                                <p class="font-title-lg font-bold text-tertiary mt-xs">${approved}</p>
-                            </div>
-                            <div class="p-md bg-surface-container-lowest rounded-lg border border-outline-variant">
-                                <span class="font-label-sm text-on-surface-variant uppercase">Pending Review</span>
-                                <p class="font-title-lg font-bold text-primary mt-xs">${pending}</p>
-                            </div>
-                            <div class="p-md bg-surface-container-lowest rounded-lg border border-outline-variant">
-                                <span class="font-label-sm text-on-surface-variant uppercase">No Sheet Yet</span>
-                                <p class="font-title-lg font-bold text-error mt-xs">${noSheet}</p>
-                            </div>
-                        </div>
-                    </div>
-                </td></tr>
-            `;
+            // Fetch planned-vs-actual report
+            let report = [];
+            try {
+                const res = await fetch('/api/manager/planned-vs-actual');
+                const data = await res.json();
+                report = data.report || [];
+            } catch(e) { console.error(e); }
+
+            const tbody = document.querySelector('tbody');
+            if (report.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-lg text-center text-on-surface-variant italic">No performance data available yet.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = report.map(emp => {
+                const scoreColor = emp.overall_score >= 90 ? '#166534' : emp.overall_score >= 70 ? '#1e40af' : '#991b1b';
+                const scoreBg = emp.overall_score >= 90 ? '#dcfce7' : emp.overall_score >= 70 ? '#dbeafe' : '#fee2e2';
+                const goalRows = emp.goals.length > 0
+                    ? emp.goals.map(g => `
+                        <tr style="background:#f9fafb">
+                            <td class="px-md py-xs pl-lg text-on-surface-variant font-label-sm" style="font-size:12px">↳ ${g.title}</td>
+                            <td class="px-md py-xs text-center font-label-sm" style="font-size:12px">${g.weightage}%</td>
+                            <td class="px-md py-xs text-center font-label-sm" style="font-size:12px">${g.target} ${g.uom_type}</td>
+                            <td class="px-md py-xs text-center font-label-sm" style="font-size:12px">${g.achievement || 0}</td>
+                            <td class="px-md py-xs text-center">
+                                <span style="background:${scoreBg};color:${scoreColor};padding:2px 8px;border-radius:9999px;font-size:11px;font-weight:700">${Math.min(g.score||0, 150)}%</span>
+                            </td>
+                        </tr>`).join('')
+                    : `<tr><td colspan="5" class="px-md py-xs pl-lg text-on-surface-variant italic font-label-sm" style="font-size:12px">No goals yet</td></tr>`;
+
+                return `
+                    <tr class="border-b border-outline-variant bg-white hover:bg-surface-container-low transition-colors">
+                        <td class="px-md py-md font-semibold text-on-surface">${emp.name}</td>
+                        <td class="px-md py-md text-center text-on-surface-variant">${emp.department || '—'}</td>
+                        <td class="px-md py-md text-center text-on-surface-variant">${emp.goals.length}</td>
+                        <td class="px-md py-md text-center text-on-surface-variant">—</td>
+                        <td class="px-md py-md text-center">
+                            <span style="background:${scoreBg};color:${scoreColor};padding:4px 12px;border-radius:9999px;font-weight:700;">${emp.overall_score}%</span>
+                        </td>
+                    </tr>
+                    ${goalRows}
+                `;
+            }).join('');
         };
+
 
         // ── Help Tab ─────────────────────────────────────────────────────────
         document.getElementById('tab-help') && (document.getElementById('tab-help').onclick = () => {

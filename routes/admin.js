@@ -88,10 +88,10 @@ router.post('/unlock/:sheetId', async (req, res) => {
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// POST /api/admin/shared-goal
+// POST /api/admin/shared-goal - 2H: include shared_from_employee_id
 router.post('/shared-goal', async (req, res) => {
     try {
-        const { employee_ids, title, thrust_area, uom_type, uom_direction, target, weightage } = req.body;
+        const { employee_ids, title, thrust_area, uom_type, uom_direction, target, weightage, source_employee_id } = req.body;
         if (!employee_ids || !Array.isArray(employee_ids) || employee_ids.length === 0)
             return res.status(400).json({ error: 'Provide at least one employee_id' });
         const year = new Date().getFullYear();
@@ -105,11 +105,28 @@ router.post('/shared-goal', async (req, res) => {
             if (sheet.is_locked) { results.push({ empId, status: 'skipped', reason: 'Sheet is locked' }); continue; }
             const count = await get('SELECT COUNT(*) as c FROM goals WHERE sheet_id=?', [sheet.id]);
             if (count.c >= 8) { results.push({ empId, status: 'skipped', reason: 'Max 8 goals reached' }); continue; }
-            await run('INSERT INTO goals (sheet_id, title, thrust_area, uom_type, uom_direction, target, weightage, is_shared) VALUES (?,?,?,?,?,?,?,1)',
-                [sheet.id, title, thrust_area, uom_type, uom_direction, Number(target), Number(weightage)]);
+            await run('INSERT INTO goals (sheet_id, title, thrust_area, uom_type, uom_direction, target, weightage, is_shared, shared_from_employee_id) VALUES (?,?,?,?,?,?,?,1,?)',
+                [sheet.id, title, thrust_area, uom_type, uom_direction, Number(target), Number(weightage), source_employee_id || null]);
             results.push({ empId, status: 'added' });
         }
         res.json({ success: true, results });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// 2I. POST /api/admin/sync-shared-goals
+router.post('/sync-shared-goals', async (req, res) => {
+    try {
+        const { source_goal_id } = req.body;
+        const sourceGoal = await get('SELECT * FROM goals WHERE id=?', [source_goal_id]);
+        if (!sourceGoal) return res.status(404).json({ error: 'Source goal not found' });
+        // Find all shared copies (same title, thrust_area, is_shared=1, different sheet)
+        const copies = await all('SELECT * FROM goals WHERE title=? AND thrust_area=? AND is_shared=1 AND id!=?',
+            [sourceGoal.title, sourceGoal.thrust_area, source_goal_id]);
+        for (const copy of copies) {
+            await run('UPDATE goals SET achievement=?, goal_status=? WHERE id=?',
+                [sourceGoal.achievement, sourceGoal.goal_status, copy.id]);
+        }
+        res.json({ success: true, synced: copies.length });
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
@@ -140,7 +157,6 @@ router.get('/export', async (req, res) => {
             LEFT JOIN checkins c4 ON c4.goal_id=g.id AND c4.quarter='Q4'
             WHERE u.role='employee' ORDER BY u.department, u.name, g.id`, [year]);
 
-        // BOM for Excel UTF-8 compatibility + proper CSV formatting
         const BOM = '\uFEFF';
         const headers = [
             'Employee Name','Email','Department','Manager','Sheet Status',
@@ -165,12 +181,12 @@ router.get('/export', async (req, res) => {
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// GET /api/admin/audit-logs - fix: properly joins user names and goal titles
+// 2F. GET /api/admin/audit-logs - fixed: user_name instead of changed_by_name
 router.get('/audit-logs', async (req, res) => {
     try {
         const logs = await all(`
             SELECT al.id, al.action, al.field_changed, al.old_value, al.new_value, al.changed_at,
-                u.name as changed_by_name, u.email as changed_by_email, u.role as changed_by_role,
+                u.name as user_name, u.email as changed_by_email, u.role as changed_by_role,
                 COALESCE(g.title, 'N/A') as goal_title
             FROM audit_logs al
             JOIN users u ON al.changed_by = u.id
@@ -194,7 +210,8 @@ router.get('/performance-report', async (req, res) => {
                 const checkins = await all('SELECT * FROM checkins WHERE goal_id=? ORDER BY quarter', [g.id]);
                 let score = 0;
                 if (g.uom_type === 'zero') score = g.achievement === 0 ? 100 : 0;
-                else if (g.target > 0) score = g.uom_direction === 'max' ? Math.round((g.achievement/g.target)*100) : Math.round((g.target/g.achievement)*100);
+                else if (g.uom_type === 'timeline') score = Math.min(Math.round(g.achievement), 100);
+                else if (g.target > 0) score = g.uom_direction === 'max' ? Math.round((g.achievement/g.target)*100) : Math.round((g.target/Math.max(g.achievement,0.01))*100);
                 return { ...g, checkins, score };
             }));
             const totalWeightage = goals.reduce((s,g) => s+g.weightage, 0);
@@ -235,6 +252,58 @@ router.put('/users/:id', async (req, res) => {
         await run('INSERT INTO audit_logs (changed_by, goal_id, action, field_changed, old_value, new_value) VALUES (?,?,?,?,?,?)',
             [req.session.user.id, null, 'user_profile_edit', 'profile', JSON.stringify({name:user.name,email:user.email}), JSON.stringify({name,email})]);
         res.json({ success: true, message: 'User profile updated' });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// 2E. GET /api/admin/cycle-config
+router.get('/cycle-config', async (req, res) => {
+    try {
+        const year = new Date().getFullYear();
+        const config = await get('SELECT * FROM cycle_config WHERE cycle_year = ?', [year]);
+        res.json({ config });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// 2E. PUT /api/admin/cycle-config
+router.put('/cycle-config', async (req, res) => {
+    try {
+        const { cycle_year, goal_setting_open, goal_setting_close, q1_open, q2_open, q3_open, q4_open, q4_close } = req.body;
+        const year = cycle_year || new Date().getFullYear();
+        await run(`INSERT INTO cycle_config (cycle_year, goal_setting_open, goal_setting_close, q1_open, q2_open, q3_open, q4_open, q4_close)
+            VALUES (?,?,?,?,?,?,?,?)
+            ON CONFLICT(cycle_year) DO UPDATE SET
+            goal_setting_open=excluded.goal_setting_open, goal_setting_close=excluded.goal_setting_close,
+            q1_open=excluded.q1_open, q2_open=excluded.q2_open, q3_open=excluded.q3_open,
+            q4_open=excluded.q4_open, q4_close=excluded.q4_close`,
+            [year, goal_setting_open, goal_setting_close, q1_open, q2_open, q3_open, q4_open, q4_close]);
+        await run('INSERT INTO audit_logs (changed_by, goal_id, action, field_changed, old_value, new_value) VALUES (?,?,?,?,?,?)',
+            [req.session.user.id, null, 'cycle_config_update', 'cycle_config', null, JSON.stringify(req.body)]);
+        res.json({ success: true, message: 'Cycle configuration updated' });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// 2G. GET /api/admin/employee/:id/details
+router.get('/employee/:id/details', async (req, res) => {
+    try {
+        const year = new Date().getFullYear();
+        const user = await get('SELECT u.id, u.name, u.email, u.department, m.name as manager_name FROM users u LEFT JOIN users m ON u.manager_id=m.id WHERE u.id=?', [req.params.id]);
+        if (!user) return res.status(404).json({ error: 'Employee not found' });
+        const sheet = await get('SELECT * FROM goal_sheets WHERE employee_id=? AND cycle_year=?', [req.params.id, year]);
+        let goals = [];
+        let checkins = [];
+        if (sheet) {
+            goals = await all('SELECT * FROM goals WHERE sheet_id=?', [sheet.id]);
+            const goalIds = goals.map(g => g.id);
+            if (goalIds.length > 0) {
+                checkins = await all(`SELECT * FROM checkins WHERE goal_id IN (${goalIds.map(()=>'?').join(',')}) ORDER BY quarter`, goalIds);
+            }
+            // Attach checkins to goals
+            goals = goals.map(g => ({
+                ...g,
+                checkins: checkins.filter(c => c.goal_id === g.id)
+            }));
+        }
+        res.json({ employee: user, sheet, goals, checkins });
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 

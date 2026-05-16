@@ -220,4 +220,33 @@ router.post('/assign-goal', async (req, res) => {
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// 2J. GET /api/manager/planned-vs-actual endpoint for the performance report
+router.get('/planned-vs-actual', async (req, res) => {
+    try {
+        const managerId = req.session.user.id;
+        const year = new Date().getFullYear();
+        const employees = await all('SELECT id, name, email, department FROM users WHERE manager_id=? AND role=?', [managerId, 'employee']);
+        const report = await Promise.all(employees.map(async emp => {
+            const sheet = await get('SELECT * FROM goal_sheets WHERE employee_id=? AND cycle_year=?', [emp.id, year]);
+            if (!sheet) return { ...emp, goals: [], overall_score: 0 };
+            const goals = await all('SELECT * FROM goals WHERE sheet_id=?', [sheet.id]);
+            const goalsWithCheckins = await Promise.all(goals.map(async g => {
+                const checkins = await all('SELECT * FROM checkins WHERE goal_id=? ORDER BY quarter', [g.id]);
+                let score = 0;
+                if (g.uom_type === 'zero') score = g.achievement === 0 ? 100 : 0;
+                else if (g.uom_type === 'timeline') score = Math.min(Math.round(g.achievement), 100);
+                else if (g.target > 0) score = g.uom_direction === 'max'
+                    ? Math.round((g.achievement/g.target)*100)
+                    : Math.round((g.target/Math.max(g.achievement,0.01))*100);
+                return { ...g, checkins, score: Math.min(score, 150) };
+            }));
+            const totalWeight = goals.reduce((s,g)=>s+g.weightage,0);
+            const overallScore = totalWeight > 0 ? Math.round(goalsWithCheckins.reduce((s,g)=>s+(g.score*g.weightage),0)/totalWeight) : 0;
+            return { ...emp, sheet, goals: goalsWithCheckins, overall_score: overallScore };
+        }));
+        res.json({ report });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 module.exports = router;
+

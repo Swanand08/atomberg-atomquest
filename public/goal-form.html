@@ -191,6 +191,11 @@
 <!-- Main Content Area -->
 <main class="flex-1 overflow-y-auto p-md lg:p-lg">
 <div class="max-w-[800px] mx-auto">
+<!-- 3B: Window Status Banner -->
+<div id="window-status-banner" class="hidden mb-md flex items-center gap-sm p-md bg-yellow-100 text-yellow-800 border border-yellow-300 rounded-xl">
+    <span class="material-symbols-outlined">warning</span>
+    <span id="window-status-text" class="font-label-md text-label-md font-medium">Goal setting window is currently closed.</span>
+</div>
 <!-- Page Header -->
 <div class="mb-lg flex justify-between items-end">
 <div>
@@ -218,6 +223,11 @@
 <div class="space-y-xs">
 <label class="font-label-md text-label-md text-on-surface">Goal Title</label>
 <input id="goal_title" class="w-full px-sm py-base rounded-lg border border-outline focus:border-primary focus:ring-1 focus:ring-primary bg-surface-container-lowest text-body-md font-body-md transition-all" placeholder="e.g., Increase Quarterly Revenue Growth" type="text"/>
+</div>
+<!-- 3A: Goal Description -->
+<div>
+    <label class="font-label-md text-label-md text-on-surface">Goal Description</label>
+    <textarea id="description" rows="3" placeholder="Describe what this goal involves and how success will be measured..." class="w-full px-sm py-base rounded-lg border border-outline focus:border-primary focus:ring-1 focus:ring-primary bg-surface-container-lowest text-body-md font-body-md resize-none mt-xs"></textarea>
 </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
                             <!-- Thrust Area -->
@@ -394,10 +404,26 @@
             updateWeightageDisplay(isNaN(val) ? 0 : val);
         });
 
+        // 3B: Fetch window status on load
+        async function checkWindowStatus() {
+            try {
+                const res = await fetch('/api/goals/window-status');
+                const data = await res.json();
+                const banner = document.getElementById('window-status-banner');
+                const bannerText = document.getElementById('window-status-text');
+                if (!data.goalSettingOpen) {
+                    banner.classList.remove('hidden');
+                    banner.classList.add('flex');
+                    bannerText.textContent = 'Goal setting window is currently closed. Goals can be submitted between May 1 and June 30.';
+                }
+            } catch(e) { console.error('Window status check failed', e); }
+        }
+
         document.querySelector('form').onsubmit = async (e) => {
             e.preventDefault();
             
             const title = document.getElementById('goal_title').value;
+            const description = document.getElementById('description').value;
             const thrust_area = document.getElementById('thrust_area').value;
             const uom_type = document.getElementById('uom_type').value;
             const uom_direction = document.getElementById('uom_direction').value;
@@ -422,7 +448,7 @@
                 const response = await fetch('/api/goals', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ title, thrust_area, uom_type, uom_direction, target, weightage })
+                    body: JSON.stringify({ title, description, thrust_area, uom_type, uom_direction, target, weightage })
                 });
 
                 const data = await response.json();
@@ -529,5 +555,6 @@
         }
 
         initForm();
+        checkWindowStatus();
     </script>
 </body></html>

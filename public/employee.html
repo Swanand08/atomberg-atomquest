@@ -414,6 +414,8 @@
                 <p id="checkin-goal-title" class="font-label-md text-label-md font-bold text-primary mb-xs"></p>
                 <p id="checkin-goal-target" class="font-label-sm text-label-sm text-secondary"></p>
             </div>
+            <!-- 3E: Window status message -->
+            <div id="checkin-window-msg" class="hidden p-sm bg-yellow-100 text-yellow-800 rounded-lg font-label-sm text-label-sm border border-yellow-300"></div>
             
             <div>
                 <label class="block font-label-md text-label-md mb-xs text-on-surface">Achievement Value</label>
@@ -442,9 +444,66 @@
             
             <div class="flex justify-end gap-sm pt-sm border-t border-outline-variant">
                 <button type="button" onclick="closeCheckInModal()" class="px-md py-sm font-label-md text-label-md text-secondary hover:bg-surface-container rounded-lg">Cancel</button>
-                <button type="submit" class="px-md py-sm bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:opacity-90 shadow-sm flex items-center gap-xs">
+                <button id="checkin-submit-btn" type="submit" class="px-md py-sm bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:opacity-90 shadow-sm flex items-center gap-xs">
                     <span class="material-symbols-outlined text-[18px]">save</span> Save Check-In
                 </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 3C: Edit Goal Modal -->
+<div id="edit-goal-modal" class="fixed inset-0 bg-on-surface/50 hidden items-center justify-center z-50 p-md backdrop-blur-sm">
+    <div class="bg-surface-container-lowest rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
+        <div class="p-md border-b border-outline-variant flex justify-between items-center bg-primary-container text-on-primary-container">
+            <h3 class="font-title-lg text-title-lg">Edit Goal</h3>
+            <button onclick="closeEditModal()" class="text-on-primary-container hover:bg-white/20 p-xs rounded-full transition-colors">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <form id="edit-goal-form" class="p-md space-y-md overflow-y-auto max-h-[70vh]">
+            <input type="hidden" id="edit-goal-id" />
+            <div>
+                <label class="block font-label-md text-label-md mb-xs text-on-surface">Goal Title</label>
+                <input id="edit-title" type="text" required class="w-full bg-surface-container-low border border-outline rounded-lg px-md py-sm focus:ring-2 focus:ring-primary outline-none" />
+            </div>
+            <div>
+                <label class="block font-label-md text-label-md mb-xs text-on-surface">Goal Description</label>
+                <textarea id="edit-description" rows="3" class="w-full bg-surface-container-low border border-outline rounded-lg px-md py-sm focus:ring-2 focus:ring-primary outline-none resize-none"></textarea>
+            </div>
+            <div class="grid grid-cols-2 gap-md">
+                <div>
+                    <label class="block font-label-md text-label-md mb-xs text-on-surface">Thrust Area</label>
+                    <input id="edit-thrust" type="text" required class="w-full bg-surface-container-low border border-outline rounded-lg px-md py-sm focus:ring-2 focus:ring-primary outline-none" />
+                </div>
+                <div>
+                    <label class="block font-label-md text-label-md mb-xs text-on-surface">UoM Type</label>
+                    <select id="edit-uom" class="w-full bg-surface-container-low border border-outline rounded-lg px-md py-sm focus:ring-2 focus:ring-primary outline-none">
+                        <option value="numeric">Numeric</option>
+                        <option value="percent">Percentage</option>
+                        <option value="timeline">Timeline</option>
+                        <option value="zero">Zero-based</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-label-md text-label-md mb-xs text-on-surface">Direction</label>
+                    <select id="edit-direction" class="w-full bg-surface-container-low border border-outline rounded-lg px-md py-sm focus:ring-2 focus:ring-primary outline-none">
+                        <option value="max">Maximize (Higher is better)</option>
+                        <option value="min">Minimize (Lower is better)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-label-md text-label-md mb-xs text-on-surface">Target Value</label>
+                    <input id="edit-target" type="number" step="any" required class="w-full bg-surface-container-low border border-outline rounded-lg px-md py-sm focus:ring-2 focus:ring-primary outline-none" />
+                </div>
+                <div>
+                    <label class="block font-label-md text-label-md mb-xs text-on-surface">Weightage %</label>
+                    <input id="edit-weightage" type="number" min="10" max="100" required class="w-full bg-surface-container-low border border-outline rounded-lg px-md py-sm focus:ring-2 focus:ring-primary outline-none" />
+                </div>
+            </div>
+            <div class="flex justify-end gap-sm pt-sm border-t border-outline-variant">
+                <button type="button" onclick="closeEditModal()" class="px-md py-sm font-label-md text-label-md text-secondary hover:bg-surface-container rounded-lg">Cancel</button>
+                <button type="submit" class="px-md py-sm bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:opacity-90 shadow-sm">Save Changes</button>
             </div>
         </form>
     </div>
@@ -520,6 +579,7 @@
                         </div>
                     </div>
                     <h3 class="font-title-lg text-title-lg text-on-surface mb-xs">${goal.title}</h3>
+                    ${goal.description ? `<p class="text-xs text-on-surface-variant italic mb-xs">${goal.description}</p>` : ''}
                     <p class="font-body-md text-body-md text-on-surface-variant flex-1 mb-md">Target: ${goal.target} (${goal.uom_type})</p>
                     <div class="space-y-sm">
                         <div class="flex justify-between items-center">
@@ -609,18 +669,98 @@
             }
         }
 
+        // 3C: Proper editGoal implementation
         function editGoal(id) {
-            // In a full app, this would open a modal or pre-fill the form
-            alert('Edit functionality is coming soon. For now, please delete and re-add.');
+            const goal = allGoals.find(g => g.id === id);
+            if (!goal) return alert('Goal not found');
+            document.getElementById('edit-goal-id').value = id;
+            document.getElementById('edit-title').value = goal.title;
+            document.getElementById('edit-description').value = goal.description || '';
+            document.getElementById('edit-thrust').value = goal.thrust_area;
+            document.getElementById('edit-uom').value = goal.uom_type;
+            document.getElementById('edit-direction').value = goal.uom_direction;
+            document.getElementById('edit-target').value = goal.target;
+            document.getElementById('edit-weightage').value = goal.weightage;
+            document.getElementById('edit-goal-modal').classList.remove('hidden');
+            document.getElementById('edit-goal-modal').classList.add('flex');
         }
 
-        function promptCheckIn(id, title, target, uom) {
+        function closeEditModal() {
+            document.getElementById('edit-goal-modal').classList.add('hidden');
+            document.getElementById('edit-goal-modal').classList.remove('flex');
+        }
+
+        document.getElementById('edit-goal-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('edit-goal-id').value;
+            const body = {
+                title: document.getElementById('edit-title').value,
+                description: document.getElementById('edit-description').value,
+                thrust_area: document.getElementById('edit-thrust').value,
+                uom_type: document.getElementById('edit-uom').value,
+                uom_direction: document.getElementById('edit-direction').value,
+                target: parseFloat(document.getElementById('edit-target').value),
+                weightage: parseInt(document.getElementById('edit-weightage').value)
+            };
+            const res = await fetch(`/api/goals/${id}/edit`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            const data = await res.json();
+            if (res.ok) {
+                closeEditModal();
+                fetchDashboard();
+            } else {
+                alert(data.error || 'Failed to update goal');
+            }
+        };
+
+        // 3E: Check-in window status
+        async function promptCheckIn(id, title, target, uom) {
             document.getElementById('checkin-goal-id').value = id;
             document.getElementById('checkin-goal-title').innerText = title;
             document.getElementById('checkin-goal-target').innerText = `Current Target: ${target} ${uom}`;
             document.getElementById('checkin-value').value = '';
             document.getElementById('checkin-modal').classList.remove('hidden');
             document.getElementById('checkin-modal').classList.add('flex');
+
+            // Fetch window status and update quarter dropdown
+            try {
+                const res = await fetch('/api/goals/window-status');
+                const data = await res.json();
+                const quarterSelect = document.getElementById('checkin-quarter');
+                const submitBtn = document.getElementById('checkin-submit-btn');
+                const windowMsg = document.getElementById('checkin-window-msg');
+                const openQuarters = data.openQuarters || ['Q1','Q2','Q3','Q4'];
+                
+                // Rebuild quarter options
+                quarterSelect.innerHTML = '';
+                ['Q1','Q2','Q3','Q4'].forEach(q => {
+                    if (openQuarters.includes(q)) {
+                        const opt = document.createElement('option');
+                        opt.value = q;
+                        opt.textContent = q;
+                        quarterSelect.appendChild(opt);
+                    }
+                });
+
+                if (openQuarters.length === 0) {
+                    windowMsg.textContent = 'No check-in windows are currently open.';
+                    windowMsg.classList.remove('hidden');
+                    submitBtn.disabled = true;
+                    submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                } else {
+                    windowMsg.classList.add('hidden');
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    windowMsg.textContent = `Open quarters: ${openQuarters.join(', ')}`;
+                    windowMsg.classList.remove('hidden');
+                    windowMsg.className = 'p-sm bg-green-50 text-green-800 rounded-lg font-label-sm text-label-sm border border-green-200';
+                }
+            } catch(e) {
+                console.error('Failed to fetch window status', e);
+            }
         }
 
         function closeCheckInModal() {
