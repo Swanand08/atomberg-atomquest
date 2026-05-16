@@ -93,21 +93,24 @@ const initDb = async () => {
     const userCount = await get('SELECT COUNT(*) as count FROM users');
     if (userCount.count === 0) {
         console.log('Seeding database with demo data...');
+        // NOTE: Passwords are stored in plain text for hackathon demo purposes only.
+        // Production implementation would use bcrypt hashing.
         // 1. Insert Admin, Manager, and Employee
-        await run("INSERT INTO users (name, email, password, role, department) VALUES (?,?,?,?,?)", ['HR Admin', 'admin@company.com', 'admin123', 'admin', 'HR']);
-        await run("INSERT INTO users (name, email, password, role, department) VALUES (?,?,?,?,?)", ['Manager Name', 'manager@company.com', 'password', 'manager', 'Engineering']);
-        await run("INSERT INTO users (name, email, password, role, manager_id, department) VALUES (?,?,?,?,?,?)", ['Employee Name', 'employee@company.com', 'password', 'employee', 2, 'Engineering']);
+        await run("INSERT INTO users (name, email, password, role, department) VALUES (?,?,?,?,?)", ['HR Admin', 'admin1@company.com', 'admin123', 'admin', 'HR']);
+        await run("INSERT INTO users (name, email, password, role, department) VALUES (?,?,?,?,?)", ['Manager Name', 'manager1@company.com', 'mgr123', 'manager', 'Engineering']);
+        await run("INSERT INTO users (name, email, password, role, manager_id, department) VALUES (?,?,?,?,?,?)", ['Employee Name', 'emp1@company.com', 'emp123', 'employee', 2, 'Engineering']);
+        await run("INSERT INTO users (name, email, password, role, manager_id, department) VALUES (?,?,?,?,?,?)", ['Clean Employee', 'emp2@company.com', 'emp123', 'employee', 2, 'Engineering']);
 
         // 2. Insert Goal Sheet for employee (id=3), approved by manager (id=2)
         await run("INSERT INTO goal_sheets (employee_id, cycle_year, status, is_locked, approved_by, approved_at) VALUES (?,?,?,?,?,CURRENT_TIMESTAMP)", [3, new Date().getFullYear(), 'approved', 1, 2]);
 
         // 3. Insert 5 Goals totaling 100% weightage
         const goals = [
-            [1, 'Implement New CI/CD Pipeline', 'Technical Excellence', 'percent', 'max', 100, 25, 65, 'on_track'],
+            [1, 'Implement New CI/CD Pipeline', 'Technical Excellence', 'percent', 'max', 100, 25, 100, 'completed'],
             [1, 'Customer Satisfaction Score > 90%', 'Customer Success', 'numeric', 'max', 9.5, 15, 0, 'not_started'],
             [1, 'Internal Security Audit', 'Operational Growth', 'percent', 'max', 100, 20, 100, 'completed'],
             [1, 'Cloud Architect Certification', 'Professional Development', 'percent', 'max', 100, 20, 80, 'on_track'],
-            [1, 'Mentorship Program Lead', 'Core Values', 'numeric', 'max', 16, 20, 12, 'on_track']
+            [1, 'Mentorship Program Lead', 'Core Values', 'numeric', 'max', 16, 20, 16, 'completed']
         ];
         
         for (const g of goals) {

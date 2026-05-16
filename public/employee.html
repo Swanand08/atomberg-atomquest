@@ -701,33 +701,61 @@
             renderGoals(allGoals);
         });
 
-        document.getElementById('tab-checkins').addEventListener('click', (e) => {
+        document.getElementById('tab-checkins').addEventListener('click', async (e) => {
             e.preventDefault();
             setActiveTab('tab-checkins');
             const container = document.querySelector('section.grid');
-            if (allGoals.length === 0) {
-                container.innerHTML = `<div class="col-span-1 lg:col-span-3 p-lg text-center text-on-surface-variant font-label-md">No goals available to check-in.</div>`;
-                return;
-            }
             
-            let checkinsHtml = allGoals.map(g => `
-                <div class="bg-surface-container-lowest p-md rounded-xl border border-outline-variant mb-md">
-                    <h3 class="font-title-lg text-on-surface mb-sm">${g.title}</h3>
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-sm">
-                        <span class="text-on-surface-variant font-label-md">Progress: ${g.achievement} / ${g.target} ${g.uom_type}</span>
-                        ${(currentSheet && currentSheet.status === 'approved') ? `
-                            <button onclick="promptCheckIn(${g.id}, '${g.title.replace(/'/g, "\\'")}', ${g.target}, '${g.uom_type}')" class="px-md py-sm bg-primary-container text-on-primary rounded-lg font-label-md hover:opacity-90">Check In</button>
-                        ` : '<span class="text-on-surface-variant text-sm italic">Not approved for check-ins</span>'}
-                    </div>
-                </div>
-            `).join('');
+            try {
+                container.innerHTML = '<div class="col-span-1 lg:col-span-3 p-lg text-center"><span class="material-symbols-outlined animate-spin">refresh</span> Loading...</div>';
+                
+                const res = await fetch('/api/goals/checkins/mine');
+                if (!res.ok) throw new Error('Failed to fetch check-ins');
+                const data = await res.json();
+                
+                if (!data.goals || data.goals.length === 0) {
+                    container.innerHTML = `<div class="col-span-1 lg:col-span-3 p-lg text-center text-on-surface-variant font-label-md">No goals available to check-in.</div>`;
+                    return;
+                }
+                
+                let checkinsHtml = data.goals.map(g => {
+                    const checkinsHistory = (g.checkins && g.checkins.length > 0) 
+                        ? g.checkins.map(c => `
+                            <div class="flex justify-between items-center text-sm py-xs border-b border-outline-variant last:border-0">
+                                <span class="font-bold text-on-surface">${c.quarter}</span>
+                                <span class="text-on-surface-variant">Achieved: ${c.achievement} ${g.uom_type}</span>
+                                <span class="text-primary capitalize">${c.status.replace('_', ' ')}</span>
+                            </div>
+                          `).join('')
+                        : '<div class="text-sm text-on-surface-variant italic">No previous check-ins.</div>';
 
-            container.innerHTML = `
-                <div class="col-span-1 lg:col-span-3">
-                    <h2 class="font-headline-md text-on-surface mb-md">Goal Check-ins</h2>
-                    ${checkinsHtml}
-                </div>
-            `;
+                    return `
+                    <div class="bg-surface-container-lowest p-md rounded-xl border border-outline-variant mb-md flex flex-col gap-sm shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex justify-between items-start">
+                            <h3 class="font-title-lg text-on-surface">${g.title}</h3>
+                            ${(currentSheet && currentSheet.status === 'approved') ? `
+                                <button onclick="promptCheckIn(${g.id}, '${g.title.replace(/'/g, "\\'")}', ${g.target}, '${g.uom_type}')" class="px-md py-sm bg-primary-container text-on-primary rounded-lg font-label-md hover:opacity-90 transition-colors">Log Check-In</button>
+                            ` : '<span class="text-on-surface-variant text-sm italic">Not approved for check-ins</span>'}
+                        </div>
+                        <p class="text-on-surface-variant font-label-md">Current Progress: ${g.achievement} / ${g.target} ${g.uom_type}</p>
+                        <div class="bg-surface-container-low p-sm rounded-lg mt-sm border border-outline-variant">
+                            <h4 class="font-label-md font-bold mb-xs text-on-surface">Check-in History</h4>
+                            ${checkinsHistory}
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+
+                container.innerHTML = `
+                    <div class="col-span-1 lg:col-span-3">
+                        <h2 class="font-headline-md text-on-surface mb-md">Goal Check-ins</h2>
+                        ${checkinsHtml}
+                    </div>
+                `;
+            } catch (err) {
+                console.error(err);
+                container.innerHTML = `<div class="col-span-1 lg:col-span-3 p-lg text-center text-error font-label-md">Error loading check-ins.</div>`;
+            }
         });
 
         document.getElementById('tab-progress').addEventListener('click', (e) => {

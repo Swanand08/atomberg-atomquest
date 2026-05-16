@@ -795,6 +795,62 @@
             alert(`Manager Profile:\nName: ${name}\nRole: Manager\n\nSettings can be managed in the Settings tab.`);
         };
 
+        // ── Assign Goal Modal ─────────────────────────────────────────────────
+        document.getElementById('btn-assign-goal').onclick = () => {
+            const select = document.getElementById('assign-employee-id');
+            select.innerHTML = '<option value="" disabled selected>Select Team Member</option>';
+            if (allTeamData.team && allTeamData.team.length > 0) {
+                allTeamData.team.forEach(emp => {
+                    select.innerHTML += `<option value="${emp.id}">${emp.name} (${emp.department || 'N/A'})</option>`;
+                });
+            } else {
+                select.innerHTML += `<option value="" disabled>No team members found</option>`;
+            }
+            document.getElementById('assign-goal-modal').classList.remove('hidden');
+            document.getElementById('assign-goal-modal').classList.add('flex');
+        };
+
+        function closeAssignGoalModal() {
+            document.getElementById('assign-goal-modal').classList.add('hidden');
+            document.getElementById('assign-goal-modal').classList.remove('flex');
+            document.getElementById('assign-goal-form').reset();
+        }
+
+        document.getElementById('assign-goal-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const empId = document.getElementById('assign-employee-id').value;
+            if (!empId) return alert('Please select a team member');
+
+            const payload = {
+                employee_ids: [Number(empId)],
+                title: document.getElementById('assign-title').value,
+                thrust_area: document.getElementById('assign-thrust').value,
+                target: document.getElementById('assign-target').value,
+                weightage: document.getElementById('assign-weightage').value,
+                uom_type: document.getElementById('assign-uom').value,
+                uom_direction: document.getElementById('assign-direction').value
+            };
+
+            try {
+                const res = await fetch('/api/manager/assign-goal', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    alert('Goal assigned successfully!');
+                    closeAssignGoalModal();
+                    fetchTeam();
+                } else {
+                    alert(data.error || 'Failed to assign goal');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('An error occurred while assigning the goal.');
+            }
+        };
+
         // ── Theme Toggle ──────────────────────────────────────────────────────
         const btnToggleTheme = document.getElementById('btn-toggle-theme');
         if (btnToggleTheme) {

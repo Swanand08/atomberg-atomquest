@@ -237,8 +237,9 @@
         const emailInput = document.getElementById('email');
         const demoCredentials = {
             employee: { email: 'emp1@company.com', password: 'emp123' },
+            employee_clean: { email: 'emp2@company.com', password: 'emp123' },
             manager:  { email: 'manager1@company.com', password: 'mgr123' },
-            admin:    { email: 'admin@company.com', password: 'admin123' }
+            admin:    { email: 'admin1@company.com', password: 'admin123' }
         };
 
         function autoFillCredentials() {
@@ -246,7 +247,6 @@
             const creds = demoCredentials[role];
             if (creds) {
                 emailInput.value = creds.email;
-                passwordInput.value = creds.password;
             }
         }
 

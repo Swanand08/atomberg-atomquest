@@ -78,9 +78,10 @@ app.use((err, req, res, next) => {
 initDb().then(() => {
     const server = app.listen(PORT, () => {
         console.log(`\n✅ AtomQuest Portal running at http://localhost:${PORT}`);
-        console.log('  Admin:     admin@company.com    / admin123');
-        console.log('  Manager:   manager@company.com  / password');
-        console.log('  Employee:  employee@company.com / password\n');
+        console.log(`  Admin:         admin1@company.com    / admin123`);
+        console.log(`  Manager:       manager1@company.com  / mgr123`);
+        console.log(`  Employee:      emp1@company.com      / emp123`);
+        console.log(`  Employee(Clean): emp2@company.com    / emp123\n`);
     });
 
     server.on('error', (err) => {

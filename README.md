@@ -6,6 +6,12 @@
 
 ---
 
+## 🌐 Live Demo
+The application is currently hosted and available for review at:
+**[https://your-app-name.onrender.com](https://your-app-name.onrender.com)**
+
+---
+
 ## 🌟 Key Features
 
 ### 🔐 Strict Role-Based Access Control (RBAC)
@@ -53,10 +59,16 @@ Make sure you have [Node.js](https://nodejs.org/) installed on your machine.
    npm install
    ```
 
-3. **Initialize the Database:**
+3. **Configure Environment:**
+   Copy the example environment file and add your Gemini API key (if applicable) and session secrets.
+   ```bash
+   cp .env.example .env
+   ```
+
+4. **Initialize the Database:**
    *(Optional)* If you want to start with a fresh slate of mock data, simply delete `atomquest.db` and the server will automatically seed realistic data upon startup.
 
-4. **Start the Server:**
+5. **Start the Server:**
    ```bash
    npm run dev
    ```
@@ -74,9 +86,30 @@ To test the different portals, you can log in using the pre-seeded credentials:
 
 | Role | Email | Password |
 | :--- | :--- | :--- |
-| **HR Admin** | `admin@company.com` | `admin123` |
-| **Manager** | `manager@company.com` | `password` |
-| **Employee** | `employee@company.com` | `password` |
+| **HR Admin** | `admin1@company.com` | `admin123` |
+| **Manager** | `manager1@company.com` | `mgr123` |
+| **Employee** | `emp1@company.com` | `emp123` |
+
+---
+
+## 🏗️ Architecture
+
+```mermaid
+graph TD
+    Client[Browser / UI] -->|HTTP GET/POST| Express[Express.js Server]
+    
+    subgraph Backend
+        Express -->|Validation| Auth[Auth Middleware]
+        Auth --> Routes[API Routes: /api/goals, /api/manager, /api/admin]
+    end
+
+    Routes -->|Query / Execute| DB[(SQLite3 Database)]
+    Routes -->|Optional GenAI| Gemini[Gemini 1.5 Flash API]
+    
+    DB -.->|Schema| Users[Users]
+    DB -.->|Schema| Goals[Goal Sheets & Check-ins]
+    DB -.->|Schema| Logs[Audit Logs]
+```
 
 ---
 
