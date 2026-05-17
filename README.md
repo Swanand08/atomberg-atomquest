@@ -14,6 +14,21 @@ The application is live and available for review at:
 
 ## 🌟 Key Features
 
+### 🤖 Built-in Local Expert AI Fallback System
+- **Zero-Dependency Smart Suggestions:** Generates professional, measurable SMART goals tailored specifically to AtomQuest Thrust Areas (Strategic Growth, Operational Excellence, Customer Success, Innovation & Tech).
+- **Seamless API Fallback:** Automatically intercepts Gemini API quota limits, billing prompts, or missing keys to instantly return pre-curated expert suggestions without breaking the user experience.
+- **Dynamic Context Awareness:** Intelligently incorporates employee-provided context directly into the AI rationale.
+
+### 🚨 Automated Escalation & Notification Hub
+- **Daily Cron Scheduler:** Background jobs automatically evaluate goal submission delays and quarterly check-in compliance.
+- **Multi-channel Alerts:** Generates rule-based notifications including simulated Microsoft Teams webhooks and direct HR/Skip-Level escalation emails.
+- **Admin Escalation Dashboard:** Centralized monitoring of overdue submissions with one-click override capabilities.
+
+### 🏢 Enterprise SSO Integration (Microsoft Entra ID)
+- **Seamless Authentication Gateway:** Enterprise login flow with Azure AD / Microsoft Entra ID.
+- **Automated Role Mapping:** Dynamically maps organizational directory groups to strict system tiers (HR Admin, Manager, Employee).
+- **Secure Session Management:** Protected session handling with 256-bit AES encryption standards and automatic timeout protection.
+
 ### 🔐 Strict Role-Based Access Control (RBAC)
 Dedicated portals and API validation for three user tiers:
 1. **Employees:** View assigned performance goals, log quarterly check-ins (Q1-Q4), and track overall achievement percentages.
@@ -23,6 +38,7 @@ Dedicated portals and API validation for three user tiers:
 ### 🎨 Modern, Dynamic UI
 - **Real-time Tab Switching:** Eliminates jarring page refreshes using seamless DOM injection for a true Single Page Application (SPA) feel.
 - **Global Theme Support:** Fully integrated Dark Mode / Light Mode capability utilizing Tailwind CSS, with user preferences persisting via local storage.
+- **Enhanced Form Controls:** Dedicated toggle utilities for password visibility and streamlined goal form cancellation.
 - **Responsive Design:** Engineered to look beautiful and professional across desktops and tablets.
 
 ### 🛡️ Robust Backend Architecture
