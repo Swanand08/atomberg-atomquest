@@ -104,6 +104,33 @@ const initDb = async () => {
         q4_close TEXT NOT NULL
     )`);
 
+    await run(`CREATE TABLE IF NOT EXISTS escalation_rules (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        rule_type TEXT NOT NULL,
+        days_threshold INTEGER NOT NULL,
+        escalate_to TEXT NOT NULL
+    )`);
+
+    await run(`CREATE TABLE IF NOT EXISTS escalation_logs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        sheet_id INTEGER,
+        rule_id INTEGER,
+        notified_user_id INTEGER,
+        escalated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY(sheet_id) REFERENCES goal_sheets(id),
+        FOREIGN KEY(rule_id) REFERENCES escalation_rules(id)
+    )`);
+
+    await run(`CREATE TABLE IF NOT EXISTS notification_logs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        recipient TEXT NOT NULL,
+        type TEXT NOT NULL,
+        subject TEXT NOT NULL,
+        body TEXT NOT NULL,
+        action_url TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`);
+
     const userCount = await get('SELECT COUNT(*) as count FROM users');
     if (userCount.count === 0) {
         console.log('Seeding database with demo data...');
@@ -112,7 +139,7 @@ const initDb = async () => {
 
         // 1. Insert Admin
         await run("INSERT INTO users (name, email, password, role, department) VALUES (?,?,?,?,?)",
-            ['HR Admin', 'admin@company.com', 'admin123', 'admin', 'HR']);
+            ['HR Admin', 'admin1@company.com', 'admin123', 'admin', 'HR']);
 
         // 2. Insert Managers
         await run("INSERT INTO users (name, email, password, role, department) VALUES (?,?,?,?,?)",
@@ -170,6 +197,11 @@ const initDb = async () => {
         const cycleYear = new Date().getFullYear();
         await run(`INSERT OR IGNORE INTO cycle_config (cycle_year, goal_setting_open, goal_setting_close, q1_open, q2_open, q3_open, q4_open, q4_close) VALUES (?,?,?,?,?,?,?,?)`,
             [cycleYear, `${cycleYear}-05-01`, `${cycleYear}-06-30`, `${cycleYear}-07-01`, `${cycleYear}-10-01`, `${cycleYear+1}-01-01`, `${cycleYear+1}-03-01`, `${cycleYear+1}-04-30`]);
+
+        // 11. Seed escalation rules
+        await run(`INSERT OR IGNORE INTO escalation_rules (rule_type, days_threshold, escalate_to) VALUES (?,?,?)`, ['submission_delay', 7, 'manager']);
+        await run(`INSERT OR IGNORE INTO escalation_rules (rule_type, days_threshold, escalate_to) VALUES (?,?,?)`, ['approval_delay', 5, 'employee_and_manager']);
+        await run(`INSERT OR IGNORE INTO escalation_rules (rule_type, days_threshold, escalate_to) VALUES (?,?,?)`, ['checkin_delay', 3, 'employee_and_manager']);
 
         console.log('Database seeded successfully.');
     }

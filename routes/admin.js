@@ -73,6 +73,44 @@ router.get('/stats', async (req, res) => {
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// GET /api/admin/analytics - data for Chart.js dashboards
+router.get('/analytics', async (req, res) => {
+    try {
+        const year = new Date().getFullYear();
+        
+        // Goals by Status
+        const statusDistribution = await all(`
+            SELECT g.goal_status, COUNT(*) as count 
+            FROM goals g 
+            JOIN goal_sheets gs ON g.sheet_id = gs.id 
+            WHERE gs.cycle_year = ? 
+            GROUP BY g.goal_status`, [year]);
+            
+        // Goals by Thrust Area
+        const thrustAreaDistribution = await all(`
+            SELECT g.thrust_area, COUNT(*) as count 
+            FROM goals g 
+            JOIN goal_sheets gs ON g.sheet_id = gs.id 
+            WHERE gs.cycle_year = ? 
+            GROUP BY g.thrust_area`, [year]);
+            
+        // Average Achievement by Department
+        const deptPerformance = await all(`
+            SELECT u.department, AVG(g.achievement) as avg_achievement
+            FROM goals g
+            JOIN goal_sheets gs ON g.sheet_id = gs.id
+            JOIN users u ON gs.employee_id = u.id
+            WHERE gs.cycle_year = ?
+            GROUP BY u.department`, [year]);
+
+        res.json({
+            status_distribution: statusDistribution,
+            thrust_area_distribution: thrustAreaDistribution,
+            department_performance: deptPerformance
+        });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 // POST /api/admin/unlock/:sheetId
 router.post('/unlock/:sheetId', async (req, res) => {
     try {
@@ -224,6 +262,18 @@ router.get('/performance-report', async (req, res) => {
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// POST /api/admin/trigger-escalations - manually run the escalation cron check
+router.post('/trigger-escalations', async (req, res) => {
+    try {
+        const { checkEscalations } = require('../cron/escalations');
+        await checkEscalations();
+        res.json({ success: true, message: 'Escalation check triggered successfully. Logs have been updated.' });
+    } catch (err) {
+        console.error('Manual trigger error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // GET /api/admin/users - list all users
 router.get('/users', async (req, res) => {
     try {
@@ -304,6 +354,70 @@ router.get('/employee/:id/details', async (req, res) => {
             }));
         }
         res.json({ employee: user, sheet, goals, checkins });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// GET /api/admin/escalation-rules - retrieve all escalation rules
+router.get('/escalation-rules', async (req, res) => {
+    try {
+        const rules = await all('SELECT * FROM escalation_rules');
+        res.json({ rules });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// PUT /api/admin/escalation-rules - edit escalation rules thresholds
+router.put('/escalation-rules', async (req, res) => {
+    try {
+        const { rules } = req.body;
+        if (!rules || !Array.isArray(rules)) return res.status(400).json({ error: 'Rules array is required' });
+        for (const rule of rules) {
+            await run('UPDATE escalation_rules SET days_threshold = ? WHERE id = ?', [rule.days_threshold, rule.id]);
+        }
+        await run('INSERT INTO audit_logs (changed_by, goal_id, action, field_changed, old_value, new_value) VALUES (?,?,?,?,?,?)',
+            [req.session.user.id, null, 'escalation_rules_update', 'escalation_rules', null, JSON.stringify(rules)]);
+        res.json({ success: true, message: 'Escalation rules updated successfully.' });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// GET /api/admin/escalation-logs - retrieve all history of escalations
+router.get('/escalation-logs', async (req, res) => {
+    try {
+        const logs = await all(`
+            SELECT el.*, er.rule_type, er.days_threshold, u.name as notified_name, u.email as notified_email, u.role as notified_role,
+                   gs.employee_id, emp.name as emp_name, emp.department as emp_dept
+            FROM escalation_logs el
+            JOIN escalation_rules er ON el.rule_id = er.id
+            JOIN users u ON el.notified_user_id = u.id
+            LEFT JOIN goal_sheets gs ON el.sheet_id = gs.id
+            LEFT JOIN users emp ON gs.employee_id = emp.id
+            ORDER BY el.escalated_at DESC
+        `);
+        res.json({ logs });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// POST /api/admin/escalations/trigger - manually trigger rule checks and generate mock alerts
+router.post('/escalations/trigger', async (req, res) => {
+    try {
+        const { checkEscalations } = require('../cron/escalations');
+        await checkEscalations();
+        res.json({ success: true, message: 'Escalation rules check ran successfully and logs generated.' });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// GET /api/admin/notification-logs - view simulated emails/Teams logs
+router.get('/notification-logs', async (req, res) => {
+    try {
+        const logs = await all('SELECT * FROM notification_logs ORDER BY created_at DESC');
+        res.json({ logs });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// POST /api/admin/notification-logs/clear - clear logs
+router.post('/notification-logs/clear', async (req, res) => {
+    try {
+        await run('DELETE FROM notification_logs');
+        res.json({ success: true, message: 'Notification simulation logs cleared.' });
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 

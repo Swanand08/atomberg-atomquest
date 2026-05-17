@@ -131,6 +131,19 @@
 <h1 class="font-headline-sm text-headline-sm text-primary tracking-tight">AtomQuest Goals</h1>
 <p class="font-body-md text-body-md text-on-secondary-container mt-xs">Precision in Every Milestone</p>
 </div>
+<!-- Microsoft SSO Button -->
+<div class="mb-md">
+    <button type="button" onclick="window.location.href='/api/auth/entra/login'" class="w-full bg-white border border-outline-variant hover:bg-surface-container transition-all duration-200 h-11 rounded-lg font-label-md text-label-md text-on-surface flex items-center justify-center gap-2 active:scale-[0.98]">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 21 21"><path fill="#f25022" d="M1 1h9v9H1z"/><path fill="#00a4ef" d="M1 11h9v9H1z"/><path fill="#7fba00" d="M11 1h9v9h-9z"/><path fill="#ffb900" d="M11 11h9v9h-9z"/></svg>
+        Sign in with Microsoft
+    </button>
+    
+    <div class="flex items-center my-md">
+        <div class="flex-grow border-t border-outline-variant"></div>
+        <span class="mx-4 text-outline font-label-sm">or sign in with email</span>
+        <div class="flex-grow border-t border-outline-variant"></div>
+    </div>
+</div>
 <!-- Form -->
 <form id="loginForm" class="space-y-md">
 <!-- Role Selector -->
@@ -169,7 +182,7 @@
 <span class="material-symbols-outlined text-outline" data-icon="lock">lock</span>
 </div>
 <input class="w-full h-11 pl-10 pr-10 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-surface-container-lowest font-body-md placeholder:text-outline-variant" id="password" placeholder="••••••••" type="password"/>
-<button class="absolute inset-y-0 right-0 pr-3 flex items-center text-outline hover:text-primary transition-colors" type="button">
+<button id="passwordToggleBtn" class="absolute inset-y-0 right-0 pr-3 flex items-center text-outline hover:text-primary transition-colors" type="button">
 <span class="material-symbols-outlined" data-icon="visibility">visibility</span>
 </button>
 </div>
@@ -223,7 +236,7 @@
     <script>
         // Password Visibility Toggle
         const passwordInput = document.getElementById('password');
-        const passwordToggle = document.querySelector('button[type="button"]');
+        const passwordToggle = document.getElementById('passwordToggleBtn');
         const passwordIcon = passwordToggle.querySelector('.material-symbols-outlined');
 
         passwordToggle.addEventListener('click', () => {
@@ -247,6 +260,7 @@
             const creds = demoCredentials[role];
             if (creds) {
                 emailInput.value = creds.email;
+                passwordInput.value = creds.password;
             }
         }
 

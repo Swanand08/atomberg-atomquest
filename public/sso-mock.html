@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Microsoft Azure AD SSO Portal | AtomQuest</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <style>
+        body {
+            background-color: #2F2F2F;
+            background-image: radial-gradient(circle at 100% 100%, #1e3a8a 0, transparent 40%), radial-gradient(circle at 0% 0%, #111827 0, transparent 50%);
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+        }
+        .azure-blue {
+            color: #0078d4;
+        }
+        .bg-azure {
+            background-color: #0078d4;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen text-white items-center justify-center p-md">
+
+    <!-- Card -->
+    <div class="w-full max-w-[500px] bg-neutral-900/90 border border-neutral-800 backdrop-blur-md rounded-xl shadow-2xl overflow-hidden p-6 md:p-8">
+        
+        <!-- Header -->
+        <div class="flex items-center gap-3 mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 21 21">
+                <path fill="#f25022" d="M1 1h9v9H1z"/><path fill="#00a4ef" d="M1 11h9v9H1z"/>
+                <path fill="#7fba00" d="M11 1h9v9h-9z"/><path fill="#ffb900" d="M11 11h9v9h-9z"/>
+            </svg>
+            <div>
+                <h1 class="text-xl font-bold tracking-tight text-neutral-100 flex items-center gap-1.5">
+                    Microsoft <span class="text-neutral-400 font-normal">Azure Active Directory</span>
+                </h1>
+                <p class="text-xs text-neutral-400">Single Sign-On (SSO) Portal</p>
+            </div>
+        </div>
+
+        <div class="border-t border-neutral-800 my-4"></div>
+
+        <!-- Description -->
+        <div class="mb-6">
+            <h2 class="text-lg font-semibold text-neutral-200">AtomQuest Goals Integration</h2>
+            <p class="text-sm text-neutral-400 mt-1">Select an active directory user from your organization to authenticate via Mock SSO and simulate Microsoft Graph API integration:</p>
+        </div>
+
+        <!-- Directory Sync Toggle -->
+        <div class="mb-6 p-3 bg-neutral-850 rounded-lg border border-neutral-800 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-green-400" style="font-variation-settings: 'FILL' 1;">sync</span>
+                <div>
+                    <p class="text-sm font-medium text-neutral-200">Automatic Directory Sync</p>
+                    <p class="text-xs text-neutral-500">Maps org hierarchy & group membership roles</p>
+                </div>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="sync-checkbox" class="sr-only peer" checked>
+                <div class="w-11 h-6 bg-neutral-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+            </label>
+        </div>
+
+        <!-- Users List -->
+        <div class="space-y-3" id="users-list">
+            <!-- User 1 -->
+            <button onclick="loginAs('emp1@company.com', 'Employee One')" class="w-full text-left bg-neutral-900 border border-neutral-800 hover:border-blue-600 p-3.5 rounded-lg flex items-center justify-between transition-all group active:scale-[0.99]">
+                <div>
+                    <p class="text-sm font-bold text-neutral-100 group-hover:text-blue-400 transition-colors">Employee One (SSO)</p>
+                    <p class="text-xs text-neutral-400 mt-0.5">emp1@company.com • Engineering</p>
+                    <span class="inline-block mt-1.5 px-2 py-0.5 bg-neutral-800 text-neutral-400 rounded text-[10px] uppercase font-bold tracking-wider">Role: Employee</span>
+                </div>
+                <span class="material-symbols-outlined text-neutral-600 group-hover:text-blue-500 transition-colors">chevron_right</span>
+            </button>
+
+            <!-- User 2 -->
+            <button onclick="loginAs('emp2@company.com', 'Employee Two')" class="w-full text-left bg-neutral-900 border border-neutral-800 hover:border-blue-600 p-3.5 rounded-lg flex items-center justify-between transition-all group active:scale-[0.99]">
+                <div>
+                    <p class="text-sm font-bold text-neutral-100 group-hover:text-blue-400 transition-colors">Employee Two (SSO)</p>
+                    <p class="text-xs text-neutral-400 mt-0.5">emp2@company.com • Engineering</p>
+                    <span class="inline-block mt-1.5 px-2 py-0.5 bg-neutral-800 text-neutral-400 rounded text-[10px] uppercase font-bold tracking-wider">Role: Employee</span>
+                </div>
+                <span class="material-symbols-outlined text-neutral-600 group-hover:text-blue-500 transition-colors">chevron_right</span>
+            </button>
+
+            <!-- User 3 -->
+            <button onclick="loginAs('manager1@company.com', 'Manager One')" class="w-full text-left bg-neutral-900 border border-neutral-800 hover:border-blue-600 p-3.5 rounded-lg flex items-center justify-between transition-all group active:scale-[0.99]">
+                <div>
+                    <p class="text-sm font-bold text-neutral-100 group-hover:text-blue-400 transition-colors">Manager One (SSO)</p>
+                    <p class="text-xs text-neutral-400 mt-0.5">manager1@company.com • Engineering</p>
+                    <span class="inline-block mt-1.5 px-2 py-0.5 bg-blue-950 text-blue-400 rounded text-[10px] uppercase font-bold tracking-wider">Role: Manager</span>
+                </div>
+                <span class="material-symbols-outlined text-neutral-600 group-hover:text-blue-500 transition-colors">chevron_right</span>
+            </button>
+
+            <!-- User 4 -->
+            <button onclick="loginAs('manager2@company.com', 'Manager Two')" class="w-full text-left bg-neutral-900 border border-neutral-800 hover:border-blue-600 p-3.5 rounded-lg flex items-center justify-between transition-all group active:scale-[0.99]">
+                <div>
+                    <p class="text-sm font-bold text-neutral-100 group-hover:text-blue-400 transition-colors">Manager Two (SSO)</p>
+                    <p class="text-xs text-neutral-400 mt-0.5">manager2@company.com • Sales</p>
+                    <span class="inline-block mt-1.5 px-2 py-0.5 bg-blue-950 text-blue-400 rounded text-[10px] uppercase font-bold tracking-wider">Role: Manager</span>
+                </div>
+                <span class="material-symbols-outlined text-neutral-600 group-hover:text-blue-500 transition-colors">chevron_right</span>
+            </button>
+
+            <!-- User 5 -->
+            <button onclick="loginAs('admin1@company.com', 'HR Admin')" class="w-full text-left bg-neutral-900 border border-neutral-800 hover:border-blue-600 p-3.5 rounded-lg flex items-center justify-between transition-all group active:scale-[0.99]">
+                <div>
+                    <p class="text-sm font-bold text-neutral-100 group-hover:text-blue-400 transition-colors">HR Admin (SSO)</p>
+                    <p class="text-xs text-neutral-400 mt-0.5">admin1@company.com • Human Resources</p>
+                    <span class="inline-block mt-1.5 px-2 py-0.5 bg-purple-950 text-purple-400 rounded text-[10px] uppercase font-bold tracking-wider">Role: Admin / HR</span>
+                </div>
+                <span class="material-symbols-outlined text-neutral-600 group-hover:text-blue-500 transition-colors">chevron_right</span>
+            </button>
+        </div>
+
+        <p class="text-center text-xs text-neutral-500 mt-6 flex items-center justify-center gap-1.5">
+            <span class="material-symbols-outlined text-[14px]">lock</span>
+            Secure mock OpenID authentication channel
+        </p>
+    </div>
+
+    <!-- Org Sync Simulation Overlay Modal -->
+    <div id="sync-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4 hidden">
+        <div class="w-full max-w-[450px] bg-neutral-900 border border-neutral-800 rounded-xl shadow-2xl p-6 text-center">
+            <!-- Spinner -->
+            <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-6"></div>
+            
+            <h3 class="text-lg font-bold text-neutral-100 mb-2">Simulating Microsoft Graph Sync</h3>
+            <p class="text-sm text-neutral-400 mb-6">Syncing user directory profile and role attributes from Entra ID...</p>
+            
+            <!-- Log Terminal -->
+            <div class="bg-black/60 rounded-lg p-4 font-mono text-xs text-left text-green-400 border border-neutral-800 space-y-2 h-44 overflow-y-auto" id="sync-logs">
+                <p class="text-neutral-500">> Initiating connection...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function appendLog(element, text, delay) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    const p = document.createElement('p');
+                    p.innerHTML = `<span class="text-blue-500">></span> ${text}`;
+                    element.appendChild(p);
+                    element.scrollTop = element.scrollHeight;
+                    resolve();
+                }, delay);
+            });
+        }
+
+        async function loginAs(email, name) {
+            const syncCheckbox = document.getElementById('sync-checkbox');
+            const syncEnabled = syncCheckbox.checked;
+            
+            const modal = document.getElementById('sync-modal');
+            const logBox = document.getElementById('sync-logs');
+            
+            modal.classList.remove('hidden');
+            logBox.innerHTML = '';
+            
+            await appendLog(logBox, `Connecting to login.microsoftonline.com/tenant-id...`, 200);
+            await appendLog(logBox, `Requesting OAuth authorization code scopes [user.read]...`, 300);
+            
+            if (syncEnabled) {
+                await appendLog(logBox, `🔒 Connection established to Microsoft Graph API endpoint.`, 400);
+                await appendLog(logBox, `🔍 Querying Entra ID profile attributes for "${email}"...`, 300);
+                
+                // Simulate role mapping based on groups
+                let group = "AtomQuest-Employees";
+                let role = "employee";
+                if (email.startsWith('manager')) {
+                    group = "AtomQuest-Managers";
+                    role = "manager";
+                } else if (email.startsWith('admin')) {
+                    group = "AtomQuest-HR-Admins";
+                    role = "admin";
+                }
+                
+                await appendLog(logBox, `🛡️ Group membership identified: "${group}"`, 300);
+                await appendLog(logBox, `✅ Mapped active portal role: "${role}"`, 200);
+                await appendLog(logBox, `🔄 Syncing LDAP manager/reporting lines successfully!`, 300);
+                await appendLog(logBox, `✨ Auto Directory Synchronization Complete.`, 200);
+            } else {
+                await appendLog(logBox, `⚠️ Directory Sync disabled. Authenticating using standard session parameters.`, 300);
+            }
+            
+            await appendLog(logBox, `Redirecting back to callback handler...`, 250);
+            
+            setTimeout(() => {
+                window.location.href = `/api/auth/entra/callback?mock=true&email=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}&sync=${syncEnabled}`;
+            }, 300);
+        }
+    </script>
+</body>
+</html>

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { run, get, all } = require('../database');
+const { sendEmail, sendTeamsNotification } = require('../utils/notifier');
 
 // 2A. Fixed computeScore for Timeline UoM
 const computeScore = (goal, achievement) => {
@@ -145,6 +146,20 @@ router.post('/submit', async (req, res) => {
         const total = goals.reduce((sum, g) => sum + g.weightage, 0);
         if (total !== 100) return res.status(400).json({ error: `Total weightage is ${total}%. Must be exactly 100% before submitting.` });
         await run("UPDATE goal_sheets SET status = 'pending' WHERE id = ?", [sheet.id]);
+        
+        // Trigger notification to manager
+        const user = await get('SELECT name, manager_id FROM users WHERE id = ?', [userId]);
+        if (user && user.manager_id) {
+            const manager = await get('SELECT name, email FROM users WHERE id = ?', [user.manager_id]);
+            if (manager) {
+                const subject = `Goal Sheet Submitted: ${user.name}`;
+                const text = `${user.name} has submitted their goal sheet for your review.`;
+                const actionUrl = 'http://localhost:3000/manager.html';
+                sendEmail(manager.email, subject, `<p>${text}</p><a href="${actionUrl}">Review Goal Sheet</a>`);
+                sendTeamsNotification(process.env.TEAMS_WEBHOOK_URL, subject, text, actionUrl);
+            }
+        }
+        
         res.json({ success: true, message: 'Goal sheet submitted for manager approval' });
     } catch (err) { res.status(500).json({ error: err.message }); }
 });

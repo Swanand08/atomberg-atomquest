@@ -303,7 +303,7 @@
 </div>
 <!-- Form Actions -->
 <div class="flex justify-end items-center gap-md pt-lg border-t border-outline-variant">
-<button class="px-md py-base border border-outline text-on-surface-variant font-label-md text-label-md rounded-lg hover:bg-surface-container-high transition-colors cursor-pointer active:opacity-80" type="button">
+<button id="btn-cancel" class="px-md py-base border border-outline text-on-surface-variant font-label-md text-label-md rounded-lg hover:bg-surface-container-high transition-colors cursor-pointer active:opacity-80" type="button">
                                 Cancel
                             </button>
 <button class="px-md py-base bg-primary-container text-on-primary text-white font-label-md text-label-md rounded-lg hover:opacity-90 transition-opacity cursor-pointer shadow-md" type="submit">
@@ -463,7 +463,7 @@
         };
 
         // Cancel button
-        document.querySelector('button[type="button"]').onclick = () => window.location.href = '/employee.html';
+        document.getElementById('btn-cancel').onclick = () => window.location.href = '/employee.html';
 
         // Utility Icons
         document.getElementById('btn-notifications').onclick = () => alert('No new notifications.');

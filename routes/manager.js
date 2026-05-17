@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { run, get, all } = require('../database');
+const { sendEmail, sendTeamsNotification } = require('../utils/notifier');
 
 // GET /api/manager/team - full team with goals and check-in status
 router.get('/team', async (req, res) => {
@@ -131,6 +132,17 @@ router.post('/approve/:sheetId', async (req, res) => {
         await run("UPDATE goal_sheets SET status='approved', is_locked=1, approved_by=?, approved_at=? WHERE id=?", [managerId, new Date().toISOString(), sheetId]);
         await run('INSERT INTO audit_logs (changed_by, goal_id, action, field_changed, old_value, new_value) VALUES (?,?,?,?,?,?)',
             [managerId, null, 'sheet_approved', 'status', 'pending', 'approved']);
+            
+        // Trigger notification to employee
+        const emp = await get('SELECT name, email FROM users WHERE id=?', [sheet.employee_id]);
+        if (emp) {
+            const subject = `Goal Sheet Approved`;
+            const text = `Your goal sheet has been approved by your manager.`;
+            const actionUrl = 'http://localhost:3000/employee.html';
+            sendEmail(emp.email, subject, `<p>${text}</p><a href="${actionUrl}">View Goal Sheet</a>`);
+            sendTeamsNotification(process.env.TEAMS_WEBHOOK_URL, subject, text, actionUrl);
+        }
+        
         res.json({ success: true, message: 'Goal sheet approved and locked' });
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -149,6 +161,17 @@ router.post('/reject/:sheetId', async (req, res) => {
         await run("UPDATE goal_sheets SET status='rejected', reject_reason=? WHERE id=?", [reason, sheetId]);
         await run('INSERT INTO audit_logs (changed_by, goal_id, action, field_changed, old_value, new_value) VALUES (?,?,?,?,?,?)',
             [managerId, null, 'sheet_rejected', 'status', 'pending', `rejected - ${reason}`]);
+            
+        // Trigger notification to employee
+        const emp = await get('SELECT name, email FROM users WHERE id=?', [sheet.employee_id]);
+        if (emp) {
+            const subject = `Goal Sheet Returned for Rework`;
+            const text = `Your goal sheet has been returned by your manager. Reason: ${reason}`;
+            const actionUrl = 'http://localhost:3000/employee.html';
+            sendEmail(emp.email, subject, `<p>${text}</p><a href="${actionUrl}">View Goal Sheet</a>`);
+            sendTeamsNotification(process.env.TEAMS_WEBHOOK_URL, subject, text, actionUrl);
+        }
+        
         res.json({ success: true, message: 'Sheet returned to employee for rework' });
     } catch (err) { res.status(500).json({ error: err.message }); }
 });

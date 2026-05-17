@@ -76,6 +76,9 @@ app.use((err, req, res, next) => {
 });
 
 initDb().then(() => {
+    const { initCron } = require('./cron/escalations');
+    initCron();
+    
     const server = app.listen(PORT, () => {
         console.log(`\n✅ AtomQuest Portal running at http://localhost:${PORT}`);
         console.log(`  Admin:         admin1@company.com    / admin123`);

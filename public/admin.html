@@ -5,6 +5,7 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>HR Admin Dashboard - AtomQuest Goals</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -150,6 +151,14 @@
                     <span class="material-symbols-outlined" data-icon="assessment">assessment</span>
                     <span class="font-label-md text-label-md">Reports</span>
                 </a>
+                <a id="tab-escalations" class="flex items-center gap-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg px-sm py-base transition-all cursor-pointer" href="#">
+                    <span class="material-symbols-outlined" data-icon="alarm">alarm</span>
+                    <span class="font-label-md text-label-md">Escalation Hub</span>
+                </a>
+                <a id="tab-notifications" class="flex items-center gap-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg px-sm py-base transition-all cursor-pointer" href="#">
+                    <span class="material-symbols-outlined" data-icon="mail">mail</span>
+                    <span class="font-label-md text-label-md">Notification Logs</span>
+                </a>
                 <a id="btn-toggle-theme" class="flex items-center gap-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg px-sm py-base transition-all cursor-pointer">
                     <span class="material-symbols-outlined" data-icon="dark_mode">dark_mode</span>
                     <span class="font-label-md text-label-md">Toggle Theme</span>
@@ -204,6 +213,24 @@
                 Export to CSV
             </button>
 </div>
+<!-- Analytics Dashboard Section -->
+<section id="section-analytics" class="tab-content block mb-lg">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-md">
+        <div class="bg-surface-container-lowest p-md rounded-xl border border-outline-variant shadow-sm flex flex-col items-center">
+            <h3 class="font-title-md text-primary mb-sm self-start">Goals by Status</h3>
+            <div class="w-full max-w-[250px]"><canvas id="chart-status"></canvas></div>
+        </div>
+        <div class="bg-surface-container-lowest p-md rounded-xl border border-outline-variant shadow-sm flex flex-col items-center">
+            <h3 class="font-title-md text-primary mb-sm self-start">Goals by Thrust Area</h3>
+            <div class="w-full max-w-[250px]"><canvas id="chart-thrust"></canvas></div>
+        </div>
+        <div class="bg-surface-container-lowest p-md rounded-xl border border-outline-variant shadow-sm flex flex-col items-center">
+            <h3 class="font-title-md text-primary mb-sm self-start">Avg Achievement by Dept</h3>
+            <div class="w-full"><canvas id="chart-dept"></canvas></div>
+        </div>
+    </div>
+</section>
+
 <!-- Completion Status Section -->
 <section id="section-employees" class="mb-lg tab-content block">
 <div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
@@ -276,6 +303,8 @@
 <!-- Dynamic Sections -->
 <section id="section-reports" class="tab-content hidden"></section>
 <section id="section-settings" class="tab-content hidden"></section>
+<section id="section-escalations" class="tab-content hidden"></section>
+<section id="section-notifications" class="tab-content hidden"></section>
 </main>
 <!-- Contextual FAB for high-level screens -->
 <button id="btn-fab-add" class="fixed bottom-md right-md bg-primary text-on-primary w-14 h-14 rounded-full shadow-lg flex items-center justify-center hover:bg-primary-container transition-all active:scale-90 z-40">
@@ -301,6 +330,25 @@
         </div>
     </div>
 </div>
+
+<!-- Notification Preview Modal -->
+<div id="notif-preview-modal" class="fixed inset-0 bg-on-surface/50 hidden items-center justify-center z-50 p-md backdrop-blur-sm">
+    <div class="bg-surface-container-lowest rounded-xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+        <div class="p-md border-b border-outline-variant flex justify-between items-center bg-secondary text-white">
+            <h3 class="font-title-lg text-title-lg flex items-center gap-2">
+                <span class="material-symbols-outlined">visibility</span>
+                Notification Simulation Preview
+            </h3>
+            <button onclick="closeNotifPreviewModal()" class="text-white hover:bg-white/20 p-xs rounded-full transition-colors">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="p-md overflow-y-auto flex-1 bg-surface-container-low" id="notif-preview-content">
+            <!-- Loaded by JS -->
+        </div>
+    </div>
+</div>
+
     <script>
         let allEmployees = [];
         let allLogs = [];
@@ -330,6 +378,7 @@
 
                 renderEmployees(allEmployees);
                 renderLogs(allLogs);
+                renderCharts();
 
                 // Handle Logout
                 const nav = document.querySelector('nav');
@@ -345,6 +394,54 @@
             } catch (err) {
                 console.error(err);
             }
+        }
+
+        async function renderCharts() {
+            try {
+                const res = await fetch('/api/admin/analytics');
+                const data = await res.json();
+                
+                // Status Chart
+                const ctxStatus = document.getElementById('chart-status').getContext('2d');
+                new Chart(ctxStatus, {
+                    type: 'doughnut',
+                    data: {
+                        labels: data.status_distribution.map(d => d.goal_status),
+                        datasets: [{
+                            data: data.status_distribution.map(d => d.count),
+                            backgroundColor: ['#00288e', '#3fd298', '#ba1a1a', '#757684', '#e7e8ea']
+                        }]
+                    }
+                });
+
+                // Thrust Area Chart
+                const ctxThrust = document.getElementById('chart-thrust').getContext('2d');
+                new Chart(ctxThrust, {
+                    type: 'pie',
+                    data: {
+                        labels: data.thrust_area_distribution.map(d => d.thrust_area),
+                        datasets: [{
+                            data: data.thrust_area_distribution.map(d => d.count),
+                            backgroundColor: ['#1e40af', '#4edea3', '#00563a', '#555f70', '#b8c4ff']
+                        }]
+                    }
+                });
+
+                // Department Performance Chart
+                const ctxDept = document.getElementById('chart-dept').getContext('2d');
+                new Chart(ctxDept, {
+                    type: 'bar',
+                    data: {
+                        labels: data.department_performance.map(d => d.department || 'N/A'),
+                        datasets: [{
+                            label: 'Avg Achievement (%)',
+                            data: data.department_performance.map(d => d.avg_achievement),
+                            backgroundColor: '#3755c3'
+                        }]
+                    },
+                    options: { scales: { y: { beginAtZero: true, max: 100 } } }
+                });
+            } catch (err) { console.error('Failed to render charts:', err); }
         }
 
         function renderEmployees(employees) {
@@ -431,7 +528,7 @@
         }
 
         function setActiveTab(tabId) {
-            ['tab-dashboard','tab-employees','tab-audit','tab-reports','tab-settings'].forEach(id => {
+            ['tab-dashboard','tab-employees','tab-audit','tab-reports','tab-settings','tab-escalations','tab-notifications'].forEach(id => {
                 const el = document.getElementById(id);
                 if (!el) return;
                 el.classList.remove('sidebar-active');
@@ -444,6 +541,8 @@
         document.getElementById('tab-dashboard').onclick = () => {
             setActiveTab('tab-dashboard');
             hideAllSections();
+            document.getElementById('section-analytics').classList.remove('hidden');
+            document.getElementById('section-analytics').classList.add('block');
             document.getElementById('section-employees').classList.remove('hidden');
             document.getElementById('section-employees').classList.add('block');
             document.getElementById('section-audit').classList.remove('hidden');
@@ -633,6 +732,367 @@
         // Initialize Theme
         if (localStorage.getItem('theme') === 'dark') {
             document.documentElement.classList.add('dark');
+        }
+
+        // ── Escalation Hub & Notification Simulation Log Tabs ──────────────────
+        let escalationRules = [];
+        let escalationLogs = [];
+        let notificationLogs = [];
+
+        document.getElementById('tab-escalations').onclick = async () => {
+            setActiveTab('tab-escalations');
+            hideAllSections();
+            const escSec = document.getElementById('section-escalations');
+            escSec.classList.remove('hidden');
+            escSec.classList.add('block');
+            await fetchEscalationsData();
+        };
+
+        document.getElementById('tab-notifications').onclick = async () => {
+            setActiveTab('tab-notifications');
+            hideAllSections();
+            const notifSec = document.getElementById('section-notifications');
+            notifSec.classList.remove('hidden');
+            notifSec.classList.add('block');
+            await fetchNotificationsData();
+        };
+
+        async function fetchEscalationsData() {
+            try {
+                const [rulesRes, logsRes] = await Promise.all([
+                    fetch('/api/admin/escalation-rules'),
+                    fetch('/api/admin/escalation-logs')
+                ]);
+                const rulesData = await rulesRes.json();
+                const logsData = await logsRes.json();
+                
+                escalationRules = rulesData.rules || [];
+                escalationLogs = logsData.logs || [];
+                
+                renderEscalationsHub();
+            } catch (err) {
+                console.error('Error fetching escalations data:', err);
+            }
+        }
+
+        async function fetchNotificationsData() {
+            try {
+                const res = await fetch('/api/admin/notification-logs');
+                const data = await res.json();
+                notificationLogs = data.logs || [];
+                renderNotificationsHub();
+            } catch (err) {
+                console.error('Error fetching notifications data:', err);
+            }
+        }
+
+        function renderEscalationsHub() {
+            const escSec = document.getElementById('section-escalations');
+            if (!escSec) return;
+
+            const ruleNames = {
+                'submission_delay': 'Goal Submission Delay',
+                'approval_delay': 'Goal Review / Approval Delay',
+                'checkin_delay': 'Quarterly Check-in Delay'
+            };
+
+            const ruleIcons = {
+                'submission_delay': 'feed',
+                'approval_delay': 'rate_review',
+                'checkin_delay': 'event_busy'
+            };
+
+            const ruleDescriptions = {
+                'submission_delay': 'Triggers when employees have not drafted and submitted their cycle goals sheet.',
+                'approval_delay': 'Triggers when managers leave submitted employee goal sheets pending without action.',
+                'checkin_delay': 'Triggers when employees leave quarterly progress and comments incomplete.'
+            };
+
+            let rulesCardsHtml = escalationRules.map(rule => {
+                return `
+                    <div class="bg-surface-container-low p-md rounded-xl border border-outline-variant flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center gap-xs text-primary mb-xs">
+                                <span class="material-symbols-outlined">${ruleIcons[rule.rule_type] || 'alarm'}</span>
+                                <h4 class="font-title-md font-bold">${ruleNames[rule.rule_type] || rule.rule_type}</h4>
+                            </div>
+                            <p class="font-body-sm text-on-surface-variant text-xs mb-sm">${ruleDescriptions[rule.rule_type]}</p>
+                        </div>
+                        <div class="pt-sm border-t border-outline-variant/50 flex items-center justify-between gap-sm">
+                            <span class="font-label-sm text-on-surface-variant">Escalation Threshold:</span>
+                            <div class="flex items-center gap-xs">
+                                <input type="number" id="threshold-${rule.id}" value="${rule.days_threshold}" min="0" max="90" 
+                                    class="w-16 px-xs py-xs bg-surface border border-outline rounded text-center font-bold text-primary focus:ring-1 focus:ring-primary outline-none">
+                                <span class="font-label-sm text-on-surface-variant">days</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            let logsHtml = '';
+            if (escalationLogs.length === 0) {
+                logsHtml = `<tr><td colspan="5" class="px-md py-md text-center text-on-surface-variant italic">No escalation incidents logged yet. Try triggering a check below.</td></tr>`;
+            } else {
+                logsHtml = escalationLogs.map(log => {
+                    return `
+                        <tr class="zebra-stripe border-b border-outline-variant">
+                            <td class="px-md py-sm font-body-sm">
+                                <p class="font-bold text-on-surface">${log.emp_name || 'N/A'}</p>
+                                <p class="text-xs text-on-surface-variant">${log.emp_dept || 'General'}</p>
+                            </td>
+                            <td class="px-md py-sm font-body-sm">
+                                <span class="px-base py-xs bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 rounded font-bold text-xs uppercase">
+                                    ${ruleNames[log.rule_type]?.replace('Goal ', '') || log.rule_type}
+                                </span>
+                            </td>
+                            <td class="px-md py-sm font-body-sm">
+                                <p class="font-medium text-on-surface">${log.notified_name}</p>
+                                <p class="text-xs text-on-surface-variant">${log.notified_email}</p>
+                                <span class="text-[10px] bg-surface-container px-sm py-xs rounded text-secondary font-bold uppercase tracking-wider">${log.notified_role}</span>
+                            </td>
+                            <td class="px-md py-sm text-center">
+                                <span class="font-bold text-error">${log.days_threshold}+ days</span>
+                            </td>
+                            <td class="px-md py-sm font-label-sm text-on-surface-variant text-right">
+                                ${new Date(log.escalated_at).toLocaleString()}
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            escSec.innerHTML = `
+                <div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm mb-lg">
+                    <div class="flex flex-wrap items-center justify-between gap-md mb-lg border-b border-outline-variant pb-md">
+                        <div>
+                            <h2 class="font-headline-md text-on-surface">Rule-Based Escalation Engine</h2>
+                            <p class="font-body-md text-on-surface-variant text-sm mt-xs">Configure compliance thresholds and trigger automatic employee-to-manager notification chains.</p>
+                        </div>
+                        <div class="flex gap-sm">
+                            <button onclick="saveEscalationRules()" class="px-md py-sm bg-primary text-on-primary rounded-lg font-label-md hover:opacity-90 active:scale-95 transition-all shadow-md flex items-center gap-xs">
+                                <span class="material-symbols-outlined text-[18px]">save</span>
+                                Save Thresholds
+                            </button>
+                            <button onclick="triggerEscalationsCheck()" class="px-md py-sm bg-secondary text-white rounded-lg font-label-md hover:opacity-90 active:scale-95 transition-all shadow-md flex items-center gap-xs">
+                                <span class="material-symbols-outlined text-[18px]">play_circle</span>
+                                Run Escalation Check
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-md mb-lg">
+                        ${rulesCardsHtml}
+                    </div>
+
+                    <div class="bg-surface-container rounded-xl overflow-hidden border border-outline-variant">
+                        <div class="p-md bg-white border-b border-outline-variant">
+                            <h3 class="font-title-lg text-primary">Active Escalation Log</h3>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-surface-container-high text-on-surface font-label-md text-xs border-b border-outline-variant">
+                                        <th class="px-md py-sm">Target Employee</th>
+                                        <th class="px-md py-sm">Escalation Trigger</th>
+                                        <th class="px-md py-sm">Notified Contact</th>
+                                        <th class="px-md py-sm text-center">Delay Threshold</th>
+                                        <th class="px-md py-sm text-right">Escalation Timestamp</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${logsHtml}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderNotificationsHub() {
+            const notifSec = document.getElementById('section-notifications');
+            if (!notifSec) return;
+
+            let logsHtml = '';
+            if (notificationLogs.length === 0) {
+                logsHtml = `<tr><td colspan="5" class="px-md py-md text-center text-on-surface-variant italic">No notifications dispatched in this simulation yet.</td></tr>`;
+            } else {
+                logsHtml = notificationLogs.map(log => {
+                    const badgeColor = log.type === 'Email' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800';
+                    const icon = log.type === 'Email' ? 'mail' : 'chat_bubble';
+                    return `
+                        <tr class="zebra-stripe border-b border-outline-variant">
+                            <td class="px-md py-sm text-center">
+                                <span class="px-base py-xs ${badgeColor} rounded-full font-bold text-xs uppercase flex items-center gap-xs justify-center w-24 mx-auto">
+                                    <span class="material-symbols-outlined text-[14px]">${icon}</span>
+                                    ${log.type}
+                                </span>
+                            </td>
+                            <td class="px-md py-sm font-body-sm max-w-xs truncate font-medium">
+                                ${log.recipient}
+                            </td>
+                            <td class="px-md py-sm font-body-sm text-on-surface max-w-sm truncate">
+                                ${log.subject}
+                            </td>
+                            <td class="px-md py-sm font-label-sm text-on-surface-variant text-center">
+                                ${new Date(log.created_at).toLocaleString()}
+                            </td>
+                            <td class="px-md py-sm text-center">
+                                <button onclick="viewNotificationLog(${log.id})" class="px-sm py-xs text-primary border border-primary hover:bg-surface-container rounded-lg font-label-sm transition-all text-xs">
+                                    View Alert
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            notifSec.innerHTML = `
+                <div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm">
+                    <div class="flex flex-wrap items-center justify-between gap-md mb-lg border-b border-outline-variant pb-md">
+                        <div>
+                            <h2 class="font-headline-md text-on-surface">Outbound Notification Simulation Center</h2>
+                            <p class="font-body-md text-on-surface-variant text-sm mt-xs">Inspect system notifications triggered by escalations or goal sheet updates.</p>
+                        </div>
+                        <button onclick="clearNotificationLogs()" class="px-md py-sm bg-error text-on-error rounded-lg font-label-md hover:opacity-90 active:scale-95 transition-all shadow-md flex items-center gap-xs">
+                            <span class="material-symbols-outlined text-[18px]">delete_sweep</span>
+                            Clear Simulation Logs
+                        </button>
+                    </div>
+
+                    <div class="bg-surface-container rounded-xl overflow-hidden border border-outline-variant">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-surface-container-high text-on-surface font-label-md text-xs border-b border-outline-variant">
+                                        <th class="px-md py-sm text-center">Medium</th>
+                                        <th class="px-md py-sm">Recipient Address</th>
+                                        <th class="px-md py-sm">Alert Subject / Header</th>
+                                        <th class="px-md py-sm text-center">Sent Timestamp</th>
+                                        <th class="px-md py-sm text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${logsHtml}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function saveEscalationRules() {
+            const rulesPayload = escalationRules.map(rule => {
+                const input = document.getElementById(`threshold-${rule.id}`);
+                return {
+                    id: rule.id,
+                    days_threshold: input ? parseInt(input.value) : rule.days_threshold
+                };
+            });
+
+            try {
+                const res = await fetch('/api/admin/escalation-rules', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ rules: rulesPayload })
+                });
+                
+                if (res.ok) {
+                    alert('✅ Escalation rule thresholds updated successfully!');
+                    await fetchEscalationsData();
+                } else {
+                    const error = await res.json();
+                    alert('❌ Update failed: ' + error.error);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Error updating thresholds');
+            }
+        }
+
+        async function triggerEscalationsCheck() {
+            try {
+                const res = await fetch('/api/admin/escalations/trigger', { method: 'POST' });
+                if (res.ok) {
+                    alert('⚡ Escalation check engine ran successfully!\nAlerts dispatched for delayed records.');
+                    await fetchEscalationsData();
+                } else {
+                    const error = await res.json();
+                    alert('❌ Run failed: ' + error.error);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Error running escalations check');
+            }
+        }
+
+        async function clearNotificationLogs() {
+            if (!confirm('Are you sure you want to clear all outbound notification logs?')) return;
+            try {
+                const res = await fetch('/api/admin/notification-logs/clear', { method: 'POST' });
+                if (res.ok) {
+                    alert('🗑️ Simulation log cleared.');
+                    await fetchNotificationsData();
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function viewNotificationLog(id) {
+            const log = notificationLogs.find(l => l.id === id);
+            if (!log) return;
+
+            const modal = document.getElementById('notif-preview-modal');
+            const container = document.getElementById('notif-preview-content');
+
+            if (log.type === 'Email') {
+                container.innerHTML = `
+                    <div class="bg-white border border-neutral-200 rounded-lg p-6 text-neutral-800 shadow-sm max-w-full">
+                        <div class="border-b border-neutral-200 pb-4 mb-4">
+                            <p class="text-xs text-neutral-500"><strong>From:</strong> AtomQuest Goals &lt;noreply@atomquest.com&gt;</p>
+                            <p class="text-xs text-neutral-500"><strong>To:</strong> ${log.recipient}</p>
+                            <p class="text-sm font-bold text-neutral-800 mt-2">Subject: ${log.subject}</p>
+                        </div>
+                        <div class="prose max-w-none text-sm leading-relaxed text-neutral-700 font-sans">
+                            ${log.body}
+                        </div>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="bg-[#f3f2f1] dark:bg-[#201f1f] p-6 rounded-lg text-neutral-900 border border-neutral-300 dark:border-neutral-700">
+                        <div class="flex items-center gap-2 mb-4 text-[#6264a7] dark:text-[#8b8cc7]">
+                            <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                            </svg>
+                            <span class="font-bold text-sm">Microsoft Teams Webhook Connector</span>
+                        </div>
+                        
+                        <div class="bg-white dark:bg-[#292929] rounded border-l-4 border-[#0076D7] shadow p-4 max-w-md mx-auto text-neutral-800 dark:text-neutral-100">
+                            <h4 class="font-bold text-sm mb-2 text-[#0076D7]">${log.subject}</h4>
+                            <p class="text-xs leading-relaxed whitespace-pre-line mb-4 text-neutral-600 dark:text-neutral-300">${log.body}</p>
+                            
+                            ${log.action_url ? `
+                                <a href="${log.action_url}" target="_blank" class="inline-block px-4 py-2 bg-[#f3f2f1] hover:bg-[#e1dfdd] text-[#0076D7] font-bold rounded text-xs border border-[#0076D7] transition-all text-center">
+                                    View Details
+                                </a>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeNotifPreviewModal() {
+            const modal = document.getElementById('notif-preview-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
         }
 
         fetchAdminData();

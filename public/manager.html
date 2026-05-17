@@ -7,6 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script id="tailwind-config">
       tailwind.config = {
         darkMode: "class",
@@ -232,6 +233,14 @@
 </div>
 </div>
 </section>
+<!-- Analytics Section (hidden by default) -->
+<section id="manager-analytics" class="hidden mb-lg">
+    <div class="bg-surface-container-lowest p-md rounded-xl border border-outline-variant shadow-sm">
+        <h3 class="font-title-md text-primary mb-sm">Team Achievement Overview</h3>
+        <div class="w-full h-64 flex justify-center"><div class="w-full max-w-2xl h-full"><canvas id="manager-chart-dept"></canvas></div></div>
+    </div>
+</section>
+
 <!-- Goal Approval Table -->
 <section class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
 <div class="px-md py-sm border-b border-outline-variant bg-surface-container-low flex justify-between items-center">
@@ -638,6 +647,7 @@
         // ── Overview Tab ──────────────────────────────────────────────────────
         document.getElementById('tab-overview').onclick = () => {
             renderTeamTable(allTeamData.team);
+            document.getElementById('manager-analytics').classList.add('hidden');
             document.querySelectorAll('nav a').forEach(a => {
                 a.classList.remove('bg-secondary-container', 'text-on-secondary-container');
                 a.classList.add('text-on-surface-variant');
@@ -650,6 +660,7 @@
         document.getElementById('tab-approvals').onclick = () => {
             const pending = allTeamData.team.filter(emp => emp.sheet && emp.sheet.status === 'pending');
             renderTeamTable(pending);
+            document.getElementById('manager-analytics').classList.add('hidden');
             // Highlight the tab
             document.querySelectorAll('nav a').forEach(a => {
                 a.classList.remove('bg-secondary-container', 'text-on-secondary-container');
@@ -659,6 +670,8 @@
             document.getElementById('tab-approvals').classList.remove('text-on-surface-variant');
         };
 
+        let managerChart = null;
+
         // ── Performance Reports Tab ───────────────────────────────────────────
         document.getElementById('tab-reports').onclick = async () => {
             document.querySelectorAll('nav a').forEach(a => {
@@ -667,6 +680,8 @@
             });
             document.getElementById('tab-reports').classList.add('bg-secondary-container', 'text-on-secondary-container');
             document.getElementById('tab-reports').classList.remove('text-on-surface-variant');
+
+            document.getElementById('manager-analytics').classList.remove('hidden');
 
             // Fetch planned-vs-actual report
             let report = [];
@@ -681,6 +696,22 @@
                 tbody.innerHTML = `<tr><td colspan="5" class="p-lg text-center text-on-surface-variant italic">No performance data available yet.</td></tr>`;
                 return;
             }
+
+            // Render Chart
+            const ctx = document.getElementById('manager-chart-dept').getContext('2d');
+            if (managerChart) managerChart.destroy();
+            managerChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: report.map(r => r.name),
+                    datasets: [{
+                        label: 'Overall Achievement (%)',
+                        data: report.map(r => r.overall_score),
+                        backgroundColor: '#00288e'
+                    }]
+                },
+                options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 100 } } }
+            });
 
             tbody.innerHTML = report.map(emp => {
                 const scoreColor = emp.overall_score >= 90 ? '#166534' : emp.overall_score >= 70 ? '#1e40af' : '#991b1b';
