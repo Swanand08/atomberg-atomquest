@@ -252,12 +252,16 @@
 <div class="overflow-x-auto">
 <table class="w-full text-left border-collapse">
 <thead>
-<tr class="bg-surface-container-low/50">
-<th class="px-md py-sm font-label-md text-label-md text-secondary uppercase tracking-wider">Employee Name</th>
-<th class="px-md py-sm font-label-md text-label-md text-secondary uppercase tracking-wider">Goals Submitted</th>
-<th class="px-md py-sm font-label-md text-label-md text-secondary uppercase tracking-wider">Status</th>
-<th class="px-md py-sm font-label-md text-label-md text-secondary uppercase tracking-wider">Date Submitted</th>
-<th class="px-md py-sm font-label-md text-label-md text-secondary uppercase tracking-wider text-right">Actions</th>
+<tr class="bg-primary text-on-primary">
+<th class="px-md py-sm font-label-md text-label-md">Employee Name</th>
+<th class="px-md py-sm font-label-md text-label-md text-center">Goals Submitted</th>
+<th class="px-md py-sm font-label-md text-label-md text-center">Q1 Check-in</th>
+<th class="px-md py-sm font-label-md text-label-md text-center">Q2 Check-in</th>
+<th class="px-md py-sm font-label-md text-label-md text-center">Q3 Check-in</th>
+<th class="px-md py-sm font-label-md text-label-md text-center">Q4 Check-in</th>
+<th class="px-md py-sm font-label-md text-label-md text-center">Completion %</th>
+<th class="px-md py-sm font-label-md text-label-md text-center">Status</th>
+<th class="px-md py-sm font-label-md text-label-md text-center">Actions</th>
 </tr>
 </thead>
 <tbody class="divide-y divide-outline-variant">
@@ -518,29 +522,29 @@
                     draft:    'In Draft'
                 }[status] || status;
 
+                const statusColor = emp.sheet_status === 'approved' ? 'bg-tertiary-fixed text-on-tertiary-fixed-variant'
+                    : emp.sheet_status === 'pending' ? 'bg-secondary-container text-on-secondary-container'
+                    : emp.sheet_status === 'rejected' ? 'bg-error-container text-on-error-container'
+                    : 'bg-surface-container text-on-surface-variant';
+
                 const tr = document.createElement('tr');
                 tr.className = 'hover:bg-surface-container-low transition-colors border-b border-outline-variant';
                 tr.innerHTML = `
-                    <td class="px-md py-md">
-                        <div class="flex items-center gap-sm">
-                            <div style="width:36px;height:36px;border-radius:50%;background:#1e40af;color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0">${emp.name.charAt(0).toUpperCase()}</div>
-                            <div>
-                                <p class="font-body-md text-body-md text-on-surface font-semibold">${emp.name}</p>
-                                <p class="font-label-sm text-label-sm text-on-surface-variant">${emp.department || ''}</p>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="px-md py-md font-body-md text-body-md text-on-surface-variant">${goalCount} goal${goalCount !== 1 ? 's' : ''}</td>
-                    <td class="px-md py-md">
-                        <span style="${statusStyle};padding:4px 12px;border-radius:9999px;font-size:12px;font-weight:600;display:inline-block">${statusLabel}</span>
-                    </td>
-                    <td class="px-md py-md font-body-md text-body-md text-secondary">${sheet.id ? 'Cycle 2025' : '—'}</td>
-                    <td class="px-md py-md text-right">
-                        <button onclick="showGoals(decodeURIComponent('${goalsData}'), '${safeName}')" class="px-sm py-xs text-primary border border-primary rounded-lg hover:bg-surface-container font-label-md text-label-md transition-colors mr-xs">View Goals</button>
-                        ${status === 'pending' ? `
-                            <button onclick="approveSheet(${sheet.id})" class="px-sm py-xs bg-primary-container text-white rounded-lg font-label-md text-label-md hover:opacity-90 transition-opacity mr-xs">✓ Approve</button>
-                            <button onclick="rejectSheet(${sheet.id})" style="border:1px solid #dc2626;color:#dc2626" class="px-sm py-xs rounded-lg font-label-md text-label-md hover:bg-red-50 transition-colors">✗ Reject</button>
+                    <td class="px-md py-md font-body-md text-body-md font-medium">${emp.name}</td>
+                    <td class="px-md py-md text-center">${emp.sheet_status ? '<span class="material-symbols-outlined text-tertiary-container">check_circle</span>' : '<span class="material-symbols-outlined text-error">cancel</span>'}</td>
+                    <td class="px-md py-md text-center">${emp.checkins && emp.checkins.Q1 ? '<span class="material-symbols-outlined text-tertiary-container">check_circle</span>' : '—'}</td>
+                    <td class="px-md py-md text-center">${emp.checkins && emp.checkins.Q2 ? '<span class="material-symbols-outlined text-tertiary-container">check_circle</span>' : '—'}</td>
+                    <td class="px-md py-md text-center">${emp.checkins && emp.checkins.Q3 ? '<span class="material-symbols-outlined text-tertiary-container">check_circle</span>' : '—'}</td>
+                    <td class="px-md py-md text-center">${emp.checkins && emp.checkins.Q4 ? '<span class="material-symbols-outlined text-tertiary-container">check_circle</span>' : '—'}</td>
+                    <td class="px-md py-md text-center font-bold text-primary">${emp.completion_percentage || 0}%</td>
+                    <td class="px-md py-md text-center"><span class="px-base py-xs ${statusColor} rounded font-label-sm text-label-sm">${emp.sheet_status || 'Not Started'}</span></td>
+                    <td class="px-md py-md text-center flex items-center justify-center gap-xs">
+                        <button onclick="viewEmployeeDetails(${emp.id})" class="px-sm py-xs text-primary border border-primary rounded-lg hover:bg-surface-container font-label-md text-label-md transition-colors">Review</button>
+                        ${emp.sheet_status === 'pending' && emp.sheet ? `
+                            <button onclick="approveSheet(${emp.sheet.id})" class="px-sm py-xs bg-primary-container text-white rounded-lg font-label-md text-label-md hover:opacity-90 transition-opacity">✓ Approve</button>
+                            <button onclick="rejectSheet(${emp.sheet.id})" style="border:1px solid #dc2626;color:#dc2626" class="px-sm py-xs rounded-lg font-label-md text-label-md hover:bg-red-50 transition-colors">✗ Reject</button>
                         ` : ''}
+                        ${emp.sheet_status === 'approved' ? `<button onclick="unlockSheet(${emp.id})" class="px-sm py-xs bg-yellow-100 text-yellow-800 border border-yellow-300 rounded-lg hover:bg-yellow-200 font-label-md text-label-md transition-colors" title="Unlock Sheet for Editing">Unlock</button>` : ''}
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -632,6 +636,31 @@
 
         function closeModal() {
             document.getElementById('goals-modal').classList.add('hidden');
+        }
+
+        function viewEmployeeDetails(empId) {
+            const emp = allTeamData.team.find(e => e.id === empId);
+            if (emp) {
+                showGoals(emp.goals || [], emp.name);
+            }
+        }
+
+        async function unlockSheet(empId) {
+            if (confirm('Unlock this employee\'s goal sheet? This will revert it to Draft status.')) {
+                try {
+                    const res = await fetch(`/api/manager/employee/${empId}/unlock`, { method: 'POST' });
+                    if (res.ok) {
+                        alert('Goal sheet unlocked successfully!');
+                        fetchTeam();
+                    } else {
+                        const data = await res.json();
+                        alert(data.error || 'Failed to unlock sheet');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('Error unlocking sheet');
+                }
+            }
         }
 
         // ── Search Filtering ──────────────────────────────────────────────────

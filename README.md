@@ -31,14 +31,14 @@ The application is live and available for review at:
 
 ### 🔐 Strict Role-Based Access Control (RBAC)
 Dedicated portals and API validation for three user tiers:
-1. **Employees:** View assigned performance goals, log quarterly check-ins (Q1-Q4), and track overall achievement percentages.
-2. **Managers:** Review team overview metrics, approve or reject incoming goal sheets, and monitor direct reports.
-3. **HR Admins:** Gain a bird's-eye view of organizational compliance. Export system-wide reports to CSV and monitor granular changes via the System Audit Log.
+1. **Employees:** View assigned performance goals, log quarterly check-ins (Q1-Q4), and track overall achievement percentages dynamically.
+2. **Managers:** Review team overview metrics, approve or reject incoming goal sheets, unlock approved goal sheets for mid-cycle revisions, and monitor direct reports' completion progress.
+3. **HR Admins:** Gain a bird's-eye view of organizational compliance, unlock any employee goal sheet across the company with full audit traceability, export system-wide reports to CSV, and monitor granular changes via the System Audit Log.
 
 ### 🎨 Modern, Dynamic UI
 - **Real-time Tab Switching:** Eliminates jarring page refreshes using seamless DOM injection for a true Single Page Application (SPA) feel.
 - **Global Theme Support:** Fully integrated Dark Mode / Light Mode capability utilizing Tailwind CSS, with user preferences persisting via local storage.
-- **Enhanced Form Controls:** Dedicated toggle utilities for password visibility and streamlined goal form cancellation.
+- **Advanced Action Controls:** Side-by-side management actions including instant Approve/Reject workflows, Goal Sheet Unlocking, and granular employee reviews.
 - **Responsive Design:** Engineered to look beautiful and professional across desktops and tablets.
 
 ### 🛡️ Robust Backend Architecture
@@ -102,7 +102,7 @@ To test the different portals, you can log in using the pre-seeded credentials:
 
 | Role | Email | Password | Notes |
 | :--- | :--- | :--- | :--- |
-| **HR Admin** | `admin@company.com` | `admin123` | Full system access |
+| **HR Admin** | `admin1@company.com` | `admin123` | Full system access |
 | **Manager** | `manager1@company.com` | `mgr123` | Team oversight & approvals |
 | **Employee** | `emp1@company.com` | `emp123` | Pre-loaded with demo goals & check-ins |
 | **Employee (Clean Slate)** | `emp2@company.com` | `emp123` | No goals — perfect for live demo! |

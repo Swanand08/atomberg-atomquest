@@ -30,7 +30,7 @@ router.get('/team', async (req, res) => {
             const overallPct = goals.length > 0 && goals.reduce((s,g)=>s+g.target,0) > 0
                 ? Math.round((goals.reduce((s,g)=>s+g.achievement,0) / goals.reduce((s,g)=>s+g.target,0)) * 100)
                 : 0;
-            return { ...emp, sheet: sheet || null, goals, checkins: checkinSummary, completed_goals: completedGoals, overall_pct: overallPct };
+            return { ...emp, sheet: sheet || null, sheet_status: sheet ? sheet.status : 'not_started', goals, checkins: checkinSummary, completed_goals: completedGoals, completion_percentage: overallPct, overall_pct: overallPct };
         }));
         res.json({ team: result, count: result.length });
     } catch (err) { res.status(500).json({ error: err.message }); }
@@ -105,20 +105,50 @@ router.get('/checkins', async (req, res) => {
     try {
         const managerId = req.session.user.id;
         const year = new Date().getFullYear();
-        const employees = await all('SELECT id, name FROM users WHERE manager_id=? AND role=?', [managerId, 'employee']);
+        const employees = await all('SELECT id, name, email, department FROM users WHERE manager_id=? AND role=?', [managerId, 'employee']);
         const result = await Promise.all(employees.map(async emp => {
             const sheet = await get('SELECT * FROM goal_sheets WHERE employee_id=? AND cycle_year=?', [emp.id, year]);
-            if (!sheet) return { ...emp, goals: [] };
+            if (!sheet) return { ...emp, sheet: null, goals: [], checkins: { Q1: false, Q2: false, Q3: false, Q4: false }, completed_goals: 0, completion_percentage: 0, overall_pct: 0 };
             const goals = await all('SELECT * FROM goals WHERE sheet_id=?', [sheet.id]);
+            let checkinSummary = { Q1: false, Q2: false, Q3: false, Q4: false };
             const goalsWithCheckins = await Promise.all(goals.map(async g => {
                 const checkins = await all('SELECT * FROM checkins WHERE goal_id=? ORDER BY quarter', [g.id]);
                 return { ...g, checkins };
             }));
-            return { ...emp, sheet: sheet || null, goals: goalsWithCheckins };
+            if (goals.length > 0) {
+                const goalIds = goals.map(g => g.id);
+                for (const q of ['Q1','Q2','Q3','Q4']) {
+                    const c = await get(`SELECT id FROM checkins WHERE goal_id IN (${goalIds.map(()=>'?').join(',')}) AND quarter=? LIMIT 1`, [...goalIds, q]);
+                    checkinSummary[q] = !!c;
+                }
+            }
+            const completedGoals = goals.filter(g => g.goal_status === 'completed').length;
+            const overallPct = goals.length > 0 && goals.reduce((s,g)=>s+g.target,0) > 0
+                ? Math.round((goals.reduce((s,g)=>s+g.achievement,0) / goals.reduce((s,g)=>s+g.target,0)) * 100)
+                : 0;
+            return { ...emp, sheet: sheet || null, sheet_status: sheet ? sheet.status : 'not_started', goals: goalsWithCheckins, checkins: checkinSummary, completed_goals: completedGoals, completion_percentage: overallPct, overall_pct: overallPct };
         }));
         res.json({ team: result });
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
+
+// POST /api/manager/employee/:id/unlock
+router.post('/employee/:id/unlock', async (req, res) => {
+    try {
+        const managerId = req.session.user.id;
+        const empId = Number(req.params.id);
+        const year = new Date().getFullYear();
+        const emp = await get('SELECT id FROM users WHERE id=? AND manager_id=?', [empId, managerId]);
+        if (!emp) return res.status(403).json({ error: 'Unauthorized or employee not found' });
+        const sheet = await get('SELECT * FROM goal_sheets WHERE employee_id = ? AND cycle_year = ?', [empId, year]);
+        if (!sheet) return res.status(404).json({ error: 'Sheet not found for this employee' });
+        await run("UPDATE goal_sheets SET is_locked=0, status='draft' WHERE id=?", [sheet.id]);
+        await run('INSERT INTO audit_logs (changed_by, goal_id, action, field_changed, old_value, new_value) VALUES (?,?,?,?,?,?)',
+            [managerId, null, 'manager_unlock', 'is_locked', '1', `0 — Reason: Manager unlock (Employee ${empId})`]);
+        res.json({ success: true, message: 'Sheet unlocked. Employee can now edit goals.' });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 
 // POST /api/manager/approve/:sheetId
 router.post('/approve/:sheetId', async (req, res) => {

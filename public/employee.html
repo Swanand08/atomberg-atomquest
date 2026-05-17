@@ -594,6 +594,16 @@
                                 <p class="font-label-sm text-label-sm text-on-surface-variant">Weightage</p>
                                 <p class="font-label-md text-label-md font-bold text-primary">${goal.weightage}%</p>
                             </div>
+                            <div>
+                                <p class="font-label-sm text-label-sm text-on-surface-variant">Score</p>
+                                <p class="font-label-md text-label-md font-bold" style="color:${
+                                    currentSheet && currentSheet.status === 'approved'
+                                        ? (goal.score >= 100 ? '#166534' : goal.score >= 75 ? '#1e40af' : '#991b1b')
+                                        : '#757684'
+                                }">
+                                    ${currentSheet && currentSheet.status === 'approved' ? (goal.score || 0) + '%' : '—'}
+                                </p>
+                            </div>
                             ${(currentSheet && currentSheet.status === 'approved') ? `
                             <button onclick="promptCheckIn(${goal.id}, '${goal.title}', ${goal.target}, '${goal.uom_type}')" class="px-sm py-xs bg-primary-container text-on-primary font-label-sm rounded transition-colors shadow-sm">
                                 Check In

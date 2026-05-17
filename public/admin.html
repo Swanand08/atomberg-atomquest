@@ -247,6 +247,9 @@
 <th class="px-md py-sm font-label-md text-label-md text-center">Goals Submitted</th>
 <th class="px-md py-sm font-label-md text-label-md text-center">Q1 Check-in</th>
 <th class="px-md py-sm font-label-md text-label-md text-center">Q2 Check-in</th>
+<th class="px-md py-sm font-label-md text-label-md text-center">Q3 Check-in</th>
+<th class="px-md py-sm font-label-md text-label-md text-center">Q4 Check-in</th>
+<th class="px-md py-sm font-label-md text-label-md text-center">Completion %</th>
 <th class="px-md py-sm font-label-md text-label-md text-center">Status</th>
 <th class="px-md py-sm font-label-md text-label-md text-center">Actions</th>
 </tr>
@@ -467,8 +470,14 @@
                     <td class="px-md py-md text-center">${emp.sheet_status ? '<span class="material-symbols-outlined text-tertiary-container">check_circle</span>' : '<span class="material-symbols-outlined text-error">cancel</span>'}</td>
                     <td class="px-md py-md text-center">${emp.checkins && emp.checkins.Q1 ? '<span class="material-symbols-outlined text-tertiary-container">check_circle</span>' : '—'}</td>
                     <td class="px-md py-md text-center">${emp.checkins && emp.checkins.Q2 ? '<span class="material-symbols-outlined text-tertiary-container">check_circle</span>' : '—'}</td>
+                    <td class="px-md py-md text-center">${emp.checkins && emp.checkins.Q3 ? '<span class="material-symbols-outlined text-tertiary-container">check_circle</span>' : '—'}</td>
+                    <td class="px-md py-md text-center">${emp.checkins && emp.checkins.Q4 ? '<span class="material-symbols-outlined text-tertiary-container">check_circle</span>' : '—'}</td>
+                    <td class="px-md py-md text-center font-bold text-primary">${emp.completion_percentage || 0}%</td>
                     <td class="px-md py-md text-center"><span class="px-base py-xs ${statusColor} rounded font-label-sm text-label-sm">${emp.sheet_status || 'Not Started'}</span></td>
-                    <td class="px-md py-md text-center"><button onclick="viewEmployeeDetails(${emp.id})" class="px-sm py-xs text-primary border border-primary rounded-lg hover:bg-surface-container font-label-md text-label-md transition-colors">View</button></td>
+                    <td class="px-md py-md text-center flex items-center justify-center gap-xs">
+                        <button onclick="viewEmployeeDetails(${emp.id})" class="px-sm py-xs text-primary border border-primary rounded-lg hover:bg-surface-container font-label-md text-label-md transition-colors">View</button>
+                        ${emp.sheet_status === 'approved' ? `<button onclick="unlockSheet(${emp.id})" class="px-sm py-xs bg-yellow-100 text-yellow-800 border border-yellow-300 rounded-lg hover:bg-yellow-200 font-label-md text-label-md transition-colors" title="Unlock Sheet for Editing">Unlock</button>` : ''}
+                    </td>
                 `;
                 empTbody.appendChild(tr);
             });
@@ -697,6 +706,24 @@
         function closeEmpDetailsModal() {
             document.getElementById('emp-details-modal').classList.add('hidden');
             document.getElementById('emp-details-modal').classList.remove('flex');
+        }
+
+        async function unlockSheet(empId) {
+            if (confirm('Unlock this employee\'s goal sheet? This will revert it to Draft status.')) {
+                try {
+                    const res = await fetch(`/api/admin/employee/${empId}/unlock`, { method: 'POST' });
+                    if (res.ok) {
+                        alert('Goal sheet unlocked successfully!');
+                        fetchAdminData();
+                    } else {
+                        const data = await res.json();
+                        alert(data.error || 'Failed to unlock sheet');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('Error unlocking sheet');
+                }
+            }
         }
         
         const generateReportBtn = document.querySelector('aside button');

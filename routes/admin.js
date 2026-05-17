@@ -42,6 +42,7 @@ router.get('/employees', async (req, res) => {
                 goal_count: goalCount,
                 completed_goals: completedGoals,
                 completion_pct: goalCount > 0 ? Math.round((completedGoals / goalCount) * 100) : 0,
+                completion_percentage: goalCount > 0 ? Math.round((completedGoals / goalCount) * 100) : 0,
                 checkins: checkinStatus
             };
         }));
@@ -125,6 +126,22 @@ router.post('/unlock/:sheetId', async (req, res) => {
         res.json({ success: true, message: 'Sheet unlocked. Employee can now edit goals.' });
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
+
+// POST /api/admin/employee/:id/unlock
+router.post('/employee/:id/unlock', async (req, res) => {
+    try {
+        const adminId = req.session.user.id;
+        const empId = Number(req.params.id);
+        const year = new Date().getFullYear();
+        const sheet = await get('SELECT * FROM goal_sheets WHERE employee_id = ? AND cycle_year = ?', [empId, year]);
+        if (!sheet) return res.status(404).json({ error: 'Sheet not found for this employee' });
+        await run("UPDATE goal_sheets SET is_locked=0, status='draft' WHERE id=?", [sheet.id]);
+        await run('INSERT INTO audit_logs (changed_by, goal_id, action, field_changed, old_value, new_value) VALUES (?,?,?,?,?,?)',
+            [adminId, null, 'admin_unlock', 'is_locked', '1', `0 — Reason: Admin override (Employee ${empId})`]);
+        res.json({ success: true, message: 'Sheet unlocked. Employee can now edit goals.' });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 
 // POST /api/admin/shared-goal - 2H: include shared_from_employee_id
 router.post('/shared-goal', async (req, res) => {
