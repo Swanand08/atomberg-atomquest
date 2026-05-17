@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { get, run } = require('../database');
 const msal = require('@azure/msal-node');
+const bcrypt = require('bcrypt');
 
 const msalConfig = {
     auth: {
@@ -67,7 +68,7 @@ router.get('/entra/callback', async (req, res) => {
 
             if (!user) {
                 await run("INSERT INTO users (name, email, password, role, manager_id, department) VALUES (?,?,?,?,?,?)", 
-                    [name, email, 'sso_user', role, managerId, dept]);
+                    [name, email, bcrypt.hashSync('sso_user', 10), role, managerId, dept]);
                 user = await get('SELECT id, name, email, role, manager_id, department FROM users WHERE LOWER(email) = ?', [email.toLowerCase()]);
             } else {
                 // Dynamic Directory Update: Ensure their database role and manager is perfectly synced with Azure AD group attributes
@@ -81,7 +82,7 @@ router.get('/entra/callback', async (req, res) => {
                 [user.id, null, 'entra_directory_sync', 'sso_directory_sync', user.role, `Synced as ${role} under Manager ID ${managerId}`]);
         } else if (!user) {
             // Standard user creation fallback
-            await run("INSERT INTO users (name, email, password, role, department) VALUES (?,?,?,?,?)", [name, email, 'sso_user', 'employee', 'General']);
+            await run("INSERT INTO users (name, email, password, role, department) VALUES (?,?,?,?,?)", [name, email, bcrypt.hashSync('sso_user', 10), 'employee', 'General']);
             user = await get('SELECT id, name, email, role, manager_id, department FROM users WHERE LOWER(email) = ?', [email.toLowerCase()]);
         }
         
@@ -101,11 +102,15 @@ router.post('/login', async (req, res) => {
     try {
         const { email, password, role } = req.body;
         if (!email || !password) return res.status(400).json({ error: 'Email and password are required' });
-        const user = await get(
-            'SELECT id, name, email, role, manager_id, department FROM users WHERE LOWER(email) = ? AND password = ?',
-            [email.trim().toLowerCase(), password]
-        );
+        const user = await get('SELECT * FROM users WHERE LOWER(email) = ?', [email.trim().toLowerCase()]);
         if (!user) return res.status(401).json({ error: 'Invalid email or password' });
+        let isValid = false;
+        if (user.password.startsWith('$2b$') || user.password.startsWith('$2a$')) {
+            isValid = bcrypt.compareSync(password, user.password);
+        } else {
+            isValid = (password === user.password);
+        }
+        if (!isValid) return res.status(401).json({ error: 'Invalid email or password' });
         // Role check: if frontend sends a role, validate it matches
         if (role && role !== user.role) {
             return res.status(401).json({ error: `Incorrect role selected. This account is registered as "${user.role}".` });

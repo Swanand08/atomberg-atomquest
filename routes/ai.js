@@ -191,4 +191,58 @@ router.post('/suggest', async (req, res) => {
     }
 });
 
+router.post('/score', async (req, res) => {
+    try {
+        const { title = '', thrust_area = '' } = req.body;
+        if (!title) {
+            return res.status(400).json({ error: 'Goal title is required' });
+        }
+
+        const apiKey = process.env.GEMINI_API_KEY || '';
+        if (apiKey && apiKey.startsWith('AIzaSy') && !apiKey.includes('dummy')) {
+            try {
+                const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+                const prompt = `You are an HR expert. Score this performance goal on SMART criteria.
+Goal: ${title}. Thrust Area: ${thrust_area}.
+Return ONLY a JSON object: { "specific": true, "measurable": true, "achievable": true, "relevant": true, "time_bound": true, "overall_score": 8, "improvement_tip": "one sentence" }`;
+
+                const result = await model.generateContent(prompt);
+                const response = await result.response;
+                const text = response.text();
+                
+                const jsonMatch = text.match(/\{[\s\S]*\}/);
+                const scoreResult = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(text);
+
+                return res.json(scoreResult);
+            } catch (apiErr) {
+                console.warn('Gemini API call unavailable/failed for scoring. Falling back to local keyword analysis:', apiErr.message);
+            }
+        }
+
+        // Fallback mock score based on keyword analysis
+        const specific = title.length > 20;
+        const measurable = /\d|%/.test(title);
+        const achievable = true;
+        const relevant = !!thrust_area;
+        const time_bound = title.toLowerCase().includes('by') || title.includes('Q') || title.toLowerCase().includes('month');
+        
+        const count = [specific, measurable, achievable, relevant, time_bound].filter(Boolean).length;
+        const overall_score = count * 2;
+        const improvement_tip = "Add a specific numeric target and deadline to make this goal fully SMART.";
+
+        return res.json({
+            specific,
+            measurable,
+            achievable,
+            relevant,
+            time_bound,
+            overall_score,
+            improvement_tip
+        });
+    } catch (err) {
+        console.error('AI Score Error:', err);
+        res.status(500).json({ error: 'Failed to score goal.' });
+    }
+});
+
 module.exports = router;

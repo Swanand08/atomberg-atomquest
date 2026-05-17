@@ -30,9 +30,9 @@ router.get('/window-status', async (req, res) => {
         const config = await get('SELECT * FROM cycle_config WHERE cycle_year = ?', [year]);
         if (!config) return res.json({ goalSettingOpen: true, openQuarters: ['Q1','Q2','Q3','Q4'], config: null });
         const openQuarters = [];
-        if (now >= new Date(config.q1_open)) openQuarters.push('Q1');
-        if (now >= new Date(config.q2_open)) openQuarters.push('Q2');
-        if (now >= new Date(config.q3_open)) openQuarters.push('Q3');
+        if (now >= new Date(config.q1_open) && now < new Date(config.q2_open)) openQuarters.push('Q1');
+        if (now >= new Date(config.q2_open) && now < new Date(config.q3_open)) openQuarters.push('Q2');
+        if (now >= new Date(config.q3_open) && now < new Date(config.q4_open)) openQuarters.push('Q3');
         if (now >= new Date(config.q4_open) && now <= new Date(config.q4_close)) openQuarters.push('Q4');
         const goalSettingOpen = now >= new Date(config.goal_setting_open) && now <= new Date(config.goal_setting_close);
         res.json({ goalSettingOpen, openQuarters, config });
@@ -67,6 +67,15 @@ router.post('/', async (req, res) => {
         }
         if (sheet.is_locked || sheet.status === 'pending' || sheet.status === 'approved')
             return res.status(403).json({ error: 'Goal sheet is locked. Cannot add goals.' });
+        const config = await get('SELECT * FROM cycle_config WHERE cycle_year = ?', [year]);
+        if (config) {
+            const now = new Date();
+            const windowOpen = now >= new Date(config.goal_setting_open);
+            const windowClose = now <= new Date(config.goal_setting_close);
+            if (!windowOpen || !windowClose) {
+                return res.status(400).json({ error: `Goal setting window is closed. It runs from ${config.goal_setting_open} to ${config.goal_setting_close}.` });
+            }
+        }
         if (!title || !thrust_area || !uom_type || !uom_direction || !target || !weightage)
             return res.status(400).json({ error: 'All fields are required' });
         const normUomType = String(uom_type).toLowerCase().replace('percentage', 'percent').replace('numeric', 'numeric');
@@ -96,7 +105,22 @@ router.put('/:id', async (req, res) => {
                 [userId, goalId, 'edit_blocked', 'all', null, JSON.stringify(req.body)]);
             return res.status(403).json({ error: 'Goal is locked. Contact Admin to unlock.' });
         }
+        const year = new Date().getFullYear();
+        const config = await get('SELECT * FROM cycle_config WHERE cycle_year = ?', [year]);
+        if (config) {
+            const now = new Date();
+            const windowOpen = now >= new Date(config.goal_setting_open);
+            const windowClose = now <= new Date(config.goal_setting_close);
+            if (!windowOpen || !windowClose) {
+                return res.status(400).json({ error: `Goal setting window is closed. It runs from ${config.goal_setting_open} to ${config.goal_setting_close}.` });
+            }
+        }
         const { title, description, thrust_area, uom_type, uom_direction, target, weightage, achievement, goal_status } = req.body;
+        if (goal.is_shared) {
+            if (title || thrust_area || uom_type || uom_direction || target !== undefined) {
+                return res.status(403).json({ error: 'Shared goals can only have their weightage modified.' });
+            }
+        }
         const updated = {
             title: title || goal.title,
             description: description !== undefined ? description : (goal.description || ''),
@@ -145,7 +169,7 @@ router.post('/submit', async (req, res) => {
         if (underMin) return res.status(400).json({ error: `Goal "${underMin.title}" has weightage below 10%` });
         const total = goals.reduce((sum, g) => sum + g.weightage, 0);
         if (total !== 100) return res.status(400).json({ error: `Total weightage is ${total}%. Must be exactly 100% before submitting.` });
-        await run("UPDATE goal_sheets SET status = 'pending' WHERE id = ?", [sheet.id]);
+        await run("UPDATE goal_sheets SET status = 'pending', submitted_at = CURRENT_TIMESTAMP WHERE id = ?", [sheet.id]);
         
         // Trigger notification to manager
         const user = await get('SELECT name, manager_id FROM users WHERE id = ?', [userId]);
@@ -154,7 +178,7 @@ router.post('/submit', async (req, res) => {
             if (manager) {
                 const subject = `Goal Sheet Submitted: ${user.name}`;
                 const text = `${user.name} has submitted their goal sheet for your review.`;
-                const actionUrl = 'http://localhost:3000/manager.html';
+                const actionUrl = `${process.env.APP_URL || 'http://localhost:3000'}/manager.html`;
                 sendEmail(manager.email, subject, `<p>${text}</p><a href="${actionUrl}">Review Goal Sheet</a>`);
                 sendTeamsNotification(process.env.TEAMS_WEBHOOK_URL, subject, text, actionUrl);
             }
@@ -181,14 +205,21 @@ router.post('/checkin', async (req, res) => {
         const config = await get('SELECT * FROM cycle_config WHERE cycle_year = ?', [new Date().getFullYear()]);
         if (config) {
             const windows = {
-                'Q1': config.q1_open,
-                'Q2': config.q2_open,
-                'Q3': config.q3_open,
-                'Q4': config.q4_open
+                'Q1': { open: config.q1_open, close: config.q2_open },
+                'Q2': { open: config.q2_open, close: config.q3_open },
+                'Q3': { open: config.q3_open, close: config.q4_open },
+                'Q4': { open: config.q4_open, close: config.q4_close }
             };
-            const windowOpen = new Date(windows[quarter]);
-            if (now < windowOpen) {
-                return res.status(400).json({ error: `${quarter} check-in window does not open until ${windowOpen.toLocaleDateString('en-IN', {day:'numeric',month:'long',year:'numeric'})}` });
+            const win = windows[quarter];
+            if (win) {
+                const openDate = new Date(win.open);
+                const closeDate = new Date(win.close);
+                if (now < openDate) {
+                    return res.status(400).json({ error: `${quarter} check-in window does not open until ${openDate.toLocaleDateString('en-IN', {day:'numeric',month:'long',year:'numeric'})}` });
+                }
+                if (now > closeDate) {
+                    return res.status(400).json({ error: `${quarter} check-in window closed on ${closeDate.toLocaleDateString('en-IN', {day:'numeric',month:'long',year:'numeric'})}` });
+                }
             }
         }
 
@@ -226,6 +257,23 @@ router.put('/:id/edit', async (req, res) => {
         if (!goal) return res.status(404).json({ error: 'Goal not found' });
         if (goal.employee_id !== userId) return res.status(403).json({ error: 'Not your goal' });
         if (goal.is_locked) return res.status(403).json({ error: 'Goal is locked after approval. Contact Admin to unlock.' });
+
+        const year = new Date().getFullYear();
+        const config = await get('SELECT * FROM cycle_config WHERE cycle_year = ?', [year]);
+        if (config) {
+            const now = new Date();
+            const windowOpen = now >= new Date(config.goal_setting_open);
+            const windowClose = now <= new Date(config.goal_setting_close);
+            if (!windowOpen || !windowClose) {
+                return res.status(400).json({ error: `Goal setting window is closed. It runs from ${config.goal_setting_open} to ${config.goal_setting_close}.` });
+            }
+        }
+
+        if (goal.is_shared) {
+            if (title || thrust_area || uom_type || uom_direction || target !== undefined) {
+                return res.status(403).json({ error: 'Shared goals can only have their weightage modified.' });
+            }
+        }
 
         const normUomType = uom_type ? String(uom_type).toLowerCase().replace('percentage','percent') : goal.uom_type;
         const newWeightage = weightage !== undefined ? Number(weightage) : goal.weightage;

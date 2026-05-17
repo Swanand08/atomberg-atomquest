@@ -1,5 +1,6 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+const bcrypt = require('bcrypt');
 
 const dbPath = process.env.DB_PATH || path.resolve(__dirname, 'atomquest.db');
 const db = new sqlite3.Database(dbPath);
@@ -47,6 +48,7 @@ const initDb = async () => {
         is_locked INTEGER DEFAULT 0,
         approved_by INTEGER,
         approved_at DATETIME,
+        submitted_at DATETIME,
         reject_reason TEXT,
         FOREIGN KEY(employee_id) REFERENCES users(id),
         FOREIGN KEY(approved_by) REFERENCES users(id)
@@ -139,23 +141,23 @@ const initDb = async () => {
 
         // 1. Insert Admin
         await run("INSERT INTO users (name, email, password, role, department) VALUES (?,?,?,?,?)",
-            ['HR Admin', 'admin1@company.com', 'admin123', 'admin', 'HR']);
+            ['HR Admin', 'admin1@company.com', bcrypt.hashSync('admin123', 10), 'admin', 'HR']);
 
         // 2. Insert Managers
         await run("INSERT INTO users (name, email, password, role, department) VALUES (?,?,?,?,?)",
-            ['Manager One', 'manager1@company.com', 'mgr123', 'manager', 'Engineering']);
+            ['Manager One', 'manager1@company.com', bcrypt.hashSync('mgr123', 10), 'manager', 'Engineering']);
         await run("INSERT INTO users (name, email, password, role, department) VALUES (?,?,?,?,?)",
-            ['Manager Two', 'manager2@company.com', 'mgr123', 'manager', 'Sales']);
+            ['Manager Two', 'manager2@company.com', bcrypt.hashSync('mgr123', 10), 'manager', 'Sales']);
 
         // 3. Insert Employees (manager1 id=2 for Engineering, manager2 id=3 for Sales)
         await run("INSERT INTO users (name, email, password, role, manager_id, department) VALUES (?,?,?,?,?,?)",
-            ['Employee One', 'emp1@company.com', 'emp123', 'employee', 2, 'Engineering']);
+            ['Employee One', 'emp1@company.com', bcrypt.hashSync('emp123', 10), 'employee', 2, 'Engineering']);
         await run("INSERT INTO users (name, email, password, role, manager_id, department) VALUES (?,?,?,?,?,?)",
-            ['Employee Two', 'emp2@company.com', 'emp123', 'employee', 2, 'Engineering']);
+            ['Employee Two', 'emp2@company.com', bcrypt.hashSync('emp123', 10), 'employee', 2, 'Engineering']);
         await run("INSERT INTO users (name, email, password, role, manager_id, department) VALUES (?,?,?,?,?,?)",
-            ['Employee Three', 'emp3@company.com', 'emp123', 'employee', 3, 'Sales']);
+            ['Employee Three', 'emp3@company.com', bcrypt.hashSync('emp123', 10), 'employee', 3, 'Sales']);
         await run("INSERT INTO users (name, email, password, role, manager_id, department) VALUES (?,?,?,?,?,?)",
-            ['Employee Four', 'emp4@company.com', 'emp123', 'employee', 3, 'Sales']);
+            ['Employee Four', 'emp4@company.com', bcrypt.hashSync('emp123', 10), 'employee', 3, 'Sales']);
 
         // 4. Approved goal sheet for emp1 (id=4)
         await run("INSERT INTO goal_sheets (employee_id, cycle_year, status, is_locked, approved_by, approved_at) VALUES (?,?,?,?,?,CURRENT_TIMESTAMP)",

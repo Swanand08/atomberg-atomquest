@@ -11,6 +11,7 @@
     "@azure/msal-node": "^5.2.1",
     "@google/generative-ai": "^0.24.1",
     "axios": "^1.16.1",
+    "bcrypt": "^6.0.0",
     "body-parser": "^1.20.2",
     "csv-writer": "^1.6.0",
     "dotenv": "^17.4.2",

@@ -36,6 +36,28 @@ router.get('/team', async (req, res) => {
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// 2J. GET /api/manager/team/goals - returns all team member goal sheets + goals + checkins
+router.get('/team/goals', async (req, res) => {
+    try {
+        const managerId = req.session.user.id;
+        const year = new Date().getFullYear();
+        const employees = await all('SELECT id, name, email, department FROM users WHERE manager_id=? AND role=?', [managerId, 'employee']);
+        const result = await Promise.all(employees.map(async emp => {
+            const sheet = await get('SELECT * FROM goal_sheets WHERE employee_id=? AND cycle_year=?', [emp.id, year]);
+            let goalsWithCheckins = [];
+            if (sheet) {
+                const goals = await all('SELECT * FROM goals WHERE sheet_id=?', [sheet.id]);
+                goalsWithCheckins = await Promise.all(goals.map(async g => {
+                    const checkins = await all('SELECT * FROM checkins WHERE goal_id=? ORDER BY quarter', [g.id]);
+                    return { ...g, checkins };
+                }));
+            }
+            return { ...emp, sheet: sheet || null, sheet_status: sheet ? sheet.status : 'not_started', goals: goalsWithCheckins };
+        }));
+        res.json({ team: result });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 // GET /api/manager/activity - recent activity feed for manager's team
 router.get('/activity', async (req, res) => {
     try {
@@ -168,7 +190,7 @@ router.post('/approve/:sheetId', async (req, res) => {
         if (emp) {
             const subject = `Goal Sheet Approved`;
             const text = `Your goal sheet has been approved by your manager.`;
-            const actionUrl = 'http://localhost:3000/employee.html';
+            const actionUrl = `${process.env.APP_URL || 'http://localhost:3000'}/employee.html`;
             sendEmail(emp.email, subject, `<p>${text}</p><a href="${actionUrl}">View Goal Sheet</a>`);
             sendTeamsNotification(process.env.TEAMS_WEBHOOK_URL, subject, text, actionUrl);
         }
@@ -197,7 +219,61 @@ router.post('/reject/:sheetId', async (req, res) => {
         if (emp) {
             const subject = `Goal Sheet Returned for Rework`;
             const text = `Your goal sheet has been returned by your manager. Reason: ${reason}`;
-            const actionUrl = 'http://localhost:3000/employee.html';
+            const actionUrl = `${process.env.APP_URL || 'http://localhost:3000'}/employee.html`;
+            sendEmail(emp.email, subject, `<p>${text}</p><a href="${actionUrl}">View Goal Sheet</a>`);
+            sendTeamsNotification(process.env.TEAMS_WEBHOOK_URL, subject, text, actionUrl);
+        }
+        
+        res.json({ success: true, message: 'Sheet returned to employee for rework' });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// 2J. POST /api/manager/team/goals/:id/approve
+router.post('/team/goals/:id/approve', async (req, res) => {
+    try {
+        const managerId = req.session.user.id;
+        const sheetId = Number(req.params.id);
+        const sheet = await get('SELECT gs.*, u.manager_id FROM goal_sheets gs JOIN users u ON gs.employee_id=u.id WHERE gs.id=?', [sheetId]);
+        if (!sheet) return res.status(404).json({ error: 'Sheet not found' });
+        if (sheet.manager_id !== managerId) return res.status(403).json({ error: 'This employee does not report to you' });
+        if (sheet.status !== 'pending') return res.status(400).json({ error: `Sheet is "${sheet.status}". Only pending sheets can be approved.` });
+        await run("UPDATE goal_sheets SET status='approved', is_locked=1, approved_by=?, approved_at=CURRENT_TIMESTAMP WHERE id=?", [managerId, sheetId]);
+        await run('INSERT INTO audit_logs (changed_by, goal_id, action, field_changed, old_value, new_value) VALUES (?,?,?,?,?,?)',
+            [managerId, null, 'sheet_approved', 'status', 'pending', 'approved']);
+            
+        const emp = await get('SELECT name, email FROM users WHERE id=?', [sheet.employee_id]);
+        if (emp) {
+            const subject = `Goal Sheet Approved`;
+            const text = `Your goal sheet has been approved by your manager.`;
+            const actionUrl = `${process.env.APP_URL || 'http://localhost:3000'}/employee.html`;
+            sendEmail(emp.email, subject, `<p>${text}</p><a href="${actionUrl}">View Goal Sheet</a>`);
+            sendTeamsNotification(process.env.TEAMS_WEBHOOK_URL, subject, text, actionUrl);
+        }
+        
+        res.json({ success: true, message: 'Goal sheet approved and locked' });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// 2J. POST /api/manager/team/goals/:id/reject
+router.post('/team/goals/:id/reject', async (req, res) => {
+    try {
+        const managerId = req.session.user.id;
+        const sheetId = Number(req.params.id);
+        const { reason } = req.body;
+        if (!reason) return res.status(400).json({ error: 'Please provide a rejection reason' });
+        const sheet = await get('SELECT gs.*, u.manager_id FROM goal_sheets gs JOIN users u ON gs.employee_id=u.id WHERE gs.id=?', [sheetId]);
+        if (!sheet) return res.status(404).json({ error: 'Sheet not found' });
+        if (sheet.manager_id !== managerId) return res.status(403).json({ error: 'This employee does not report to you' });
+        if (sheet.status !== 'pending') return res.status(400).json({ error: 'Only pending sheets can be rejected' });
+        await run("UPDATE goal_sheets SET status='rejected', is_locked=0, reject_reason=? WHERE id=?", [reason, sheetId]);
+        await run('INSERT INTO audit_logs (changed_by, goal_id, action, field_changed, old_value, new_value) VALUES (?,?,?,?,?,?)',
+            [managerId, null, 'sheet_rejected', 'status', 'pending', `rejected - ${reason}`]);
+            
+        const emp = await get('SELECT name, email FROM users WHERE id=?', [sheet.employee_id]);
+        if (emp) {
+            const subject = `Goal Sheet Returned for Rework`;
+            const text = `Your goal sheet has been returned by your manager. Reason: ${reason}`;
+            const actionUrl = `${process.env.APP_URL || 'http://localhost:3000'}/employee.html`;
             sendEmail(emp.email, subject, `<p>${text}</p><a href="${actionUrl}">View Goal Sheet</a>`);
             sendTeamsNotification(process.env.TEAMS_WEBHOOK_URL, subject, text, actionUrl);
         }

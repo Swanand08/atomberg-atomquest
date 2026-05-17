@@ -127,6 +127,21 @@ router.post('/unlock/:sheetId', async (req, res) => {
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// 2E. POST /api/admin/relock/:sheetId
+router.post('/relock/:sheetId', async (req, res) => {
+    try {
+        const adminId = req.session.user.id;
+        const sheetId = Number(req.params.sheetId);
+        const { reason } = req.body;
+        const sheet = await get('SELECT * FROM goal_sheets WHERE id = ?', [sheetId]);
+        if (!sheet) return res.status(404).json({ error: 'Sheet not found' });
+        await run("UPDATE goal_sheets SET is_locked=1 WHERE id=?", [sheetId]);
+        await run('INSERT INTO audit_logs (changed_by, goal_id, action, field_changed, old_value, new_value) VALUES (?,?,?,?,?,?)',
+            [adminId, null, 'admin_relock', 'is_locked', '0', `1 — Reason: ${reason || 'Admin override'}`]);
+        res.json({ success: true, message: 'Sheet re-locked successfully.' });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 // POST /api/admin/employee/:id/unlock
 router.post('/employee/:id/unlock', async (req, res) => {
     try {
@@ -145,6 +160,31 @@ router.post('/employee/:id/unlock', async (req, res) => {
 
 // POST /api/admin/shared-goal - 2H: include shared_from_employee_id
 router.post('/shared-goal', async (req, res) => {
+    try {
+        const { employee_ids, title, thrust_area, uom_type, uom_direction, target, weightage, source_employee_id } = req.body;
+        if (!employee_ids || !Array.isArray(employee_ids) || employee_ids.length === 0)
+            return res.status(400).json({ error: 'Provide at least one employee_id' });
+        const year = new Date().getFullYear();
+        const results = [];
+        for (const empId of employee_ids) {
+            let sheet = await get('SELECT * FROM goal_sheets WHERE employee_id=? AND cycle_year=?', [empId, year]);
+            if (!sheet) {
+                const r = await run('INSERT INTO goal_sheets (employee_id, cycle_year) VALUES (?,?)', [empId, year]);
+                sheet = await get('SELECT * FROM goal_sheets WHERE id=?', [r.lastID]);
+            }
+            if (sheet.is_locked) { results.push({ empId, status: 'skipped', reason: 'Sheet is locked' }); continue; }
+            const count = await get('SELECT COUNT(*) as c FROM goals WHERE sheet_id=?', [sheet.id]);
+            if (count.c >= 8) { results.push({ empId, status: 'skipped', reason: 'Max 8 goals reached' }); continue; }
+            await run('INSERT INTO goals (sheet_id, title, thrust_area, uom_type, uom_direction, target, weightage, is_shared, shared_from_employee_id) VALUES (?,?,?,?,?,?,?,1,?)',
+                [sheet.id, title, thrust_area, uom_type, uom_direction, Number(target), Number(weightage), source_employee_id || null]);
+            results.push({ empId, status: 'added' });
+        }
+        res.json({ success: true, results });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// 2F. POST /api/admin/shared-goals
+router.post('/shared-goals', async (req, res) => {
     try {
         const { employee_ids, title, thrust_area, uom_type, uom_direction, target, weightage, source_employee_id } = req.body;
         if (!employee_ids || !Array.isArray(employee_ids) || employee_ids.length === 0)
@@ -413,6 +453,37 @@ router.get('/escalation-logs', async (req, res) => {
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// 2G. GET /api/admin/escalations
+router.get('/escalations', async (req, res) => {
+    try {
+        const rules = await all('SELECT * FROM escalation_rules');
+        const logs = await all(`
+            SELECT el.*, er.rule_type, er.days_threshold, u.name as notified_name, u.email as notified_email, u.role as notified_role,
+                   gs.employee_id, emp.name as emp_name, emp.department as emp_dept
+            FROM escalation_logs el
+            JOIN escalation_rules er ON el.rule_id = er.id
+            JOIN users u ON el.notified_user_id = u.id
+            LEFT JOIN goal_sheets gs ON el.sheet_id = gs.id
+            LEFT JOIN users emp ON gs.employee_id = emp.id
+            ORDER BY el.escalated_at DESC
+        `);
+        res.json({ rules, logs });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// 2G. PUT /api/admin/escalations/rules/:id
+router.put('/escalations/rules/:id', async (req, res) => {
+    try {
+        const ruleId = Number(req.params.id);
+        const { days_threshold, is_active } = req.body;
+        await run('UPDATE escalation_rules SET days_threshold = COALESCE(?, days_threshold) WHERE id = ?',
+            [days_threshold !== undefined ? Number(days_threshold) : null, ruleId]);
+        await run('INSERT INTO audit_logs (changed_by, goal_id, action, field_changed, old_value, new_value) VALUES (?,?,?,?,?,?)',
+            [req.session.user.id, null, 'escalation_rule_update', 'escalation_rules', null, JSON.stringify(req.body)]);
+        res.json({ success: true, message: 'Escalation rule updated successfully.' });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 // POST /api/admin/escalations/trigger - manually trigger rule checks and generate mock alerts
 router.post('/escalations/trigger', async (req, res) => {
     try {
@@ -426,6 +497,14 @@ router.post('/escalations/trigger', async (req, res) => {
 router.get('/notification-logs', async (req, res) => {
     try {
         const logs = await all('SELECT * FROM notification_logs ORDER BY created_at DESC');
+        res.json({ logs });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// 2I. GET /api/admin/notifications
+router.get('/notifications', async (req, res) => {
+    try {
+        const logs = await all('SELECT id, recipient, type, subject, body, action_url, created_at as sent_at FROM notification_logs ORDER BY created_at DESC');
         res.json({ logs });
     } catch (err) { res.status(500).json({ error: err.message }); }
 });

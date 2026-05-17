@@ -3,7 +3,7 @@ const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const path = require('path');
-const { initDb } = require('./database');
+const { initDb, all } = require('./database');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -26,7 +26,7 @@ app.use((req, res, next) => {
     next();
 });
 app.use(session({
-    secret: 'atomquest-secret-2025',
+    secret: process.env.SESSION_SECRET || require('crypto').randomBytes(32).toString('hex'),
     resave: false,
     saveUninitialized: false,
     cookie: { secure: false, maxAge: 1000 * 60 * 60 * 8 }
@@ -57,6 +57,20 @@ app.use('/api/manager', requireAuth, requireRole('manager', 'admin'), managerRou
 app.use('/api/admin', requireAuth, requireRole('admin'), adminRoutes);
 app.use('/api/ai', requireAuth, aiRoutes);
 
+app.get('/api/notifications/mine', requireAuth, async (req, res) => {
+    try {
+        const email = req.session.user.email;
+        const logs = await all(
+            `SELECT * FROM notification_logs WHERE recipient = ? OR recipient LIKE '%Webhook%' ORDER BY created_at DESC LIMIT 10`,
+            [email]
+        );
+        res.json({ success: true, logs });
+    } catch (err) {
+        console.error('Error fetching notifications:', err);
+        res.status(500).json({ error: 'Failed to fetch notifications' });
+    }
+});
+
 app.get('/', (req, res) => {
     if (!req.session.user) return res.redirect('/login.html');
     const role = req.session.user.role;
@@ -80,7 +94,7 @@ initDb().then(() => {
     initCron();
     
     const server = app.listen(PORT, () => {
-        console.log(`\n✅ AtomQuest Portal running at http://localhost:${PORT}`);
+        console.log(`\n✅ AtomQuest Portal running at ${process.env.APP_URL || 'http://localhost:' + PORT}`);
         console.log(`  Admin:         admin1@company.com    / admin123`);
         console.log(`  Manager:       manager1@company.com  / mgr123`);
         console.log(`  Employee:      emp1@company.com      / emp123`);

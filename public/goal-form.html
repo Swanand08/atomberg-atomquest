@@ -222,7 +222,43 @@
 <!-- Goal Title -->
 <div class="space-y-xs">
 <label class="font-label-md text-label-md text-on-surface">Goal Title</label>
-<input id="goal_title" class="w-full px-sm py-base rounded-lg border border-outline focus:border-primary focus:ring-1 focus:ring-primary bg-surface-container-lowest text-body-md font-body-md transition-all" placeholder="e.g., Increase Quarterly Revenue Growth" type="text"/>
+<div class="flex gap-xs">
+<input id="goal_title" class="flex-1 px-sm py-base rounded-lg border border-outline focus:border-primary focus:ring-1 focus:ring-primary bg-surface-container-lowest text-body-md font-body-md transition-all" placeholder="e.g., Increase Quarterly Revenue Growth" type="text"/>
+<button id="btn-ai-score" type="button" class="px-md py-base bg-primary-container text-on-primary text-white rounded-lg hover:opacity-90 transition-opacity flex items-center gap-xs shadow-sm font-label-md whitespace-nowrap">
+    <span class="material-symbols-outlined text-[18px]">psychology</span>
+    Score SMART
+</button>
+</div>
+<!-- SMART Score Panel -->
+<div id="smart-score-panel" class="overflow-hidden transition-all duration-300 max-h-0 bg-surface-container-low p-0 rounded-xl border-0 border-outline-variant mt-xs shadow-inner">
+    <div class="p-md space-y-sm">
+        <div class="flex justify-between items-center border-b border-outline-variant pb-xs">
+            <h4 class="font-label-md text-label-md font-bold text-on-surface flex items-center gap-xs">
+                <span class="material-symbols-outlined text-primary text-[18px]">verified</span>
+                SMART Criteria Evaluation
+            </h4>
+            <span id="smart-score-badge" class="px-sm py-xs bg-primary text-on-primary text-white font-bold rounded-full font-label-sm shadow-sm">SMART Score: 0/10</span>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-xs font-label-sm text-label-sm text-on-surface">
+            <div id="smart-specific" class="flex items-center gap-xs p-xs bg-surface-container-lowest rounded border border-outline-variant font-medium">
+                <span class="material-symbols-outlined text-error text-[16px]">cancel</span> Specific
+            </div>
+            <div id="smart-measurable" class="flex items-center gap-xs p-xs bg-surface-container-lowest rounded border border-outline-variant font-medium">
+                <span class="material-symbols-outlined text-error text-[16px]">cancel</span> Measurable
+            </div>
+            <div id="smart-achievable" class="flex items-center gap-xs p-xs bg-surface-container-lowest rounded border border-outline-variant font-medium">
+                <span class="material-symbols-outlined text-error text-[16px]">cancel</span> Achievable
+            </div>
+            <div id="smart-relevant" class="flex items-center gap-xs p-xs bg-surface-container-lowest rounded border border-outline-variant font-medium">
+                <span class="material-symbols-outlined text-error text-[16px]">cancel</span> Relevant
+            </div>
+            <div id="smart-timebound" class="flex items-center gap-xs p-xs bg-surface-container-lowest rounded border border-outline-variant font-medium">
+                <span class="material-symbols-outlined text-error text-[16px]">cancel</span> Time-bound
+            </div>
+        </div>
+        <p id="smart-improvement-tip" class="font-label-sm text-label-sm text-on-surface-variant italic pt-xs border-t border-outline-variant leading-tight"></p>
+    </div>
+</div>
 </div>
 <!-- 3A: Goal Description -->
 <div>
@@ -532,6 +568,72 @@
             document.getElementById('uom_direction').value = s.direction || 'max';
             document.getElementById('target').value = s.target;
             document.getElementById('ai-suggestions').classList.add('hidden');
+        }
+
+        // SMART Criteria Scoring Logic
+        document.getElementById('btn-ai-score').onclick = async () => {
+            const title = document.getElementById('goal_title').value;
+            const thrust_area = document.getElementById('thrust_area').value;
+
+            if (!title) return alert('Please enter a Goal Title first.');
+
+            const btn = document.getElementById('btn-ai-score');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin">refresh</span> Scoring...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/ai/score', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, thrust_area })
+                });
+                const data = await res.json();
+                
+                if (res.ok) {
+                    renderSmartScore(data);
+                } else {
+                    alert(data.error || 'Failed to score goal.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Connection error while scoring goal. Check if your API key is set in .env');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        };
+
+        function renderSmartScore(score) {
+            const panel = document.getElementById('smart-score-panel');
+            const badge = document.getElementById('smart-score-badge');
+            const tip = document.getElementById('smart-improvement-tip');
+
+            badge.innerText = `SMART Score: ${score.overall_score || 0}/10`;
+            tip.innerText = score.improvement_tip || '';
+
+            const criteria = [
+                { id: 'smart-specific', val: score.specific, label: 'Specific' },
+                { id: 'smart-measurable', val: score.measurable, label: 'Measurable' },
+                { id: 'smart-achievable', val: score.achievable, label: 'Achievable' },
+                { id: 'smart-relevant', val: score.relevant, label: 'Relevant' },
+                { id: 'smart-timebound', val: score.time_bound, label: 'Time-bound' }
+            ];
+
+            criteria.forEach(c => {
+                const el = document.getElementById(c.id);
+                if (c.val) {
+                    el.className = 'flex items-center gap-xs p-xs bg-green-50 text-green-800 rounded border border-green-200 font-medium';
+                    el.innerHTML = '<span class="material-symbols-outlined text-green-600 text-[16px]">check_circle</span> ' + c.label;
+                } else {
+                    el.className = 'flex items-center gap-xs p-xs bg-red-50 text-red-800 rounded border border-red-200 font-medium';
+                    el.innerHTML = '<span class="material-symbols-outlined text-red-600 text-[16px]">cancel</span> ' + c.label;
+                }
+            });
+
+            // Animate sliding in
+            panel.classList.remove('max-h-0', 'p-0', 'border-0');
+            panel.classList.add('max-h-[500px]', 'border', 'p-xs');
         }
 
         // ── Theme Toggle ──────────────────────────────────────────────────────

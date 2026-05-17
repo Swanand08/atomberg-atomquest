@@ -63,13 +63,13 @@ const checkEscalations = async () => {
                             <p><strong>Employee:</strong> ${emp.name} (Engineering)</p>
                             <p><strong>Timeline:</strong> Goal setting window opened on ${config.goal_setting_open}. The goals have remained unsubmitted for <strong>${simulatedDays} days</strong>.</p>
                             <p><strong>Action Required:</strong> Please draft and submit the cycle goals sheet immediately.</p>
-                            <p><a href="http://localhost:3000/employee.html">Navigate to Goals Sheet Dashboard</a></p>
+                            <p><a href="${process.env.APP_URL || 'http://localhost:3000'}/employee.html">Navigate to Goals Sheet Dashboard</a></p>
                         `;
 
                         await sendEmail(notifyEmail, subject, body);
                         
                         const teamsText = `⚠️ **Goal Submission Delay Escalation**\n\n**Employee:** ${emp.name}\n**Timeline:** Delayed by ${simulatedDays} days.\n**Status:** ${chainLevel}.\n\nPlease review and submit goals immediately.`;
-                        await sendTeamsNotification(process.env.TEAMS_WEBHOOK_URL, subject, teamsText, 'http://localhost:3000/employee.html');
+                        await sendTeamsNotification(process.env.TEAMS_WEBHOOK_URL, subject, teamsText, `${process.env.APP_URL || 'http://localhost:3000'}/employee.html`);
 
                         await run('INSERT INTO escalation_logs (sheet_id, rule_id, notified_user_id) VALUES (?, ?, ?)', 
                             [null, submissionRule.id, notifiedUserId]);
@@ -90,14 +90,7 @@ const checkEscalations = async () => {
             `, [year]);
 
             for (const sheet of pendingSheets) {
-                // Find audit log for when it was set to pending
-                const log = await get(`
-                    SELECT * FROM audit_logs 
-                    WHERE field_changed = 'status' AND new_value = 'pending' AND goal_id IS NULL
-                    ORDER BY changed_at DESC LIMIT 1
-                `);
-                
-                const pendingDate = log ? new Date(log.changed_at) : new Date(Date.now() - (approvalRule.days_threshold + 1) * 24 * 60 * 60 * 1000);
+                const pendingDate = sheet.submitted_at ? new Date(sheet.submitted_at) : new Date(Date.now() - (approvalRule.days_threshold + 1) * 24 * 60 * 60 * 1000);
                 const daysPending = Math.floor((new Date() - pendingDate) / (1000 * 60 * 60 * 24));
                 
                 // Allow dynamic simulation from threshold
@@ -132,13 +125,13 @@ const checkEscalations = async () => {
                             <p><strong>Manager:</strong> ${sheet.mgr_name}</p>
                             <p><strong>Timeline:</strong> Pending approval for <strong>${simulatedDays} days</strong> since submission.</p>
                             <p><strong>Action Required:</strong> Please review and approve/reject the goals sheet immediately to unlock quarterly check-ins.</p>
-                            <p><a href="http://localhost:3000/manager.html">Navigate to Manager Review Dashboard</a></p>
+                            <p><a href="${process.env.APP_URL || 'http://localhost:3000'}/manager.html">Navigate to Manager Review Dashboard</a></p>
                         `;
 
                         await sendEmail(notifyEmail, subject, body);
 
                         const teamsText = `🚨 **Goal Sheet Approval Pending**\n\n**Employee:** ${sheet.emp_name}\n**Manager:** ${sheet.mgr_name}\n**Delay:** ${simulatedDays} days.\n**Status:** ${chainLevel}.\n\nPlease review immediately.`;
-                        await sendTeamsNotification(process.env.TEAMS_WEBHOOK_URL, subject, teamsText, 'http://localhost:3000/manager.html');
+                        await sendTeamsNotification(process.env.TEAMS_WEBHOOK_URL, subject, teamsText, `${process.env.APP_URL || 'http://localhost:3000'}/manager.html`);
 
                         await run('INSERT INTO escalation_logs (sheet_id, rule_id, notified_user_id) VALUES (?, ?, ?)', 
                             [sheet.id, approvalRule.id, notifiedUserId]);
@@ -220,13 +213,13 @@ const checkEscalations = async () => {
                                 <p><strong>Active Window:</strong> ${activeQuarter} check-in window opened on ${quarterOpenDate.toLocaleDateString()}.</p>
                                 <p><strong>Timeline:</strong> Delayed for <strong>${simulatedDays} days</strong>.</p>
                                 <p><strong>Action Required:</strong> Please log in to complete performance reporting and comments for this quarter immediately.</p>
-                                <p><a href="http://localhost:3000/employee.html">Navigate to Goals Sheet & Check-ins</a></p>
+                                <p><a href="${process.env.APP_URL || 'http://localhost:3000'}/employee.html">Navigate to Goals Sheet & Check-ins</a></p>
                             `;
 
                             await sendEmail(notifyEmail, subject, body);
 
                             const teamsText = `⏰ **Quarterly Check-in Pending Escalation**\n\n**Quarter:** ${activeQuarter}\n**Employee:** ${item.emp_name}\n**Timeline:** Delayed by ${simulatedDays} days.\n**Status:** ${chainLevel}.\n\nPlease submit quarterly check-ins immediately.`;
-                            await sendTeamsNotification(process.env.TEAMS_WEBHOOK_URL, subject, teamsText, 'http://localhost:3000/employee.html');
+                            await sendTeamsNotification(process.env.TEAMS_WEBHOOK_URL, subject, teamsText, `${process.env.APP_URL || 'http://localhost:3000'}/employee.html`);
 
                             await run('INSERT INTO escalation_logs (sheet_id, rule_id, notified_user_id) VALUES (?, ?, ?)', 
                                 [item.sheet_id, checkinRule.id, notifiedUserId]);
